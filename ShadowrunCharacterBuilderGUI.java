@@ -27,11 +27,13 @@ public class ShadowrunCharacterBuilderGUI {
     private JTextArea taNotes;
     
     // ATTRIBUTES fields
-    private JTextField tfBody, tfAgility, tfReaction, tfStrength, tfWillpower,
-                       tfLogic, tfIntuition, tfCharisma, tfEdge, tfEssence,
-                       tfMagicResonance, tfInitiative, tfMatrixInitiative, tfAstralInitiative,
-                       tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement, tfUnarmedAR,
-                       tfDefenseRating;
+    private JSpinner spBody, spAgility, spReaction, spStrength,
+                     spWillpower, spLogic, spIntuition, spCharisma,
+                     spEdge, spEssence, spMagic, spResonance;
+    // TODO later: initiative and other derived stats
+    // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
+    //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
+    //                    tfUnarmedAR, tfDefenseRating;
     
     // CONDITION MONITOR fields (future feature)
     // private JTextField tfPhysicalBoxes, tfStunBoxes;
@@ -43,6 +45,8 @@ public class ShadowrunCharacterBuilderGUI {
     private DefaultTableModel qualitiesTableModel;
     private JTable tableContacts;
     private DefaultTableModel contactsTableModel;
+    private JLabel lblSkillCount;
+    private JLabel lblQualityCount;
     
     // WEAPONS, ARMOR: future feature
     // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
@@ -61,8 +65,8 @@ public class ShadowrunCharacterBuilderGUI {
     //                    tfVehicleArmor, tfVehiclePilot, tfVehicleSensor, tfVehicleSeats;
     // private JTextArea taVehicleNotes;
     
-    // GEAR
-    private JTextArea taGear;
+    // GEAR - to be developed later
+    // private JTextArea taGear;
     
     // SPELLS/ RITUALS/ COMPLEX FORMS - future feature
     // private JTextArea taSpellsRituals;
@@ -91,7 +95,7 @@ public class ShadowrunCharacterBuilderGUI {
         // buildMatrixSection(); // TODO expand later
         // buildAugmentationsSection(); // TODO expand later
         // buildVehicleSection(); // TODO expand later
-        buildGearSection();
+        // buildGearSection(); // TODO develop later
         // buildSpellsSection(); // TODO expand later
         // buildAdeptPowersSection(); // TODO expand later
         buildNotesSection();
@@ -157,60 +161,56 @@ public class ShadowrunCharacterBuilderGUI {
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Attributes", TitledBorder.LEFT, TitledBorder.TOP));
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(4, 4, 4, 4);
-        c.anchor = GridBagConstraints.WEST;
+        c.anchor = GridBagConstraints.NORTHWEST;
 
-        int row = 0;
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Body:"), c);
-        tfBody = new JTextField(3); c.gridx = 1; panel.add(tfBody, c);
-        c.gridx = 2; panel.add(new JLabel("Agility:"), c);
-        tfAgility = new JTextField(3); c.gridx = 3; panel.add(tfAgility, c);
-        c.gridx = 4; panel.add(new JLabel("Reaction:"), c);
-        tfReaction = new JTextField(3); c.gridx = 5; panel.add(tfReaction, c);
-        c.gridx = 6; panel.add(new JLabel("Strength:"), c);
-        tfStrength = new JTextField(3); c.gridx = 7; panel.add(tfStrength, c);
-        row++;
+        JPanel physical = new JPanel(new GridBagLayout());
+        physical.setBorder(BorderFactory.createTitledBorder("Physical"));
+        GridBagConstraints pc = new GridBagConstraints();
+        pc.insets = new Insets(2,2,2,2);
+        pc.anchor = GridBagConstraints.WEST;
+        int prow = 0;
+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Body:"), pc);
+        spBody = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Agility:"), pc);
+        spAgility = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Reaction:"), pc);
+        spReaction = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
+        spStrength = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Willpower:"), c);
-        tfWillpower = new JTextField(3); c.gridx = 1; panel.add(tfWillpower, c);
-        c.gridx = 2; panel.add(new JLabel("Logic:"), c);
-        tfLogic = new JTextField(3); c.gridx = 3; panel.add(tfLogic, c);
-        c.gridx = 4; panel.add(new JLabel("Intuition:"), c);
-        tfIntuition = new JTextField(3); c.gridx = 5; panel.add(tfIntuition, c);
-        c.gridx = 6; panel.add(new JLabel("Charisma:"), c);
-        tfCharisma = new JTextField(3); c.gridx = 7; panel.add(tfCharisma, c);
-        row++;
+        JPanel mental = new JPanel(new GridBagLayout());
+        mental.setBorder(BorderFactory.createTitledBorder("Mental"));
+        GridBagConstraints mc = new GridBagConstraints();
+        mc.insets = new Insets(2,2,2,2);
+        mc.anchor = GridBagConstraints.WEST;
+        int mrow = 0;
+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
+        spWillpower = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
+        spLogic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
+        spIntuition = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
+        spCharisma = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Edge:"), c);
-        tfEdge = new JTextField(3); c.gridx = 1; panel.add(tfEdge, c);
-        c.gridx = 2; panel.add(new JLabel("Essence:"), c);
-        tfEssence = new JTextField(3); c.gridx = 3; panel.add(tfEssence, c);
-        c.gridx = 4; panel.add(new JLabel("Magic/Resonance:"), c);
-        tfMagicResonance = new JTextField(3); c.gridx = 5; panel.add(tfMagicResonance, c);
-        row++;
+        JPanel special = new JPanel(new GridBagLayout());
+        special.setBorder(BorderFactory.createTitledBorder("Special"));
+        GridBagConstraints sc = new GridBagConstraints();
+        sc.insets = new Insets(2,2,2,2);
+        sc.anchor = GridBagConstraints.WEST;
+        int srow = 0;
+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
+        spEdge = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
+        spEssence = new JSpinner(new SpinnerNumberModel(6, 0, 6, 1)); sc.gridx = 1; special.add(spEssence, sc); srow++;
+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
+        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
+        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Initiative:"), c);
-        tfInitiative = new JTextField(3); c.gridx = 1; panel.add(tfInitiative, c);
-        c.gridx = 2; panel.add(new JLabel("Matrix Initiative:"), c);
-        tfMatrixInitiative = new JTextField(3); c.gridx = 3; panel.add(tfMatrixInitiative, c);
-        c.gridx = 4; panel.add(new JLabel("Astral Initiative:"), c);
-        tfAstralInitiative = new JTextField(3); c.gridx = 5; panel.add(tfAstralInitiative, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Judge Intentions:"), c);
-        tfJudgeIntentions = new JTextField(3); c.gridx = 1; panel.add(tfJudgeIntentions, c);
-        c.gridx = 2; panel.add(new JLabel("Memory:"), c);
-        tfMemory = new JTextField(3); c.gridx = 3; panel.add(tfMemory, c);
-        c.gridx = 4; panel.add(new JLabel("Lift/Carry:"), c);
-        tfLiftCarry = new JTextField(5); c.gridx = 5; panel.add(tfLiftCarry, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Movement:"), c);
-        tfMovement = new JTextField(3); c.gridx = 1; panel.add(tfMovement, c);
-        c.gridx = 2; panel.add(new JLabel("Unarmed AR:"), c);
-        tfUnarmedAR = new JTextField(3); c.gridx = 3; panel.add(tfUnarmedAR, c);
-        c.gridx = 4; panel.add(new JLabel("Defense Rating:"), c);
-        tfDefenseRating = new JTextField(3); c.gridx = 5; panel.add(tfDefenseRating, c);
-        row++;
+        c.gridx = 0; c.gridy = 0; panel.add(physical, c);
+        c.gridx = 1; panel.add(mental, c);
+        c.gridx = 2; panel.add(special, c);
 
         contentPanel.add(panel);
     }
@@ -246,14 +246,31 @@ private void buildConditionMonitorSection() {
         btnAddSkill.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 skillsTableModel.addRow(new Object[]{"", "", "", ""});
+                updateSkillCount();
             }
         });
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btnPanel.add(btnAddSkill);
+        JButton btnRemoveSkill = new JButton("Remove Skill");
+        btnRemoveSkill.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int row = tableSkills.getSelectedRow();
+                if (row != -1) {
+                    skillsTableModel.removeRow(row);
+                    updateSkillCount();
+                }
+            }
+        });
+        lblSkillCount = new JLabel("0 skills");
+        JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonSub.add(btnAddSkill);
+        buttonSub.add(btnRemoveSkill);
+        JPanel btnPanel = new JPanel(new BorderLayout());
+        btnPanel.add(buttonSub, BorderLayout.WEST);
+        btnPanel.add(lblSkillCount, BorderLayout.EAST);
 
         panel.add(new JLabel("Enter skills:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
         panel.add(btnPanel, BorderLayout.SOUTH);
+        updateSkillCount();
         contentPanel.add(panel);
     }
 
@@ -269,14 +286,31 @@ private void buildConditionMonitorSection() {
         btnAddQuality.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
+                updateQualityCount();
             }
         });
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btnPanel.add(btnAddQuality);
+        JButton btnRemoveQuality = new JButton("Remove Quality");
+        btnRemoveQuality.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int row = tableQualities.getSelectedRow();
+                if (row != -1) {
+                    qualitiesTableModel.removeRow(row);
+                    updateQualityCount();
+                }
+            }
+        });
+        lblQualityCount = new JLabel("0 qualities");
+        JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonSub.add(btnAddQuality);
+        buttonSub.add(btnRemoveQuality);
+        JPanel btnPanel = new JPanel(new BorderLayout());
+        btnPanel.add(buttonSub, BorderLayout.WEST);
+        btnPanel.add(lblQualityCount, BorderLayout.EAST);
 
         panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
         panel.add(btnPanel, BorderLayout.SOUTH);
+        updateQualityCount();
         contentPanel.add(panel);
     }
 
@@ -332,6 +366,18 @@ private void buildConditionMonitorSection() {
         taNotes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         panel.add(new JScrollPane(taNotes), BorderLayout.CENTER);
         contentPanel.add(panel);
+    }
+
+    private void updateSkillCount() {
+        if (lblSkillCount != null) {
+            lblSkillCount.setText(skillsTableModel.getRowCount() + " skills");
+        }
+    }
+
+    private void updateQualityCount() {
+        if (lblQualityCount != null) {
+            lblQualityCount.setText(qualitiesTableModel.getRowCount() + " qualities");
+        }
     }
 
 /*
@@ -475,7 +521,9 @@ private void buildVehicleSection() {
     }
 */
 
-    private void buildGearSection() {
+/*
+ * Gear section - to be developed later
+private void buildGearSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Gear", TitledBorder.LEFT, TitledBorder.TOP));
         taGear = new JTextArea(4, 60);
@@ -486,6 +534,7 @@ private void buildVehicleSection() {
         panel.add(sp, BorderLayout.CENTER);
         contentPanel.add(panel);
     }
+*/
 
 /*
  * Future feature: Spells/Preparations/Rituals/Complex Forms section
@@ -528,10 +577,13 @@ private void buildAdeptPowersSection() {
                 cbGender.getSelectedItem(), tfHeight.getText(), tfWeight.getText()));
 
         sb.append("\n-- Attributes --\n");
-        sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n", tfBody.getText(), tfAgility.getText(), tfReaction.getText(), tfStrength.getText(), tfWillpower.getText()));
-        sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n", tfLogic.getText(), tfIntuition.getText(), tfCharisma.getText(), tfEdge.getText(), tfEssence.getText()));
-        sb.append(String.format("Magic/Resonance: %s   Initiative: %s   Matrix Init: %s   Astral Init: %s\n", tfMagicResonance.getText(), tfInitiative.getText(), tfMatrixInitiative.getText(), tfAstralInitiative.getText()));
-        sb.append(String.format("Judge Intentions: %s   Memory: %s   Lift/Carry: %s   Movement: %s   Unarmed AR: %s   Defense Rating: %s\n", tfJudgeIntentions.getText(), tfMemory.getText(), tfLiftCarry.getText(), tfMovement.getText(), tfUnarmedAR.getText(), tfDefenseRating.getText()));
+        sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
+                spBody.getValue(), spAgility.getValue(), spReaction.getValue(), spStrength.getValue(), spWillpower.getValue()));
+        sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n",
+                spLogic.getValue(), spIntuition.getValue(), spCharisma.getValue(), spEdge.getValue(), spEssence.getValue()));
+        sb.append(String.format("Magic: %s   Resonance: %s\n",
+                spMagic.getValue(), spResonance.getValue()));
+        // Initiative and other derived stats will be added later
 
         // Condition Monitor will be added in a future version
 
@@ -590,8 +642,8 @@ private void buildAdeptPowersSection() {
         // Augmentations will be added later
         // Vehicle section will be added later
 
-        sb.append("\n-- Gear --\n");
-        sb.append(taGear.getText().isEmpty() ? "None\n" : taGear.getText() + "\n");
+        // sb.append("\n-- Gear --\n");
+        // sb.append(taGear.getText().isEmpty() ? "None\n" : taGear.getText() + "\n");
         // Spells and Adept Powers sections will be added later
 
         sb.append("\n-- Notes --\n");
