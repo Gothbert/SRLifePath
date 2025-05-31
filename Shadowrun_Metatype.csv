@@ -1,0 +1,32 @@
+Name,Karma Cost,Type,Root Meta,Average Height (cm),Average Weight (kg),Sourcebook
+Dwarf,0,Metahuman,,120,54,Core Rulebook
+Elf,0,Metahuman,,190,80,Core Rulebook
+Human,0,Metahuman,,175,78,Core Rulebook
+Ork,0,Metahuman,,190,128,Core Rulebook
+Troll,0,Metahuman,,250,300,Core Rulebook
+Centaur,15,Metasapient,,210,435,Sixth World Companion
+Merrow,15,Metasapient,,285,375,Sixth World Companion
+Naga,15,Metasapient,,690,245,Sixth World Companion
+Pixie,10,Metasapient,,60,19,Sixth World Companion
+Sasquatch,10,Metasapient,,240,244,Sixth World Companion
+Cyclops,5,Metavariant,Troll,270,421,Sixth World Companion
+Dalakitnon,5,Metavariant,Elf,170,80,Sixth World Companion
+Dryad,5,Metavariant,Elf,175,63,Sixth World Companion
+Duende,10,Metavariant,Dwarf,110,55,Sixth World Companion
+Fomorian,10,Metavariant,Troll,235,224,Sixth World Companion
+Giant,5,Metavariant,Troll,300,467,Sixth World Companion
+Gnome,5,Metavariant,Dwarf,80,37,Sixth World Companion
+Hanuman,5,Metavariant,Dwarf,120,49,Sixth World Companion
+Hobgoblin,5,Metavariant,Ork,180,98,Sixth World Companion
+Koborokuru,5,Metavariant,Dwarf,110,42,Sixth World Companion
+Menehune,5,Metavariant,Dwarf,110,42,Sixth World Companion
+Minotaur,5,Metavariant,Troll,240,285,Sixth World Companion
+Nartaki (four arms),5,Metavariant,Human,175,86,Sixth World Companion
+Nartaki (six arms),10,Metavariant,Human,175,86,Sixth World Companion
+Nocturna,5,Metavariant,Elf,190,80,Sixth World Companion
+Ogre,5,Metavariant,Ork,170,101,Sixth World Companion
+Oni,5,Metavariant,Ork,190,128,Sixth World Companion
+Satyr,10,Metavariant,Ork,160,69,Sixth World Companion
+Valkyrie,15,Metavariant,Human,176,115,Sixth World Companion
+Wakyambi,10,Metavariant,Elf,230,145,Sixth World Companion
+Xapiri Thepe,5,Metavariant,Elf,170,57,Sixth World Companion

@@ -1,0 +1,20 @@
+Name,Primary Attribute,Skill Category,Notes
+Athletics,Agility,Physical,"general athletic feats like running, jumping, also covers throwing weapons and bows"
+Close Combat,Agility,Combat,"all melee fighting, including unarmed and blades"
+Exotic Weapons,Agility,Combat,special or unusual weapons not covered by other skills
+Firearms,Agility,Combat,"all ranged firearms, from pistols to rifles"
+Stealth,Agility,Physical,"sneaking, hiding, shadowing, lockpicking etc."
+Con,Charisma,Social,"deception, fast-talking, impersonation"
+Influence,Charisma,Social,"charisma-based influence, negotiation, leadership, etiquette"
+Astral,Intuition,Magical,perceiving and interacting with the astral plane
+Outdoors,Intuition,Physical,"wilderness survival, tracking, navigation, animal handling"
+Perception,Intuition,Physical,alertness and sensing using the five senses
+Biotech,Logic,Technical,"first aid, medicine, biotechnology"
+Cracking,Logic,Technical,illegal matrix actions like hacking/cybercombat
+Electronics,Logic,Technical,"legal matrix uses, computing and electronic ops"
+Engineering,Logic,Technical,"mechanics, hardware, vehicle gunnery operations"
+Conjuring,Magic,Magical,summoning and banishing spirits
+Enchanting,Magic,Magical,"enchanting, alchemy, crafting magical items"
+Sorcery,Magic,Magical,spellcasting and magical skill uses
+Piloting,Reaction,Technical,operating and driving vehicles of all types
+Tasking,Resonance,Resonance,technomancer abilities like compiling or registering sprites
