@@ -54,6 +54,22 @@ public class ShadowrunCharacterBuilderGUI {
     private java.util.Map<String, double[]> metatypeMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> archetypeMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
+    private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
+
+    private static final String[] RANK_OPTIONS = {
+            "1 - Novice",
+            "2 - Advanced Beginner",
+            "3 - Journeyman",
+            "4 - Professional",
+            "5 - Advanced Professional",
+            "6 - Local Legend",
+            "7 - Elite",
+            "8 - Professional Elite",
+            "9 - National Elite",
+            "10 - Multinational Elite",
+            "11 - Global Elite",
+            "12 - GOAT"
+    };
     
     // WEAPONS, ARMOR: future feature
     // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
@@ -300,7 +316,7 @@ private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Skills", TitledBorder.LEFT, TitledBorder.TOP));
 
-        skillsTableModel = new DefaultTableModel(new Object[]{"Skill", "Rank", "Attribute", "Type"}, 0) {
+        skillsTableModel = new DefaultTableModel(new Object[]{"Skill", "Rank", "Type", "Attribute", "Category"}, 0) {
             public boolean isCellEditable(int row, int column) {
                 return column < 2;
             }
@@ -309,14 +325,14 @@ private void buildConditionMonitorSection() {
         tableSkills.setAutoCreateRowSorter(true);
 
         loadSkills();
+        loadSpecializations();
 
         TableColumn skillCol = tableSkills.getColumnModel().getColumn(0);
         JComboBox<String> cbSkillNames = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
         skillCol.setCellEditor(new DefaultCellEditor(cbSkillNames));
 
         TableColumn rankCol = tableSkills.getColumnModel().getColumn(1);
-        String[] ranks = {"Novice","Advanced Beginner","Journeyman","Professional","Advanced Professional","Local Legend","Elite","Professional Elite","National Elite","Multinational Elite","Global Elite","GOAT"};
-        rankCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(ranks)));
+        rankCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(RANK_OPTIONS)));
 
         skillsTableModel.addTableModelListener(e -> {
             if (e.getType() == javax.swing.event.TableModelEvent.UPDATE && e.getColumn() == 0) {
@@ -324,11 +340,13 @@ private void buildConditionMonitorSection() {
                 Object val = skillsTableModel.getValueAt(r, 0);
                 if (val != null && skillMap.containsKey(val.toString())) {
                     String[] info = skillMap.get(val.toString());
-                    skillsTableModel.setValueAt(info[0], r, 2);
-                    skillsTableModel.setValueAt(info[1], r, 3);
+                    skillsTableModel.setValueAt("General", r, 2);
+                    skillsTableModel.setValueAt(info[0], r, 3);
+                    skillsTableModel.setValueAt(info[1], r, 4);
                 } else {
                     skillsTableModel.setValueAt("", r, 2);
                     skillsTableModel.setValueAt("", r, 3);
+                    skillsTableModel.setValueAt("", r, 4);
                 }
             }
         });
@@ -339,8 +357,7 @@ private void buildConditionMonitorSection() {
         JButton btnAddSkill = new JButton("Add Skill");
         btnAddSkill.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                skillsTableModel.addRow(new Object[]{"", "", "", ""});
-                updateSkillCount();
+                showAddSkillDialog();
             }
         });
         JButton btnRemoveSkill = new JButton("Remove Skill");
@@ -564,11 +581,185 @@ private void buildConditionMonitorSection() {
                 if (parts.length >= 3) {
                     String name = parts[0].trim();
                     String attr = parts[1].trim();
-                    String type = parts[2].trim();
-                    skillMap.put(name, new String[]{attr, type});
+                    String category = parts[2].trim();
+                    skillMap.put(name, new String[]{attr, category});
                 }
             }
         } catch (Exception ignored) {}
+    }
+
+    private void loadSpecializations() {
+        specializationMap.clear();
+        java.io.File file = new java.io.File("Shadowrun_Specializations.csv");
+        if (!file.exists()) return;
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+                if (parts.length >= 4) {
+                    String spec = parts[0].trim();
+                    String parent = parts[1].trim();
+                    String attr = parts[2].trim();
+                    String cat = parts[3].trim();
+                    specializationMap.put(spec, new String[]{parent, attr, cat});
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void showAddSkillDialog() {
+        JDialog dialog = new JDialog(frame, "Add Skill Dialog", true);
+        JPanel main = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(4,4,4,4);
+        c.anchor = GridBagConstraints.WEST;
+        int row = 0;
+
+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
+        JComboBox<String> cbType = new JComboBox<>(new String[]{"General","Specialization","Knowledge","Language"});
+        c.gridx = 1; main.add(cbType, c); row++;
+
+        CardLayout cl = new CardLayout();
+        JPanel cards = new JPanel(cl);
+
+        // General card
+        JPanel general = new JPanel(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(2,2,2,2); gc.anchor = GridBagConstraints.WEST;
+        int gr = 0;
+        gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Skill Name:"), gc);
+        JComboBox<String> cbGenSkill = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
+        gc.gridx=1; general.add(cbGenSkill, gc); gr++;
+        gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Category:"), gc);
+        JTextField tfGenCat = new JTextField(15); tfGenCat.setEditable(false);
+        gc.gridx=1; general.add(tfGenCat, gc); gr++;
+        gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Primary Attribute:"), gc);
+        JTextField tfGenAttr = new JTextField(15); tfGenAttr.setEditable(false);
+        gc.gridx=1; general.add(tfGenAttr, gc); gr++;
+        gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Rank:"), gc);
+        JComboBox<String> cbGenRank = new JComboBox<>(RANK_OPTIONS);
+        gc.gridx=1; general.add(cbGenRank, gc);
+
+        cbGenSkill.addActionListener(e -> {
+            String s = (String) cbGenSkill.getSelectedItem();
+            if (s != null && skillMap.containsKey(s)) {
+                String[] info = skillMap.get(s);
+                tfGenAttr.setText(info[0]);
+                tfGenCat.setText(info[1]);
+            } else {
+                tfGenAttr.setText("");
+                tfGenCat.setText("");
+            }
+        });
+        if(cbGenSkill.getItemCount()>0) cbGenSkill.setSelectedIndex(0);
+
+        // Specialization card
+        JPanel spec = new JPanel(new GridBagLayout());
+        GridBagConstraints sc = new GridBagConstraints();
+        sc.insets = new Insets(2,2,2,2); sc.anchor = GridBagConstraints.WEST;
+        int sr = 0;
+        sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Specialization:"), sc);
+        JComboBox<String> cbSpec = new JComboBox<>(specializationMap.keySet().toArray(new String[0]));
+        sc.gridx=1; spec.add(cbSpec, sc); sr++;
+        sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Parent Skill:"), sc);
+        JTextField tfParent = new JTextField(15); tfParent.setEditable(false);
+        sc.gridx=1; spec.add(tfParent, sc); sr++;
+        sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Category:"), sc);
+        JTextField tfSpecCat = new JTextField(15); tfSpecCat.setEditable(false);
+        sc.gridx=1; spec.add(tfSpecCat, sc); sr++;
+        sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Primary Attribute:"), sc);
+        JTextField tfSpecAttr = new JTextField(15); tfSpecAttr.setEditable(false);
+        sc.gridx=1; spec.add(tfSpecAttr, sc); sr++;
+        sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Rank:"), sc);
+        JComboBox<String> cbSpecRank = new JComboBox<>(RANK_OPTIONS);
+        sc.gridx=1; spec.add(cbSpecRank, sc);
+
+        cbSpec.addActionListener(e -> {
+            String s = (String) cbSpec.getSelectedItem();
+            if (s != null && specializationMap.containsKey(s)) {
+                String[] info = specializationMap.get(s);
+                tfParent.setText(info[0]);
+                tfSpecAttr.setText(info[1]);
+                tfSpecCat.setText(info[2]);
+            } else {
+                tfParent.setText("");
+                tfSpecAttr.setText("");
+                tfSpecCat.setText("");
+            }
+        });
+        if(cbSpec.getItemCount()>0) cbSpec.setSelectedIndex(0);
+
+        // Knowledge card
+        JPanel knowledge = new JPanel(new GridBagLayout());
+        GridBagConstraints kc = new GridBagConstraints();
+        kc.insets = new Insets(2,2,2,2); kc.anchor = GridBagConstraints.WEST;
+        kc.gridx=0; kc.gridy=0; knowledge.add(new JLabel("Area/Field:"), kc);
+        JTextField tfKnowledge = new JTextField(15);
+        kc.gridx=1; knowledge.add(tfKnowledge, kc);
+
+        // Language card
+        JPanel language = new JPanel(new GridBagLayout());
+        GridBagConstraints lc = new GridBagConstraints();
+        lc.insets = new Insets(2,2,2,2); lc.anchor = GridBagConstraints.WEST;
+        lc.gridx=0; lc.gridy=0; language.add(new JLabel("Language:"), lc);
+        JTextField tfLanguage = new JTextField(15);
+        lc.gridx=1; language.add(tfLanguage, lc); lc.gridy=1; lc.gridx=0; language.add(new JLabel("Proficiency:"), lc);
+        JComboBox<String> cbProf = new JComboBox<>(new String[]{"Novice","Specialist","Expert","Native"});
+        lc.gridx=1; language.add(cbProf, lc);
+
+        cards.add(general, "General");
+        cards.add(spec, "Specialization");
+        cards.add(knowledge, "Knowledge");
+        cards.add(language, "Language");
+
+        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
+        main.add(cards, c); row++;
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnSave = new JButton("Save");
+        JButton btnCancel = new JButton("Cancel");
+        btnPanel.add(btnSave); btnPanel.add(btnCancel);
+        c.gridx=0; c.gridy=row; c.gridwidth=2; main.add(btnPanel,c);
+
+        cbType.addActionListener(e -> {
+            String t = (String) cbType.getSelectedItem();
+            cl.show(cards, t);
+        });
+        cbType.setSelectedIndex(0);
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+
+        btnSave.addActionListener(e -> {
+            String t = (String) cbType.getSelectedItem();
+            String skill=""; String rank=""; String attr=""; String cat="";
+            if ("General".equals(t)) {
+                skill = (String) cbGenSkill.getSelectedItem();
+                rank = (String) cbGenRank.getSelectedItem();
+                attr = tfGenAttr.getText();
+                cat = tfGenCat.getText();
+            } else if ("Specialization".equals(t)) {
+                skill = (String) cbSpec.getSelectedItem();
+                rank = (String) cbSpecRank.getSelectedItem();
+                attr = tfSpecAttr.getText();
+                cat = tfSpecCat.getText();
+            } else if ("Knowledge".equals(t)) {
+                skill = tfKnowledge.getText();
+                rank = "N/A";
+            } else if ("Language".equals(t)) {
+                skill = tfLanguage.getText();
+                rank = (String) cbProf.getSelectedItem();
+            }
+            if (skill != null && !skill.trim().isEmpty()) {
+                skillsTableModel.addRow(new Object[]{skill, rank, t, attr, cat});
+                updateSkillCount();
+            }
+            dialog.dispose();
+        });
+
+        dialog.getContentPane().add(main);
+        dialog.pack();
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
     }
 
     private void loadArchetypes() {
@@ -804,13 +995,16 @@ private void buildAdeptPowersSection() {
         for (int i = 0; i < skillsTableModel.getRowCount(); i++) {
             String skill = (String) skillsTableModel.getValueAt(i, 0);
             String rank = (String) skillsTableModel.getValueAt(i, 1);
-            String attribute = (String) skillsTableModel.getValueAt(i, 2);
-            String type = (String) skillsTableModel.getValueAt(i, 3);
+            String type = (String) skillsTableModel.getValueAt(i, 2);
+            String attribute = (String) skillsTableModel.getValueAt(i, 3);
+            String category = (String) skillsTableModel.getValueAt(i, 4);
             if (skill != null && !skill.trim().isEmpty()) {
-                skillsBuilder.append(String.format("%s, %s, %s, %s\n",
-                        skill, rank == null ? "" : rank,
+                skillsBuilder.append(String.format("%s, %s, %s, %s, %s\n",
+                        skill,
+                        rank == null ? "" : rank,
+                        type == null ? "" : type,
                         attribute == null ? "" : attribute,
-                        type == null ? "" : type));
+                        category == null ? "" : category));
             }
         }
         sb.append(skillsBuilder.length() == 0 ? "None\n" : skillsBuilder.toString());
