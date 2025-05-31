@@ -1,12 +1,11 @@
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Shadowrun 6e Character Builder with GUI
@@ -21,10 +20,11 @@ public class ShadowrunCharacterBuilderGUI {
     private JScrollPane scrollPane;
     
     // PERSONAL DATA fields
-    private JTextField tfName, tfPlayer, tfNotes, tfMetatype, tfEthnicity, tfAge, tfSex,
-                       tfHeight, tfWeight, tfReputation, tfHeat, tfKarmaTotal, tfKarmaMisc,
-                       tfNuyen, tfPrimaryLifestyle, tfPrimaryArmor, tfPrimaryRanged,
-                       tfPrimaryMelee, tfFakeIDs;
+    private JTextField tfName, tfPlayer, tfMetatype, tfEthnicity, tfAge,
+                       tfHeight, tfWeight;
+    private JComboBox<String> cbGender;
+    private JTextField tfNuyen, tfPrimaryLifestyle, tfFakeIDs;
+    private JTextArea taNotes;
     
     // ATTRIBUTES fields
     private JTextField tfBody, tfAgility, tfReaction, tfStrength, tfWillpower,
@@ -33,37 +33,42 @@ public class ShadowrunCharacterBuilderGUI {
                        tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement, tfUnarmedAR,
                        tfDefenseRating;
     
-    // CONDITION MONITOR fields
-    private JTextField tfPhysicalBoxes, tfStunBoxes;
+    // CONDITION MONITOR fields (future feature)
+    // private JTextField tfPhysicalBoxes, tfStunBoxes;
     
-    // SKILLS, QUALITIES, CONTACTS: use JTextArea to allow multiple lines
-    private JTextArea taSkills, taQualities, taContacts;
+    // SKILLS table and QUALITIES/CONTACTS tables
+    private JTable tableSkills;
+    private DefaultTableModel skillsTableModel;
+    private JTable tableQualities;
+    private DefaultTableModel qualitiesTableModel;
+    private JTable tableContacts;
+    private DefaultTableModel contactsTableModel;
     
-    // WEAPONS, ARMOR: similarly multi-line
-    private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
+    // WEAPONS, ARMOR: future feature
+    // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
     
-    // MATRIX STATS
-    private JTextField tfMatrixAttack, tfMatrixSleaze, tfMatrixDataProc, tfMatrixFirewall,
-                       tfMatrixConditionBoxes;
-    private JTextArea taMatrixDevices;
+    // MATRIX STATS - future feature
+    // private JTextField tfMatrixAttack, tfMatrixSleaze, tfMatrixDataProc, tfMatrixFirewall,
+    //                    tfMatrixConditionBoxes;
+    // private JTextArea taMatrixDevices;
     
-    // AUGMENTATIONS
-    private JTextArea taAugmentations;
+    // AUGMENTATIONS - future feature
+    // private JTextArea taAugmentations;
     
-    // VEHICLE
-    private JTextField tfVehicleName, tfVehicleHandling, tfVehicleAcceleration,
-                       tfVehicleSpeedInterval, tfVehicleTopSpeed, tfVehicleBody,
-                       tfVehicleArmor, tfVehiclePilot, tfVehicleSensor, tfVehicleSeats;
-    private JTextArea taVehicleNotes;
+    // VEHICLE - future feature
+    // private JTextField tfVehicleName, tfVehicleHandling, tfVehicleAcceleration,
+    //                    tfVehicleSpeedInterval, tfVehicleTopSpeed, tfVehicleBody,
+    //                    tfVehicleArmor, tfVehiclePilot, tfVehicleSensor, tfVehicleSeats;
+    // private JTextArea taVehicleNotes;
     
     // GEAR
     private JTextArea taGear;
     
-    // SPELLS/ RITUALS/ COMPLEX FORMS
-    private JTextArea taSpellsRituals;
+    // SPELLS/ RITUALS/ COMPLEX FORMS - future feature
+    // private JTextArea taSpellsRituals;
     
-    // ADEPT POWERS
-    private JTextArea taAdeptPowers;
+    // ADEPT POWERS - future feature
+    // private JTextArea taAdeptPowers;
     
     public ShadowrunCharacterBuilderGUI() {
         frame = new JFrame("Shadowrun 6e Character Builder");
@@ -77,17 +82,19 @@ public class ShadowrunCharacterBuilderGUI {
         // Build each section
         buildPersonalDataSection();
         buildAttributesSection();
-        buildConditionMonitorSection();
+        // buildConditionMonitorSection(); // TODO expand later
         buildSkillsSection();
         buildQualitiesSection();
         buildContactsSection();
-        buildWeaponsArmorSection();
-        buildMatrixSection();
-        buildAugmentationsSection();
-        buildVehicleSection();
+        buildLifestyleSection();
+        // buildWeaponsArmorSection(); // TODO expand later
+        // buildMatrixSection(); // TODO expand later
+        // buildAugmentationsSection(); // TODO expand later
+        // buildVehicleSection(); // TODO expand later
         buildGearSection();
-        buildSpellsSection();
-        buildAdeptPowersSection();
+        // buildSpellsSection(); // TODO expand later
+        // buildAdeptPowersSection(); // TODO expand later
+        buildNotesSection();
 
         // Generate Button
         JButton btnGenerate = new JButton("Generate Report");
@@ -121,9 +128,6 @@ public class ShadowrunCharacterBuilderGUI {
         tfPlayer = new JTextField(15); c.gridx = 3; panel.add(tfPlayer, c);
         row++;
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Notes:"), c);
-        tfNotes = new JTextField(50); c.gridx = 1; c.gridwidth = 3; panel.add(tfNotes, c);
-        c.gridwidth = 1; row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
         tfMetatype = new JTextField(10); c.gridx = 1; panel.add(tfMetatype, c);
@@ -133,8 +137,8 @@ public class ShadowrunCharacterBuilderGUI {
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Age:"), c);
         tfAge = new JTextField(5); c.gridx = 1; panel.add(tfAge, c);
-        c.gridx = 2; panel.add(new JLabel("Sex:"), c);
-        tfSex = new JTextField(5); c.gridx = 3; panel.add(tfSex, c);
+        c.gridx = 2; panel.add(new JLabel("Gender:"), c);
+        cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
         row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Height:"), c);
@@ -143,35 +147,7 @@ public class ShadowrunCharacterBuilderGUI {
         tfWeight = new JTextField(5); c.gridx = 3; panel.add(tfWeight, c);
         row++;
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Reputation:"), c);
-        tfReputation = new JTextField(10); c.gridx = 1; panel.add(tfReputation, c);
-        c.gridx = 2; panel.add(new JLabel("Heat:"), c);
-        tfHeat = new JTextField(10); c.gridx = 3; panel.add(tfHeat, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Karma (Total):"), c);
-        tfKarmaTotal = new JTextField(5); c.gridx = 1; panel.add(tfKarmaTotal, c);
-        c.gridx = 2; panel.add(new JLabel("Karma (Misc):"), c);
-        tfKarmaMisc = new JTextField(5); c.gridx = 3; panel.add(tfKarmaMisc, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Nuyen:"), c);
-        tfNuyen = new JTextField(10); c.gridx = 1; panel.add(tfNuyen, c);
-        c.gridx = 2; panel.add(new JLabel("Primary Lifestyle:"), c);
-        tfPrimaryLifestyle = new JTextField(15); c.gridx = 3; panel.add(tfPrimaryLifestyle, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Primary Armor:"), c);
-        tfPrimaryArmor = new JTextField(15); c.gridx = 1; panel.add(tfPrimaryArmor, c);
-        c.gridx = 2; panel.add(new JLabel("Primary Ranged Weapon:"), c);
-        tfPrimaryRanged = new JTextField(20); c.gridx = 3; panel.add(tfPrimaryRanged, c);
-        row++;
-
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Primary Melee Weapon:"), c);
-        tfPrimaryMelee = new JTextField(20); c.gridx = 1; panel.add(tfPrimaryMelee, c);
-        c.gridx = 2; panel.add(new JLabel("Fake IDs / Lifestyles / Funds / Licenses:"), c);
-        tfFakeIDs = new JTextField(25); c.gridx = 3; panel.add(tfFakeIDs, c);
-        row++;
+        // Reputation, Heat, Karma, and primary weapons/armor will be added in future versions
 
         contentPanel.add(panel);
     }
@@ -239,59 +215,128 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(panel);
     }
 
-    private void buildConditionMonitorSection() {
+/*
+ * Future feature: Condition Monitor section
+private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Condition Monitor", TitledBorder.LEFT, TitledBorder.TOP));
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(4, 4, 4, 4);
         c.anchor = GridBagConstraints.WEST;
-        
+
         int row = 0;
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Physical Damage Track Boxes:"), c);
         tfPhysicalBoxes = new JTextField(5); c.gridx = 1; panel.add(tfPhysicalBoxes, c);
         c.gridx = 2; panel.add(new JLabel("Stun Damage Track Boxes:"), c);
         tfStunBoxes = new JTextField(5); c.gridx = 3; panel.add(tfStunBoxes, c);
-        
+
         contentPanel.add(panel);
     }
+*/
 
     private void buildSkillsSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Skills", TitledBorder.LEFT, TitledBorder.TOP));
-        taSkills = new JTextArea(5, 60);
-        taSkills.setLineWrap(true);
-        taSkills.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        JScrollPane sp = new JScrollPane(taSkills);
-        panel.add(new JLabel("Enter skills (one per line, format: Skill, Rank, Attribute, Type):"), BorderLayout.NORTH);
+
+        skillsTableModel = new DefaultTableModel(new Object[]{"Skill", "Rank", "Attribute", "Type"}, 0);
+        tableSkills = new JTable(skillsTableModel);
+        JScrollPane sp = new JScrollPane(tableSkills);
+
+        JButton btnAddSkill = new JButton("Add Skill");
+        btnAddSkill.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                skillsTableModel.addRow(new Object[]{"", "", "", ""});
+            }
+        });
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnPanel.add(btnAddSkill);
+
+        panel.add(new JLabel("Enter skills:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
+        panel.add(btnPanel, BorderLayout.SOUTH);
         contentPanel.add(panel);
     }
 
     private void buildQualitiesSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
-        taQualities = new JTextArea(4, 60);
-        taQualities.setLineWrap(true);
-        taQualities.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        JScrollPane sp = new JScrollPane(taQualities);
-        panel.add(new JLabel("Enter qualities (one per line, format: Quality, Notes, Type):"), BorderLayout.NORTH);
+
+        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0);
+        tableQualities = new JTable(qualitiesTableModel);
+        JScrollPane sp = new JScrollPane(tableQualities);
+
+        JButton btnAddQuality = new JButton("Add Quality");
+        btnAddQuality.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
+            }
+        });
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnPanel.add(btnAddQuality);
+
+        panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
+        panel.add(btnPanel, BorderLayout.SOUTH);
         contentPanel.add(panel);
     }
 
     private void buildContactsSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Contacts", TitledBorder.LEFT, TitledBorder.TOP));
-        taContacts = new JTextArea(4, 60);
-        taContacts.setLineWrap(true);
-        taContacts.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        JScrollPane sp = new JScrollPane(taContacts);
-        panel.add(new JLabel("Enter contacts (one per line, format: Name, Loyalty, Connection):"), BorderLayout.NORTH);
+
+        contactsTableModel = new DefaultTableModel(new Object[]{"Name", "Loyalty", "Connection"}, 0);
+        tableContacts = new JTable(contactsTableModel);
+        JScrollPane sp = new JScrollPane(tableContacts);
+
+        JButton btnAddContact = new JButton("Add Contact");
+        btnAddContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                contactsTableModel.addRow(new Object[]{"", "", ""});
+            }
+        });
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        btnPanel.add(btnAddContact);
+
+        panel.add(new JLabel("Enter contacts:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
+        panel.add(btnPanel, BorderLayout.SOUTH);
         contentPanel.add(panel);
     }
 
-    private void buildWeaponsArmorSection() {
+    private void buildLifestyleSection() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Lifestyle", TitledBorder.LEFT, TitledBorder.TOP));
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(4, 4, 4, 4);
+        c.anchor = GridBagConstraints.WEST;
+
+        int row = 0;
+        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Nuyen:"), c);
+        tfNuyen = new JTextField(10); c.gridx = 1; panel.add(tfNuyen, c);
+        c.gridx = 2; panel.add(new JLabel("Primary Lifestyle:"), c);
+        tfPrimaryLifestyle = new JTextField(15); c.gridx = 3; panel.add(tfPrimaryLifestyle, c);
+        row++;
+
+        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Fake IDs / Lifestyles / Funds / Licenses:"), c);
+        tfFakeIDs = new JTextField(25); c.gridx = 1; c.gridwidth = 3; panel.add(tfFakeIDs, c);
+        c.gridwidth = 1; row++;
+
+        contentPanel.add(panel);
+    }
+
+    private void buildNotesSection() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Notes", TitledBorder.LEFT, TitledBorder.TOP));
+        taNotes = new JTextArea(4, 60);
+        taNotes.setLineWrap(true);
+        taNotes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        panel.add(new JScrollPane(taNotes), BorderLayout.CENTER);
+        contentPanel.add(panel);
+    }
+
+/*
+ * Future feature: Weapons and Armor section
+private void buildWeaponsArmorSection() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Weapons & Armor", TitledBorder.LEFT, TitledBorder.TOP));
@@ -328,8 +373,11 @@ public class ShadowrunCharacterBuilderGUI {
 
         contentPanel.add(panel);
     }
+*/
 
-    private void buildMatrixSection() {
+/*
+ * Future feature: Matrix section
+private void buildMatrixSection() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Matrix", TitledBorder.LEFT, TitledBorder.TOP));
         GridBagConstraints c = new GridBagConstraints();
@@ -362,8 +410,10 @@ public class ShadowrunCharacterBuilderGUI {
 
         contentPanel.add(panel);
     }
-
-    private void buildAugmentationsSection() {
+*/
+/*
+ * Future feature: Augmentations section
+private void buildAugmentationsSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Augmentations", TitledBorder.LEFT, TitledBorder.TOP));
         taAugmentations = new JTextArea(4, 60);
@@ -375,7 +425,10 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(panel);
     }
 
-    private void buildVehicleSection() {
+*/
+/*
+ * Future feature: Vehicle section
+private void buildVehicleSection() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Vehicle", TitledBorder.LEFT, TitledBorder.TOP));
         GridBagConstraints c = new GridBagConstraints();
@@ -420,6 +473,7 @@ public class ShadowrunCharacterBuilderGUI {
         
         contentPanel.add(panel);
     }
+*/
 
     private void buildGearSection() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -433,7 +487,9 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(panel);
     }
 
-    private void buildSpellsSection() {
+/*
+ * Future feature: Spells/Preparations/Rituals/Complex Forms section
+private void buildSpellsSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Spells / Rituals / Complex Forms", TitledBorder.LEFT, TitledBorder.TOP));
         taSpellsRituals = new JTextArea(4, 60);
@@ -445,7 +501,10 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(panel);
     }
 
-    private void buildAdeptPowersSection() {
+*/
+/*
+ * Future feature: Adept Powers or Other Abilities section
+private void buildAdeptPowersSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Adept Powers / Other Abilities", TitledBorder.LEFT, TitledBorder.TOP));
         taAdeptPowers = new JTextArea(3, 60);
@@ -456,6 +515,7 @@ public class ShadowrunCharacterBuilderGUI {
         panel.add(sp, BorderLayout.CENTER);
         contentPanel.add(panel);
     }
+*/
 
     private void generateReport() {
         StringBuilder sb = new StringBuilder();
@@ -463,13 +523,9 @@ public class ShadowrunCharacterBuilderGUI {
         sb.append("-- Personal Data --\n");
         sb.append(String.format("Name: %s\n", tfName.getText()));
         sb.append(String.format("Player: %s\n", tfPlayer.getText()));
-        sb.append(String.format("Notes: %s\n", tfNotes.getText()));
-        sb.append(String.format("Metatype: %s   Ethnicity: %s   Age: %s   Sex: %s   Height: %s   Weight: %s\n", tfMetatype.getText(), tfEthnicity.getText(), tfAge.getText(), tfSex.getText(), tfHeight.getText(), tfWeight.getText()));
-        sb.append(String.format("Reputation: %s   Heat: %s\n", tfReputation.getText(), tfHeat.getText()));
-        sb.append(String.format("Karma (Total/Misc): %s / %s\n", tfKarmaTotal.getText(), tfKarmaMisc.getText()));
-        sb.append(String.format("Nuyen: %s   Primary Lifestyle: %s\n", tfNuyen.getText(), tfPrimaryLifestyle.getText()));
-        sb.append(String.format("Primary Armor: %s   Primary Ranged Weapon: %s   Primary Melee Weapon: %s\n", tfPrimaryArmor.getText(), tfPrimaryRanged.getText(), tfPrimaryMelee.getText()));
-        sb.append(String.format("Fake IDs / Lifestyles / Funds / Licenses: %s\n", tfFakeIDs.getText()));
+        sb.append(String.format("Metatype: %s   Ethnicity: %s   Age: %s   Gender: %s   Height: %s   Weight: %s\n",
+                tfMetatype.getText(), tfEthnicity.getText(), tfAge.getText(),
+                cbGender.getSelectedItem(), tfHeight.getText(), tfWeight.getText()));
 
         sb.append("\n-- Attributes --\n");
         sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n", tfBody.getText(), tfAgility.getText(), tfReaction.getText(), tfStrength.getText(), tfWillpower.getText()));
@@ -477,49 +533,69 @@ public class ShadowrunCharacterBuilderGUI {
         sb.append(String.format("Magic/Resonance: %s   Initiative: %s   Matrix Init: %s   Astral Init: %s\n", tfMagicResonance.getText(), tfInitiative.getText(), tfMatrixInitiative.getText(), tfAstralInitiative.getText()));
         sb.append(String.format("Judge Intentions: %s   Memory: %s   Lift/Carry: %s   Movement: %s   Unarmed AR: %s   Defense Rating: %s\n", tfJudgeIntentions.getText(), tfMemory.getText(), tfLiftCarry.getText(), tfMovement.getText(), tfUnarmedAR.getText(), tfDefenseRating.getText()));
 
-        sb.append("\n-- Condition Monitor --\n");
-        sb.append(String.format("Physical Damage Track Boxes: %s   Stun Damage Track Boxes: %s\n", tfPhysicalBoxes.getText(), tfStunBoxes.getText()));
+        // Condition Monitor will be added in a future version
 
         sb.append("\n-- Skills --\n");
-        sb.append(taSkills.getText().isEmpty() ? "None\n" : taSkills.getText() + "\n");
+        StringBuilder skillsBuilder = new StringBuilder();
+        for (int i = 0; i < skillsTableModel.getRowCount(); i++) {
+            String skill = (String) skillsTableModel.getValueAt(i, 0);
+            String rank = (String) skillsTableModel.getValueAt(i, 1);
+            String attribute = (String) skillsTableModel.getValueAt(i, 2);
+            String type = (String) skillsTableModel.getValueAt(i, 3);
+            if (skill != null && !skill.trim().isEmpty()) {
+                skillsBuilder.append(String.format("%s, %s, %s, %s\n",
+                        skill, rank == null ? "" : rank,
+                        attribute == null ? "" : attribute,
+                        type == null ? "" : type));
+            }
+        }
+        sb.append(skillsBuilder.length() == 0 ? "None\n" : skillsBuilder.toString());
 
         sb.append("\n-- Qualities --\n");
-        sb.append(taQualities.getText().isEmpty() ? "None\n" : taQualities.getText() + "\n");
+        StringBuilder qualBuilder = new StringBuilder();
+        for (int i = 0; i < qualitiesTableModel.getRowCount(); i++) {
+            String q = (String) qualitiesTableModel.getValueAt(i, 0);
+            String type = (String) qualitiesTableModel.getValueAt(i, 1);
+            String karma = (String) qualitiesTableModel.getValueAt(i, 2);
+            String cat = (String) qualitiesTableModel.getValueAt(i, 3);
+            if (q != null && !q.trim().isEmpty()) {
+                qualBuilder.append(String.format("%s, %s, %s, %s\n",
+                        q, type == null ? "" : type,
+                        karma == null ? "" : karma,
+                        cat == null ? "" : cat));
+            }
+        }
+        sb.append(qualBuilder.length() == 0 ? "None\n" : qualBuilder.toString());
 
         sb.append("\n-- Contacts --\n");
-        sb.append(taContacts.getText().isEmpty() ? "None\n" : taContacts.getText() + "\n");
+        StringBuilder contactBuilder = new StringBuilder();
+        for (int i = 0; i < contactsTableModel.getRowCount(); i++) {
+            String name = (String) contactsTableModel.getValueAt(i, 0);
+            String loyalty = (String) contactsTableModel.getValueAt(i, 1);
+            String connection = (String) contactsTableModel.getValueAt(i, 2);
+            if (name != null && !name.trim().isEmpty()) {
+                contactBuilder.append(String.format("%s, %s, %s\n",
+                        name, loyalty == null ? "" : loyalty,
+                        connection == null ? "" : connection));
+            }
+        }
+        sb.append(contactBuilder.length() == 0 ? "None\n" : contactBuilder.toString());
 
-        sb.append("\n-- Ranged Weapons --\n");
-        sb.append(taRangedWeapons.getText().isEmpty() ? "None\n" : taRangedWeapons.getText() + "\n");
+        sb.append("\n-- Lifestyle --\n");
+        sb.append(String.format("Nuyen: %s   Primary Lifestyle: %s\n", tfNuyen.getText(), tfPrimaryLifestyle.getText()));
+        sb.append(String.format("Fake IDs / Lifestyles / Funds / Licenses: %s\n", tfFakeIDs.getText()));
 
-        sb.append("\n-- Melee Weapons --\n");
-        sb.append(taMeleeWeapons.getText().isEmpty() ? "None\n" : taMeleeWeapons.getText() + "\n");
-
-        sb.append("\n-- Armor --\n");
-        sb.append(taArmor.getText().isEmpty() ? "None\n" : taArmor.getText() + "\n");
-
-        sb.append("\n-- Matrix Stats --\n");
-        sb.append(String.format("Attack: %s   Sleaze: %s   Data Proc: %s   Firewall: %s\n", tfMatrixAttack.getText(), tfMatrixSleaze.getText(), tfMatrixDataProc.getText(), tfMatrixFirewall.getText()));
-        sb.append("Devices/DR and Programs:\n");
-        sb.append(taMatrixDevices.getText().isEmpty() ? "None\n" : taMatrixDevices.getText() + "\n");
-        sb.append(String.format("Matrix Condition Monitor Boxes: %s\n", tfMatrixConditionBoxes.getText()));
-
-        sb.append("\n-- Augmentations --\n");
-        sb.append(taAugmentations.getText().isEmpty() ? "None\n" : taAugmentations.getText() + "\n");
-
-        sb.append("\n-- Vehicle --\n");
-        sb.append(String.format("Name: %s   Handling: %s   Acceleration: %s   Speed Interval: %s   Top Speed: %s\n", tfVehicleName.getText(), tfVehicleHandling.getText(), tfVehicleAcceleration.getText(), tfVehicleSpeedInterval.getText(), tfVehicleTopSpeed.getText()));
-        sb.append(String.format("Body: %s   Armor: %s   Pilot: %s   Sensor: %s   Seats: %s\n", tfVehicleBody.getText(), tfVehicleArmor.getText(), tfVehiclePilot.getText(), tfVehicleSensor.getText(), tfVehicleSeats.getText()));
-        sb.append(String.format("Notes: %s\n", taVehicleNotes.getText()));
+        // Ranged Weapons, Melee Weapons, and Armor sections will be added later
+        // Matrix stats will be added later
+        // Augmentations will be added later
+        // Vehicle section will be added later
 
         sb.append("\n-- Gear --\n");
         sb.append(taGear.getText().isEmpty() ? "None\n" : taGear.getText() + "\n");
+        // Spells and Adept Powers sections will be added later
 
-        sb.append("\n-- Spells / Rituals / Complex Forms --\n");
-        sb.append(taSpellsRituals.getText().isEmpty() ? "None\n" : taSpellsRituals.getText() + "\n");
-
-        sb.append("\n-- Adept Powers or Other Abilities --\n");
-        sb.append(taAdeptPowers.getText().isEmpty() ? "None\n" : taAdeptPowers.getText() + "\n");
+        sb.append("\n-- Notes --\n");
+        sb.append(taNotes.getText().isEmpty() ? "None\n" : taNotes.getText() + "\n");
 
         // Display in a dialog
         JTextArea textArea = new JTextArea(sb.toString());
