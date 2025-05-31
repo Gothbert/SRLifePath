@@ -1,9 +1,13 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4cd7a3a5c 100644
+index c72f8c5ab3dbd4053dbe6ea6dfc9e8e7562d606a..bb71c13772418c7196d3efb37e9060fba39008a5 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -5,115 +5,119 @@ import java.awt.*;
+@@ -1,406 +1,456 @@
+ import javax.swing.*;
+ import javax.swing.border.TitledBorder;
+ import javax.swing.table.DefaultTableModel;
+ import java.awt.*;
  import java.awt.event.*;
  import java.io.BufferedWriter;
  import java.io.FileWriter;
@@ -19,28 +23,28 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
  public class ShadowrunCharacterBuilderGUI {
      private JFrame frame;
      private JPanel contentPanel;
-     private JScrollPane scrollPane;
+-    private JScrollPane scrollPane;
++    private JScrollPane scrollPane;
++    private JTabbedPane tabs;
      
      // PERSONAL DATA fields
-     private JTextField tfName, tfPlayer, tfMetatype, tfEthnicity, tfAge,
-                        tfHeight, tfWeight;
+-    private JTextField tfName, tfPlayer, tfMetatype, tfEthnicity, tfAge,
+-                       tfHeight, tfWeight;
++    private JTextField tfName, tfPlayer, tfAge,
++                       tfHeight, tfWeight, tfRole;
++    private JComboBox<String> cbMetatype;
      private JComboBox<String> cbGender;
      private JTextField tfNuyen, tfPrimaryLifestyle, tfFakeIDs;
      private JTextArea taNotes;
      
      // ATTRIBUTES fields
--    private JTextField tfBody, tfAgility, tfReaction, tfStrength, tfWillpower,
--                       tfLogic, tfIntuition, tfCharisma, tfEdge, tfEssence,
--                       tfMagicResonance, tfInitiative, tfMatrixInitiative, tfAstralInitiative,
--                       tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement, tfUnarmedAR,
--                       tfDefenseRating;
-+    private JSpinner spBody, spAgility, spReaction, spStrength,
-+                     spWillpower, spLogic, spIntuition, spCharisma,
-+                     spEdge, spEssence, spMagic, spResonance;
-+    // TODO later: initiative and other derived stats
-+    // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
-+    //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
-+    //                    tfUnarmedAR, tfDefenseRating;
+     private JSpinner spBody, spAgility, spReaction, spStrength,
+                      spWillpower, spLogic, spIntuition, spCharisma,
+                      spEdge, spEssence, spMagic, spResonance;
+     // TODO later: initiative and other derived stats
+     // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
+     //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
+     //                    tfUnarmedAR, tfDefenseRating;
      
      // CONDITION MONITOR fields (future feature)
      // private JTextField tfPhysicalBoxes, tfStunBoxes;
@@ -52,12 +56,15 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
 -    private DefaultTableModel qualitiesTableModel;
 -    private JTable tableContacts;
 -    private DefaultTableModel contactsTableModel;
+-    private JLabel lblSkillCount;
+-    private JLabel lblQualityCount;
 +    private JTable tableQualities;
 +    private DefaultTableModel qualitiesTableModel;
 +    private JTable tableContacts;
 +    private DefaultTableModel contactsTableModel;
 +    private JLabel lblSkillCount;
 +    private JLabel lblQualityCount;
++    private java.util.Map<String, double[]> metatypeMap = new java.util.LinkedHashMap<>();
      
      // WEAPONS, ARMOR: future feature
      // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
@@ -76,10 +83,8 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
      //                    tfVehicleArmor, tfVehiclePilot, tfVehicleSensor, tfVehicleSeats;
      // private JTextArea taVehicleNotes;
      
--    // GEAR
--    private JTextArea taGear;
-+    // GEAR - to be developed later
-+    // private JTextArea taGear;
+     // GEAR - to be developed later
+     // private JTextArea taGear;
      
      // SPELLS/ RITUALS/ COMPLEX FORMS - future feature
      // private JTextArea taSpellsRituals;
@@ -96,23 +101,34 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
          contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
  
-         // Build each section
-         buildPersonalDataSection();
-         buildAttributesSection();
-         // buildConditionMonitorSection(); // TODO expand later
-         buildSkillsSection();
-         buildQualitiesSection();
-         buildContactsSection();
-         buildLifestyleSection();
-         // buildWeaponsArmorSection(); // TODO expand later
-         // buildMatrixSection(); // TODO expand later
-         // buildAugmentationsSection(); // TODO expand later
-         // buildVehicleSection(); // TODO expand later
--        buildGearSection();
-+        // buildGearSection(); // TODO develop later
-         // buildSpellsSection(); // TODO expand later
-         // buildAdeptPowersSection(); // TODO expand later
-         buildNotesSection();
+-        // Build each section
+-        buildPersonalDataSection();
+-        buildAttributesSection();
+-        // buildConditionMonitorSection(); // TODO expand later
+-        buildSkillsSection();
+-        buildQualitiesSection();
+-        buildContactsSection();
+-        buildLifestyleSection();
+-        // buildWeaponsArmorSection(); // TODO expand later
+-        // buildMatrixSection(); // TODO expand later
+-        // buildAugmentationsSection(); // TODO expand later
+-        // buildVehicleSection(); // TODO expand later
+-        // buildGearSection(); // TODO develop later
+-        // buildSpellsSection(); // TODO expand later
+-        // buildAdeptPowersSection(); // TODO expand later
+-        buildNotesSection();
++        // Build each section
++        buildPersonalDataSection();
++        buildAttributesSection();
++        // buildConditionMonitorSection(); // TODO expand later
++
++        tabs = new JTabbedPane();
++        tabs.addTab("Skills", buildSkillsSection());
++        tabs.addTab("Qualities", buildQualitiesSection());
++        tabs.addTab("Contacts", buildContactsSection());
++        tabs.addTab("Lifestyle", buildLifestyleSection());
++        tabs.addTab("Notes", buildNotesSection());
++        contentPanel.add(tabs);
  
          // Generate Button
          JButton btnGenerate = new JButton("Generate Report");
@@ -131,160 +147,151 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          frame.setVisible(true);
      }
  
-     private void buildPersonalDataSection() {
-         JPanel panel = new JPanel(new GridBagLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Personal Data", TitledBorder.LEFT, TitledBorder.TOP));
-         GridBagConstraints c = new GridBagConstraints();
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4cd7a3a5c 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -130,231 +134,273 @@ public class ShadowrunCharacterBuilderGUI {
- 
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
-         tfMetatype = new JTextField(10); c.gridx = 1; panel.add(tfMetatype, c);
-         c.gridx = 2; panel.add(new JLabel("Ethnicity:"), c);
-         tfEthnicity = new JTextField(10); c.gridx = 3; panel.add(tfEthnicity, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Age:"), c);
-         tfAge = new JTextField(5); c.gridx = 1; panel.add(tfAge, c);
-         c.gridx = 2; panel.add(new JLabel("Gender:"), c);
-         cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Height:"), c);
-         tfHeight = new JTextField(5); c.gridx = 1; panel.add(tfHeight, c);
-         c.gridx = 2; panel.add(new JLabel("Weight:"), c);
-         tfWeight = new JTextField(5); c.gridx = 3; panel.add(tfWeight, c);
-         row++;
- 
-         // Reputation, Heat, Karma, and primary weapons/armor will be added in future versions
- 
-         contentPanel.add(panel);
-     }
- 
--    private void buildAttributesSection() {
+-    private void buildPersonalDataSection() {
 -        JPanel panel = new JPanel(new GridBagLayout());
--        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Attributes", TitledBorder.LEFT, TitledBorder.TOP));
+-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Personal Data", TitledBorder.LEFT, TitledBorder.TOP));
 -        GridBagConstraints c = new GridBagConstraints();
 -        c.insets = new Insets(4, 4, 4, 4);
 -        c.anchor = GridBagConstraints.WEST;
 -
 -        int row = 0;
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Body:"), c);
--        tfBody = new JTextField(3); c.gridx = 1; panel.add(tfBody, c);
--        c.gridx = 2; panel.add(new JLabel("Agility:"), c);
--        tfAgility = new JTextField(3); c.gridx = 3; panel.add(tfAgility, c);
--        c.gridx = 4; panel.add(new JLabel("Reaction:"), c);
--        tfReaction = new JTextField(3); c.gridx = 5; panel.add(tfReaction, c);
--        c.gridx = 6; panel.add(new JLabel("Strength:"), c);
--        tfStrength = new JTextField(3); c.gridx = 7; panel.add(tfStrength, c);
+-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name/Primary Alias:"), c);
+-        tfName = new JTextField(20); c.gridx = 1; panel.add(tfName, c);
+-
+-        c.gridx = 2; panel.add(new JLabel("Player Name:"), c);
+-        tfPlayer = new JTextField(15); c.gridx = 3; panel.add(tfPlayer, c);
 -        row++;
 -
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Willpower:"), c);
--        tfWillpower = new JTextField(3); c.gridx = 1; panel.add(tfWillpower, c);
--        c.gridx = 2; panel.add(new JLabel("Logic:"), c);
--        tfLogic = new JTextField(3); c.gridx = 3; panel.add(tfLogic, c);
--        c.gridx = 4; panel.add(new JLabel("Intuition:"), c);
--        tfIntuition = new JTextField(3); c.gridx = 5; panel.add(tfIntuition, c);
--        c.gridx = 6; panel.add(new JLabel("Charisma:"), c);
--        tfCharisma = new JTextField(3); c.gridx = 7; panel.add(tfCharisma, c);
+-
+-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
+-        tfMetatype = new JTextField(10); c.gridx = 1; panel.add(tfMetatype, c);
+-        c.gridx = 2; panel.add(new JLabel("Ethnicity:"), c);
+-        tfEthnicity = new JTextField(10); c.gridx = 3; panel.add(tfEthnicity, c);
 -        row++;
 -
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Edge:"), c);
--        tfEdge = new JTextField(3); c.gridx = 1; panel.add(tfEdge, c);
--        c.gridx = 2; panel.add(new JLabel("Essence:"), c);
--        tfEssence = new JTextField(3); c.gridx = 3; panel.add(tfEssence, c);
--        c.gridx = 4; panel.add(new JLabel("Magic/Resonance:"), c);
--        tfMagicResonance = new JTextField(3); c.gridx = 5; panel.add(tfMagicResonance, c);
+-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Age:"), c);
+-        tfAge = new JTextField(5); c.gridx = 1; panel.add(tfAge, c);
+-        c.gridx = 2; panel.add(new JLabel("Gender:"), c);
+-        cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
 -        row++;
 -
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Initiative:"), c);
--        tfInitiative = new JTextField(3); c.gridx = 1; panel.add(tfInitiative, c);
--        c.gridx = 2; panel.add(new JLabel("Matrix Initiative:"), c);
--        tfMatrixInitiative = new JTextField(3); c.gridx = 3; panel.add(tfMatrixInitiative, c);
--        c.gridx = 4; panel.add(new JLabel("Astral Initiative:"), c);
--        tfAstralInitiative = new JTextField(3); c.gridx = 5; panel.add(tfAstralInitiative, c);
+-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Height:"), c);
+-        tfHeight = new JTextField(5); c.gridx = 1; panel.add(tfHeight, c);
+-        c.gridx = 2; panel.add(new JLabel("Weight:"), c);
+-        tfWeight = new JTextField(5); c.gridx = 3; panel.add(tfWeight, c);
 -        row++;
 -
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Judge Intentions:"), c);
--        tfJudgeIntentions = new JTextField(3); c.gridx = 1; panel.add(tfJudgeIntentions, c);
--        c.gridx = 2; panel.add(new JLabel("Memory:"), c);
--        tfMemory = new JTextField(3); c.gridx = 3; panel.add(tfMemory, c);
--        c.gridx = 4; panel.add(new JLabel("Lift/Carry:"), c);
--        tfLiftCarry = new JTextField(5); c.gridx = 5; panel.add(tfLiftCarry, c);
--        row++;
--
--        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Movement:"), c);
--        tfMovement = new JTextField(3); c.gridx = 1; panel.add(tfMovement, c);
--        c.gridx = 2; panel.add(new JLabel("Unarmed AR:"), c);
--        tfUnarmedAR = new JTextField(3); c.gridx = 3; panel.add(tfUnarmedAR, c);
--        c.gridx = 4; panel.add(new JLabel("Defense Rating:"), c);
--        tfDefenseRating = new JTextField(3); c.gridx = 5; panel.add(tfDefenseRating, c);
--        row++;
+-        // Reputation, Heat, Karma, and primary weapons/armor will be added in future versions
 -
 -        contentPanel.add(panel);
 -    }
-+    private void buildAttributesSection() {
++    private void buildPersonalDataSection() {
 +        JPanel panel = new JPanel(new GridBagLayout());
-+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Attributes", TitledBorder.LEFT, TitledBorder.TOP));
++        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Personal Data", TitledBorder.LEFT, TitledBorder.TOP));
 +        GridBagConstraints c = new GridBagConstraints();
 +        c.insets = new Insets(4, 4, 4, 4);
-+        c.anchor = GridBagConstraints.NORTHWEST;
++        c.anchor = GridBagConstraints.WEST;
 +
-+        JPanel physical = new JPanel(new GridBagLayout());
-+        physical.setBorder(BorderFactory.createTitledBorder("Physical"));
-+        GridBagConstraints pc = new GridBagConstraints();
-+        pc.insets = new Insets(2,2,2,2);
-+        pc.anchor = GridBagConstraints.WEST;
-+        int prow = 0;
-+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Body:"), pc);
-+        spBody = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
-+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Agility:"), pc);
-+        spAgility = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
-+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Reaction:"), pc);
-+        spReaction = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
-+        pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
-+        spStrength = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
++        int row = 0;
++        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name/Primary Alias:"), c);
++        tfName = new JTextField(20); c.gridx = 1; panel.add(tfName, c);
++        c.gridx = 2; panel.add(new JLabel("Gender:"), c);
++        cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
++        row++;
 +
-+        JPanel mental = new JPanel(new GridBagLayout());
-+        mental.setBorder(BorderFactory.createTitledBorder("Mental"));
-+        GridBagConstraints mc = new GridBagConstraints();
-+        mc.insets = new Insets(2,2,2,2);
-+        mc.anchor = GridBagConstraints.WEST;
-+        int mrow = 0;
-+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
-+        spWillpower = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
-+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
-+        spLogic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
-+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
-+        spIntuition = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
-+        mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
-+        spCharisma = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
++        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Player Name:"), c);
++        tfPlayer = new JTextField(15); c.gridx = 1; panel.add(tfPlayer, c);
++        c.gridx = 2; panel.add(new JLabel("Age:"), c);
++        tfAge = new JTextField(5); c.gridx = 3; panel.add(tfAge, c);
++        row++;
 +
-+        JPanel special = new JPanel(new GridBagLayout());
-+        special.setBorder(BorderFactory.createTitledBorder("Special"));
-+        GridBagConstraints sc = new GridBagConstraints();
-+        sc.insets = new Insets(2,2,2,2);
-+        sc.anchor = GridBagConstraints.WEST;
-+        int srow = 0;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
-+        spEdge = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
-+        spEssence = new JSpinner(new SpinnerNumberModel(6, 0, 6, 1)); sc.gridx = 1; special.add(spEssence, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-+        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-+        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
++        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Archetype/Role:"), c);
++        tfRole = new JTextField(15); c.gridx = 1; panel.add(tfRole, c);
++        c.gridx = 2; panel.add(new JLabel("Height (cm):"), c);
++        tfHeight = new JTextField(5); c.gridx = 3; panel.add(tfHeight, c);
++        row++;
 +
-+        c.gridx = 0; c.gridy = 0; panel.add(physical, c);
-+        c.gridx = 1; panel.add(mental, c);
-+        c.gridx = 2; panel.add(special, c);
++        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
++        cbMetatype = new JComboBox<>(); c.gridx = 1; panel.add(cbMetatype, c);
++        c.gridx = 2; panel.add(new JLabel("Weight (kg):"), c);
++        tfWeight = new JTextField(5); c.gridx = 3; panel.add(tfWeight, c);
++        row++;
++
++        loadMetatypes();
 +
 +        contentPanel.add(panel);
 +    }
+ 
+     private void buildAttributesSection() {
+         JPanel panel = new JPanel(new GridBagLayout());
+         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Attributes", TitledBorder.LEFT, TitledBorder.TOP));
+         GridBagConstraints c = new GridBagConstraints();
+         c.insets = new Insets(4, 4, 4, 4);
+         c.anchor = GridBagConstraints.NORTHWEST;
+ 
+         JPanel physical = new JPanel(new GridBagLayout());
+         physical.setBorder(BorderFactory.createTitledBorder("Physical"));
+         GridBagConstraints pc = new GridBagConstraints();
+         pc.insets = new Insets(2,2,2,2);
+         pc.anchor = GridBagConstraints.WEST;
+         int prow = 0;
+         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Body:"), pc);
+-        spBody = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
++        spBody = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
+         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Agility:"), pc);
+-        spAgility = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
++        spAgility = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
+         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Reaction:"), pc);
+-        spReaction = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
++        spReaction = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
+         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
+-        spStrength = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
++        spStrength = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
+ 
+         JPanel mental = new JPanel(new GridBagLayout());
+         mental.setBorder(BorderFactory.createTitledBorder("Mental"));
+         GridBagConstraints mc = new GridBagConstraints();
+         mc.insets = new Insets(2,2,2,2);
+         mc.anchor = GridBagConstraints.WEST;
+         int mrow = 0;
+         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
+-        spWillpower = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
++        spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
+         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
+-        spLogic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
++        spLogic = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
+         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
+-        spIntuition = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
++        spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
+         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
+-        spCharisma = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
++        spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
+ 
+         JPanel special = new JPanel(new GridBagLayout());
+         special.setBorder(BorderFactory.createTitledBorder("Special"));
+         GridBagConstraints sc = new GridBagConstraints();
+         sc.insets = new Insets(2,2,2,2);
+         sc.anchor = GridBagConstraints.WEST;
+         int srow = 0;
+         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
+-        spEdge = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
++        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
+         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
+-        spEssence = new JSpinner(new SpinnerNumberModel(6, 0, 6, 1)); sc.gridx = 1; special.add(spEssence, sc); srow++;
++        spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01)); sc.gridx = 1; special.add(spEssence, sc); srow++;
+         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
+-        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
++        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
+         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
+-        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
++        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
+ 
+         c.gridx = 0; c.gridy = 0; panel.add(physical, c);
+         c.gridx = 1; panel.add(mental, c);
+         c.gridx = 2; panel.add(special, c);
+ 
+         contentPanel.add(panel);
+     }
  
  /*
   * Future feature: Condition Monitor section
@@ -305,7 +312,8 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
      }
  */
  
-     private void buildSkillsSection() {
+-    private void buildSkillsSection() {
++    private JPanel buildSkillsSection() {
          JPanel panel = new JPanel(new BorderLayout());
          panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Skills", TitledBorder.LEFT, TitledBorder.TOP));
  
@@ -313,50 +321,46 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          tableSkills = new JTable(skillsTableModel);
          JScrollPane sp = new JScrollPane(tableSkills);
  
--        JButton btnAddSkill = new JButton("Add Skill");
--        btnAddSkill.addActionListener(new ActionListener() {
--            public void actionPerformed(ActionEvent e) {
--                skillsTableModel.addRow(new Object[]{"", "", "", ""});
--            }
--        });
--        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
--        btnPanel.add(btnAddSkill);
-+        JButton btnAddSkill = new JButton("Add Skill");
-+        btnAddSkill.addActionListener(new ActionListener() {
-+            public void actionPerformed(ActionEvent e) {
-+                skillsTableModel.addRow(new Object[]{"", "", "", ""});
-+                updateSkillCount();
-+            }
-+        });
-+        JButton btnRemoveSkill = new JButton("Remove Skill");
-+        btnRemoveSkill.addActionListener(new ActionListener() {
-+            public void actionPerformed(ActionEvent e) {
-+                int row = tableSkills.getSelectedRow();
-+                if (row != -1) {
-+                    skillsTableModel.removeRow(row);
-+                    updateSkillCount();
-+                }
-+            }
-+        });
-+        lblSkillCount = new JLabel("0 skills");
-+        JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-+        buttonSub.add(btnAddSkill);
-+        buttonSub.add(btnRemoveSkill);
-+        JPanel btnPanel = new JPanel(new BorderLayout());
-+        btnPanel.add(buttonSub, BorderLayout.WEST);
-+        btnPanel.add(lblSkillCount, BorderLayout.EAST);
+         JButton btnAddSkill = new JButton("Add Skill");
+         btnAddSkill.addActionListener(new ActionListener() {
+             public void actionPerformed(ActionEvent e) {
+                 skillsTableModel.addRow(new Object[]{"", "", "", ""});
+                 updateSkillCount();
+             }
+         });
+         JButton btnRemoveSkill = new JButton("Remove Skill");
+         btnRemoveSkill.addActionListener(new ActionListener() {
+             public void actionPerformed(ActionEvent e) {
+                 int row = tableSkills.getSelectedRow();
+                 if (row != -1) {
+                     skillsTableModel.removeRow(row);
+                     updateSkillCount();
+                 }
+             }
+         });
+         lblSkillCount = new JLabel("0 skills");
+         JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+         buttonSub.add(btnAddSkill);
+         buttonSub.add(btnRemoveSkill);
+         JPanel btnPanel = new JPanel(new BorderLayout());
+         btnPanel.add(buttonSub, BorderLayout.WEST);
+         btnPanel.add(lblSkillCount, BorderLayout.EAST);
  
-         panel.add(new JLabel("Enter skills:"), BorderLayout.NORTH);
-         panel.add(sp, BorderLayout.CENTER);
+-        panel.add(new JLabel("Enter skills:"), BorderLayout.NORTH);
+-        panel.add(sp, BorderLayout.CENTER);
 -        panel.add(btnPanel, BorderLayout.SOUTH);
+-        updateSkillCount();
 -        contentPanel.add(panel);
 -    }
++        panel.add(new JLabel("Enter skills:"), BorderLayout.NORTH);
++        panel.add(sp, BorderLayout.CENTER);
 +        panel.add(btnPanel, BorderLayout.SOUTH);
 +        updateSkillCount();
-+        contentPanel.add(panel);
++        return panel;
 +    }
  
-     private void buildQualitiesSection() {
+-    private void buildQualitiesSection() {
++    private JPanel buildQualitiesSection() {
          JPanel panel = new JPanel(new BorderLayout());
          panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
  
@@ -364,51 +368,46 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          tableQualities = new JTable(qualitiesTableModel);
          JScrollPane sp = new JScrollPane(tableQualities);
  
--        JButton btnAddQuality = new JButton("Add Quality");
--        btnAddQuality.addActionListener(new ActionListener() {
--            public void actionPerformed(ActionEvent e) {
--                qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
--            }
--        });
--        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
--        btnPanel.add(btnAddQuality);
-+        JButton btnAddQuality = new JButton("Add Quality");
-+        btnAddQuality.addActionListener(new ActionListener() {
-+            public void actionPerformed(ActionEvent e) {
-+                qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
-+                updateQualityCount();
-+            }
-+        });
-+        JButton btnRemoveQuality = new JButton("Remove Quality");
-+        btnRemoveQuality.addActionListener(new ActionListener() {
-+            public void actionPerformed(ActionEvent e) {
-+                int row = tableQualities.getSelectedRow();
-+                if (row != -1) {
-+                    qualitiesTableModel.removeRow(row);
-+                    updateQualityCount();
-+                }
-+            }
-+        });
-+        lblQualityCount = new JLabel("0 qualities");
-+        JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-+        buttonSub.add(btnAddQuality);
-+        buttonSub.add(btnRemoveQuality);
-+        JPanel btnPanel = new JPanel(new BorderLayout());
-+        btnPanel.add(buttonSub, BorderLayout.WEST);
-+        btnPanel.add(lblQualityCount, BorderLayout.EAST);
+         JButton btnAddQuality = new JButton("Add Quality");
+         btnAddQuality.addActionListener(new ActionListener() {
+             public void actionPerformed(ActionEvent e) {
+                 qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
+                 updateQualityCount();
+             }
+         });
+         JButton btnRemoveQuality = new JButton("Remove Quality");
+         btnRemoveQuality.addActionListener(new ActionListener() {
+             public void actionPerformed(ActionEvent e) {
+                 int row = tableQualities.getSelectedRow();
+                 if (row != -1) {
+                     qualitiesTableModel.removeRow(row);
+                     updateQualityCount();
+                 }
+             }
+         });
+         lblQualityCount = new JLabel("0 qualities");
+         JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+         buttonSub.add(btnAddQuality);
+         buttonSub.add(btnRemoveQuality);
+         JPanel btnPanel = new JPanel(new BorderLayout());
+         btnPanel.add(buttonSub, BorderLayout.WEST);
+         btnPanel.add(lblQualityCount, BorderLayout.EAST);
  
-         panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
+-        panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
 -        panel.add(sp, BorderLayout.CENTER);
 -        panel.add(btnPanel, BorderLayout.SOUTH);
+-        updateQualityCount();
 -        contentPanel.add(panel);
 -    }
++        panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
 +        panel.add(sp, BorderLayout.CENTER);
 +        panel.add(btnPanel, BorderLayout.SOUTH);
 +        updateQualityCount();
-+        contentPanel.add(panel);
++        return panel;
 +    }
  
-     private void buildContactsSection() {
+-    private void buildContactsSection() {
++    private JPanel buildContactsSection() {
          JPanel panel = new JPanel(new BorderLayout());
          panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Contacts", TitledBorder.LEFT, TitledBorder.TOP));
  
@@ -425,13 +424,19 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
          btnPanel.add(btnAddContact);
  
-         panel.add(new JLabel("Enter contacts:"), BorderLayout.NORTH);
-         panel.add(sp, BorderLayout.CENTER);
-         panel.add(btnPanel, BorderLayout.SOUTH);
-         contentPanel.add(panel);
-     }
+-        panel.add(new JLabel("Enter contacts:"), BorderLayout.NORTH);
+-        panel.add(sp, BorderLayout.CENTER);
+-        panel.add(btnPanel, BorderLayout.SOUTH);
+-        contentPanel.add(panel);
+-    }
++        panel.add(new JLabel("Enter contacts:"), BorderLayout.NORTH);
++        panel.add(sp, BorderLayout.CENTER);
++        panel.add(btnPanel, BorderLayout.SOUTH);
++        return panel;
++    }
  
-     private void buildLifestyleSection() {
+-    private void buildLifestyleSection() {
++    private JPanel buildLifestyleSection() {
          JPanel panel = new JPanel(new GridBagLayout());
          panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Lifestyle", TitledBorder.LEFT, TitledBorder.TOP));
          GridBagConstraints c = new GridBagConstraints();
@@ -447,40 +452,100 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
  
          c.gridx = 0; c.gridy = row; panel.add(new JLabel("Fake IDs / Lifestyles / Funds / Licenses:"), c);
          tfFakeIDs = new JTextField(25); c.gridx = 1; c.gridwidth = 3; panel.add(tfFakeIDs, c);
-         c.gridwidth = 1; row++;
- 
-         contentPanel.add(panel);
-     }
+-        c.gridwidth = 1; row++;
+-
+-        contentPanel.add(panel);
+-    }
++        c.gridwidth = 1; row++;
++
++        return panel;
++    }
  
 -    private void buildNotesSection() {
--        JPanel panel = new JPanel(new BorderLayout());
--        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Notes", TitledBorder.LEFT, TitledBorder.TOP));
++    private JPanel buildNotesSection() {
+         JPanel panel = new JPanel(new BorderLayout());
+         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Notes", TitledBorder.LEFT, TitledBorder.TOP));
 -        taNotes = new JTextArea(4, 60);
 -        taNotes.setLineWrap(true);
 -        taNotes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 -        panel.add(new JScrollPane(taNotes), BorderLayout.CENTER);
 -        contentPanel.add(panel);
 -    }
-+    private void buildNotesSection() {
-+        JPanel panel = new JPanel(new BorderLayout());
-+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Notes", TitledBorder.LEFT, TitledBorder.TOP));
 +        taNotes = new JTextArea(4, 60);
 +        taNotes.setLineWrap(true);
 +        taNotes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 +        panel.add(new JScrollPane(taNotes), BorderLayout.CENTER);
-+        contentPanel.add(panel);
++        return panel;
 +    }
-+
-+    private void updateSkillCount() {
-+        if (lblSkillCount != null) {
-+            lblSkillCount.setText(skillsTableModel.getRowCount() + " skills");
-+        }
-+    }
-+
+ 
+     private void updateSkillCount() {
+         if (lblSkillCount != null) {
+             lblSkillCount.setText(skillsTableModel.getRowCount() + " skills");
+         }
+     }
+ 
+-    private void updateQualityCount() {
+-        if (lblQualityCount != null) {
+-            lblQualityCount.setText(qualitiesTableModel.getRowCount() + " qualities");
+-        }
+-    }
 +    private void updateQualityCount() {
 +        if (lblQualityCount != null) {
 +            lblQualityCount.setText(qualitiesTableModel.getRowCount() + " qualities");
 +        }
++    }
++
++    private void loadMetatypes() {
++        cbMetatype.removeAllItems();
++        metatypeMap.clear();
++        java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
++        if (!file.exists()) return;
++        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
++            String line = br.readLine(); // skip header
++            java.util.List<String[]> mains = new java.util.ArrayList<>();
++            java.util.Map<String, java.util.List<String[]>> variants = new java.util.LinkedHashMap<>();
++            while ((line = br.readLine()) != null) {
++                String[] parts = line.split(",");
++                if (parts.length < 6) continue;
++                String name = parts[0].trim();
++                String type = parts[2].trim();
++                String root = parts[3].trim();
++                if (type.equals("Metahuman") || type.equals("Metasapient")) {
++                    mains.add(parts);
++                } else if (type.equals("Metavariant")) {
++                    variants.computeIfAbsent(root, k -> new java.util.ArrayList<>()).add(parts);
++                }
++            }
++            for (String[] m : mains) {
++                String name = m[0].trim();
++                double h = Double.parseDouble(m[4]);
++                double w = Double.parseDouble(m[5]);
++                String display = name;
++                cbMetatype.addItem(display);
++                metatypeMap.put(display, new double[]{h, w});
++                java.util.List<String[]> varList = variants.get(name);
++                if (varList != null) {
++                    for (String[] v : varList) {
++                        String disp = " - " + v[0].trim();
++                        double vh = Double.parseDouble(v[4]);
++                        double vw = Double.parseDouble(v[5]);
++                        cbMetatype.addItem(disp);
++                        metatypeMap.put(disp, new double[]{vh, vw});
++                    }
++                }
++            }
++        } catch (Exception ignored) {}
++
++        cbMetatype.addActionListener(new java.awt.event.ActionListener() {
++            public void actionPerformed(java.awt.event.ActionEvent e) {
++                String sel = (String) cbMetatype.getSelectedItem();
++                if (sel != null && metatypeMap.containsKey(sel)) {
++                    double[] vals = metatypeMap.get(sel);
++                    tfHeight.setText(String.format("%.0f", vals[0]));
++                    tfWeight.setText(String.format("%.0f", vals[1]));
++                }
++            }
++        });
 +    }
  
  /*
@@ -508,72 +573,10 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          taMeleeWeapons.setBorder(BorderFactory.createLineBorder(Color.GRAY));
          sub2.add(new JLabel("Enter melee weapons (one per line, format: Weapon, DV, Close):"), BorderLayout.NORTH);
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4cd7a3a5c 100644
+index c72f8c5ab3dbd4053dbe6ea6dfc9e8e7562d606a..bb71c13772418c7196d3efb37e9060fba39008a5 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -453,107 +499,113 @@ private void buildVehicleSection() {
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Body:"), c);
-         tfVehicleBody = new JTextField(3); c.gridx = 1; panel.add(tfVehicleBody, c);
-         c.gridx = 2; panel.add(new JLabel("Armor:"), c);
-         tfVehicleArmor = new JTextField(3); c.gridx = 3; panel.add(tfVehicleArmor, c);
-         c.gridx = 4; panel.add(new JLabel("Pilot:"), c);
-         tfVehiclePilot = new JTextField(3); c.gridx = 5; panel.add(tfVehiclePilot, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Sensor:"), c);
-         tfVehicleSensor = new JTextField(3); c.gridx = 1; panel.add(tfVehicleSensor, c);
-         c.gridx = 2; panel.add(new JLabel("Seats:"), c);
-         tfVehicleSeats = new JTextField(3); c.gridx = 3; panel.add(tfVehicleSeats, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; c.gridwidth = 8; c.fill = GridBagConstraints.BOTH;
-         taVehicleNotes = new JTextArea(3, 60);
-         taVehicleNotes.setLineWrap(true);
-         taVehicleNotes.setBorder(BorderFactory.createTitledBorder("Vehicle Notes:"));
-         panel.add(new JScrollPane(taVehicleNotes), c);
-         c.gridwidth = 1; c.fill = GridBagConstraints.NONE;
-         
-         contentPanel.add(panel);
-     }
- */
- 
--    private void buildGearSection() {
--        JPanel panel = new JPanel(new BorderLayout());
--        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Gear", TitledBorder.LEFT, TitledBorder.TOP));
--        taGear = new JTextArea(4, 60);
--        taGear.setLineWrap(true);
--        taGear.setBorder(BorderFactory.createLineBorder(Color.GRAY));
--        JScrollPane sp = new JScrollPane(taGear);
--        panel.add(new JLabel("Enter gear items (one per line, format: Item Name, Rating):"), BorderLayout.NORTH);
--        panel.add(sp, BorderLayout.CENTER);
--        contentPanel.add(panel);
--    }
-+/*
-+ * Gear section - to be developed later
-+private void buildGearSection() {
-+        JPanel panel = new JPanel(new BorderLayout());
-+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Gear", TitledBorder.LEFT, TitledBorder.TOP));
-+        taGear = new JTextArea(4, 60);
-+        taGear.setLineWrap(true);
-+        taGear.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-+        JScrollPane sp = new JScrollPane(taGear);
-+        panel.add(new JLabel("Enter gear items (one per line, format: Item Name, Rating):"), BorderLayout.NORTH);
-+        panel.add(sp, BorderLayout.CENTER);
-+        contentPanel.add(panel);
-+    }
-+*/
- 
- /*
-  * Future feature: Spells/Preparations/Rituals/Complex Forms section
- private void buildSpellsSection() {
-         JPanel panel = new JPanel(new BorderLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Spells / Rituals / Complex Forms", TitledBorder.LEFT, TitledBorder.TOP));
-         taSpellsRituals = new JTextArea(4, 60);
-         taSpellsRituals.setLineWrap(true);
-         taSpellsRituals.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-         JScrollPane sp = new JScrollPane(taSpellsRituals);
-         panel.add(new JLabel("Enter spells/rituals/complex forms (one per line, format: Type, Name, Target/Range, Duration, Drain):"), BorderLayout.NORTH);
-         panel.add(sp, BorderLayout.CENTER);
+@@ -550,53 +600,54 @@ private void buildSpellsSection() {
          contentPanel.add(panel);
      }
  
@@ -599,23 +602,22 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
          sb.append("-- Personal Data --\n");
          sb.append(String.format("Name: %s\n", tfName.getText()));
          sb.append(String.format("Player: %s\n", tfPlayer.getText()));
-         sb.append(String.format("Metatype: %s   Ethnicity: %s   Age: %s   Gender: %s   Height: %s   Weight: %s\n",
-                 tfMetatype.getText(), tfEthnicity.getText(), tfAge.getText(),
-                 cbGender.getSelectedItem(), tfHeight.getText(), tfWeight.getText()));
+-        sb.append(String.format("Metatype: %s   Ethnicity: %s   Age: %s   Gender: %s   Height: %s   Weight: %s\n",
+-                tfMetatype.getText(), tfEthnicity.getText(), tfAge.getText(),
+-                cbGender.getSelectedItem(), tfHeight.getText(), tfWeight.getText()));
++        sb.append(String.format("Role: %s   Metatype: %s   Gender: %s   Age: %s   Height (cm): %s   Weight (kg): %s\n",
++                tfRole.getText(), cbMetatype.getSelectedItem(),
++                cbGender.getSelectedItem(), tfAge.getText(),
++                tfHeight.getText(), tfWeight.getText()));
  
--        sb.append("\n-- Attributes --\n");
--        sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n", tfBody.getText(), tfAgility.getText(), tfReaction.getText(), tfStrength.getText(), tfWillpower.getText()));
--        sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n", tfLogic.getText(), tfIntuition.getText(), tfCharisma.getText(), tfEdge.getText(), tfEssence.getText()));
--        sb.append(String.format("Magic/Resonance: %s   Initiative: %s   Matrix Init: %s   Astral Init: %s\n", tfMagicResonance.getText(), tfInitiative.getText(), tfMatrixInitiative.getText(), tfAstralInitiative.getText()));
--        sb.append(String.format("Judge Intentions: %s   Memory: %s   Lift/Carry: %s   Movement: %s   Unarmed AR: %s   Defense Rating: %s\n", tfJudgeIntentions.getText(), tfMemory.getText(), tfLiftCarry.getText(), tfMovement.getText(), tfUnarmedAR.getText(), tfDefenseRating.getText()));
-+        sb.append("\n-- Attributes --\n");
-+        sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
-+                spBody.getValue(), spAgility.getValue(), spReaction.getValue(), spStrength.getValue(), spWillpower.getValue()));
-+        sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n",
-+                spLogic.getValue(), spIntuition.getValue(), spCharisma.getValue(), spEdge.getValue(), spEssence.getValue()));
-+        sb.append(String.format("Magic: %s   Resonance: %s\n",
-+                spMagic.getValue(), spResonance.getValue()));
-+        // Initiative and other derived stats will be added later
+         sb.append("\n-- Attributes --\n");
+         sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
+                 spBody.getValue(), spAgility.getValue(), spReaction.getValue(), spStrength.getValue(), spWillpower.getValue()));
+         sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n",
+                 spLogic.getValue(), spIntuition.getValue(), spCharisma.getValue(), spEdge.getValue(), spEssence.getValue()));
+         sb.append(String.format("Magic: %s   Resonance: %s\n",
+                 spMagic.getValue(), spResonance.getValue()));
+         // Initiative and other derived stats will be added later
  
          // Condition Monitor will be added in a future version
  
@@ -632,74 +634,6 @@ index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4
                          attribute == null ? "" : attribute,
                          type == null ? "" : type));
              }
-         }
-         sb.append(skillsBuilder.length() == 0 ? "None\n" : skillsBuilder.toString());
- 
-         sb.append("\n-- Qualities --\n");
-         StringBuilder qualBuilder = new StringBuilder();
-         for (int i = 0; i < qualitiesTableModel.getRowCount(); i++) {
-             String q = (String) qualitiesTableModel.getValueAt(i, 0);
-             String type = (String) qualitiesTableModel.getValueAt(i, 1);
-             String karma = (String) qualitiesTableModel.getValueAt(i, 2);
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 78381961a51e8ebb398a1a20d9104edcf84647d3..67ce15c504f61d86776e24c0783064a4cd7a3a5c 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -568,52 +620,52 @@ private void buildAdeptPowersSection() {
-         sb.append(qualBuilder.length() == 0 ? "None\n" : qualBuilder.toString());
- 
-         sb.append("\n-- Contacts --\n");
-         StringBuilder contactBuilder = new StringBuilder();
-         for (int i = 0; i < contactsTableModel.getRowCount(); i++) {
-             String name = (String) contactsTableModel.getValueAt(i, 0);
-             String loyalty = (String) contactsTableModel.getValueAt(i, 1);
-             String connection = (String) contactsTableModel.getValueAt(i, 2);
-             if (name != null && !name.trim().isEmpty()) {
-                 contactBuilder.append(String.format("%s, %s, %s\n",
-                         name, loyalty == null ? "" : loyalty,
-                         connection == null ? "" : connection));
-             }
-         }
-         sb.append(contactBuilder.length() == 0 ? "None\n" : contactBuilder.toString());
- 
-         sb.append("\n-- Lifestyle --\n");
-         sb.append(String.format("Nuyen: %s   Primary Lifestyle: %s\n", tfNuyen.getText(), tfPrimaryLifestyle.getText()));
-         sb.append(String.format("Fake IDs / Lifestyles / Funds / Licenses: %s\n", tfFakeIDs.getText()));
- 
-         // Ranged Weapons, Melee Weapons, and Armor sections will be added later
-         // Matrix stats will be added later
-         // Augmentations will be added later
-         // Vehicle section will be added later
- 
--        sb.append("\n-- Gear --\n");
--        sb.append(taGear.getText().isEmpty() ? "None\n" : taGear.getText() + "\n");
-+        // sb.append("\n-- Gear --\n");
-+        // sb.append(taGear.getText().isEmpty() ? "None\n" : taGear.getText() + "\n");
-         // Spells and Adept Powers sections will be added later
- 
-         sb.append("\n-- Notes --\n");
-         sb.append(taNotes.getText().isEmpty() ? "None\n" : taNotes.getText() + "\n");
- 
-         // Display in a dialog
-         JTextArea textArea = new JTextArea(sb.toString());
-         textArea.setEditable(false);
-         textArea.setCaretPosition(0);
-         JScrollPane sp = new JScrollPane(textArea);
-         sp.setPreferredSize(new Dimension(800, 600));
-         JOptionPane.showMessageDialog(frame, sp, "Character Report", JOptionPane.INFORMATION_MESSAGE);
- 
-         // Save to text file
-         String safeName = tfName.getText().replaceAll("\\s+", "");
-         if (!safeName.isEmpty()) {
-             try (BufferedWriter writer = new BufferedWriter(new FileWriter(safeName + "_CharacterReport.txt"))) {
-                 writer.write(sb.toString());
-             } catch (IOException ex) {
-                 JOptionPane.showMessageDialog(frame, "Error saving report: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-             }
-         }
-     }
- 
-     public static void main(String[] args) {
  
 EOF
 )
