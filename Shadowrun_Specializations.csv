@@ -1,0 +1,78 @@
+Specialization,Parent Skill,Primary Attribute,Category
+Acting,Con,Charisma,Social
+Aeronautics Mechanic,Engineering,Logic,Technical
+Aircraft,Piloting,Reaction,Physical
+Alchemy,Enchanting,Magic,Magical
+Archery,Athletics,Agility,Physical
+Armorer,Engineering,Logic,Technical
+Artificing,Enchanting,Magic,Magical
+Assault Cannons,Firearms,Agility,Combat
+Astral Combat,Astral,Intuition,Magical
+Astral Signatures,Astral,Intuition,Magical
+Automotive Mechanic,Engineering,Logic,Technical
+Banishing,Conjuring,Magic,Magical
+Biotechnology,Biotech,Logic,Technical
+Blades,Close Combat,Agility,Combat
+Camouflage,Stealth,Agility,Physical
+Climbing,Athletics,Agility,Physical
+Clubs,Close Combat,Agility,Combat
+Compiling,Tasking,Resonance,Resonance
+Computer,Electronics,Logic,Technical
+Counterspelling,Sorcery,Magic,Magical
+Cybercombat,Cracking,Logic,Technical
+Cybertechnology,Biotech,Logic,Technical
+Decompiling,Tasking,Resonance,Resonance
+Demolitions,Engineering,Logic,Technical
+Desert (Outdoors),Outdoors,Intuition,Physical
+Desert (Perception),Perception,Intuition,Physical
+Disenchanting,Enchanting,Magic,Magical
+Disguise,Con,Charisma,Social
+Electronic Warfare,Cracking,Logic,Technical
+Emotional States,Astral,Intuition,Magical
+Etiquette,Influence,Charisma,Social
+First Aid,Biotech,Logic,Technical
+Flamethrower,Exotic Weapons,Agility,Combat
+Flying,Athletics,Agility,Physical
+Ground Craft,Piloting,Reaction,Physical
+Gunnery,Engineering,Logic,Technical
+Gymnastics,Athletics,Agility,Physical
+Hacking,Cracking,Logic,Technical
+Hardware,Electronics,Logic,Technical
+Heavy Pistols,Firearms,Agility,Combat
+Hold-Outs,Firearms,Agility,Combat
+Impersonation,Con,Charisma,Social
+Industrial Mechanic,Engineering,Logic,Technical
+Instruction,Influence,Charisma,Social
+Intimidation,Influence,Charisma,Social
+Launcher (missile/rocket),Exotic Weapons,Agility,Combat
+Leadership,Influence,Charisma,Social
+Light Pistols,Firearms,Agility,Combat
+Lockpicking,Engineering,Logic,Technical
+Machine Guns,Firearms,Agility,Combat
+Machine Pistols,Firearms,Agility,Combat
+Medicine,Biotech,Logic,Technical
+Monofilament Whip,Exotic Weapons,Agility,Combat
+Nautical Mechanic,Engineering,Logic,Technical
+Negotiation,Influence,Charisma,Social
+Palming,Stealth,Agility,Physical
+Performance,Con,Charisma,Social
+Registering,Tasking,Resonance,Resonance
+Rifles,Firearms,Agility,Combat
+Ritual Spellcasting,Sorcery,Magic,Magical
+Shotguns,Firearms,Agility,Combat
+Sneaking,Stealth,Agility,Physical
+Software,Electronics,Logic,Technical
+Spellcasting,Sorcery,Magic,Magical
+Spirit Types,Astral,Intuition,Magical
+Sprinting,Athletics,Agility,Physical
+Submachine Guns,Firearms,Agility,Combat
+Summoning,Conjuring,Magic,Magical
+Swimming,Athletics,Agility,Physical
+Tasers,Firearms,Agility,Combat
+Throwing,Athletics,Agility,Physical
+Unarmed Combat,Close Combat,Agility,Combat
+Urban (Outdoors),Outdoors,Intuition,Physical
+Urban (Perception),Perception,Intuition,Physical
+Watercraft,Piloting,Reaction,Physical
+Woods (Outdoors),Outdoors,Intuition,Physical
+Woods (Perception),Perception,Intuition,Physical
