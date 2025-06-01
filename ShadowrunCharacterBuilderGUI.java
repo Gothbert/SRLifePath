@@ -957,10 +957,8 @@ private void buildConditionMonitorSection() {
         int row = 0;
 
         c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
-        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList("Magic","Matrix","Mental","Physical","Social","Vehicle"));
-        if (chkSurge.isSelected()) {
-            cats.add("Metagenic");
-        }
+        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList(
+                "Magic","Matrix","Mental","Physical","Social","Vehicle","Metagenic"));
         JComboBox<String> cbCategory = new JComboBox<>(cats.toArray(new String[0]));
         c.gridx = 1; main.add(cbCategory, c); row++;
 

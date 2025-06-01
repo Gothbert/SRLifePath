@@ -1,162 +1,9 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 1a749e159edefc1170f974d8393929a9b54ef9e2..3c2c0ffd030b1fda7cf65c51f5a067f9b1f6cd01 100644
+index f93f9ff25d8dcfedd2abc69477abe33e2f79ec9e..41b801398983025f42e0daeb75c1d68a4937dfcd 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -186,63 +186,65 @@ public class ShadowrunCharacterBuilderGUI {
-         cbRole = new JComboBox<>(); c.gridx = 1; panel.add(cbRole, c);
-         JButton btnRoleInfo = new JButton("\u2139");
-         btnRoleInfo.setMargin(new Insets(0,0,0,0));
-         btnRoleInfo.setVisible(false);
-         c.gridx = 2; panel.add(btnRoleInfo, c);
-         c.gridx = 3; panel.add(new JLabel("Height (cm):"), c);
-         tfHeight = new JTextField(5); c.gridx = 4; panel.add(tfHeight, c);
-         c.gridx = 5; panel.add(new JLabel("Height (ft):"), c);
-         tfHeightFt = new JTextField(6); tfHeightFt.setEditable(false); c.gridx = 6; panel.add(tfHeightFt, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
-         cbMetatype = new JComboBox<>();
-         cbMetatype.setRenderer(new DefaultListCellRenderer() {
-             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                 if (value instanceof MetaItem) {
-                     MetaItem mi = (MetaItem) value;
-                     String text = mi.name;
-                     if (index >= 0 && mi.variant) text = " - " + text;
-                     lbl.setText(text);
-                 }
-                 return lbl;
-             }
-         });
--        c.gridx = 1; panel.add(cbMetatype, c);
--        chkSurge = new JCheckBox("SURGE");
--        c.gridx = 2; panel.add(chkSurge, c);
--        c.gridx = 3; panel.add(new JLabel("Weight (kg):"), c);
--        tfWeight = new JTextField(5); c.gridx = 4; panel.add(tfWeight, c);
--        c.gridx = 5; panel.add(new JLabel("Weight (lbs):"), c);
--        tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
--        row++;
--
--        lblSurgeCollective = new JLabel("SURGE Collective:");
--        cbSurgeCollective = new JComboBox<>();
--        c.gridx = 0; c.gridy = row; panel.add(lblSurgeCollective, c);
--        c.gridx = 1; panel.add(cbSurgeCollective, c);
-+        c.gridx = 1; panel.add(cbMetatype, c);
-+        c.gridx = 3; panel.add(new JLabel("Weight (kg):"), c);
-+        tfWeight = new JTextField(5); c.gridx = 4; panel.add(tfWeight, c);
-+        c.gridx = 5; panel.add(new JLabel("Weight (lbs):"), c);
-+        tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
-+        row++;
-+
-+        chkSurge = new JCheckBox("SURGE");
-+        c.gridx = 1; c.gridy = row; panel.add(chkSurge, c);
-+        row++;
-+
-+        lblSurgeCollective = new JLabel("SURGE Collective:");
-+        cbSurgeCollective = new JComboBox<>();
-+        c.gridx = 0; c.gridy = row; panel.add(lblSurgeCollective, c);
-+        c.gridx = 1; panel.add(cbSurgeCollective, c);
-         lblSurgeCollective.setVisible(false);
-         cbSurgeCollective.setVisible(false);
-         row++;
- 
-         loadMetatypes();
-         loadSurgeCollectives();
-         loadArchetypes();
-         cbRole.setSelectedIndex(-1);
-         cbMetatype.setSelectedIndex(-1);
-         cbGender.setSelectedIndex(-1);
- 
-         tfHeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-             public void removeUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-             public void changedUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-         });
-         tfWeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-             public void removeUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-             public void changedUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-         });
- 
-         chkSurge.addActionListener(e -> {
-             boolean sel = chkSurge.isSelected();
-             lblSurgeCollective.setVisible(sel);
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 1a749e159edefc1170f974d8393929a9b54ef9e2..3c2c0ffd030b1fda7cf65c51f5a067f9b1f6cd01 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -311,57 +313,57 @@ public class ShadowrunCharacterBuilderGUI {
-         int mrow = 0;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
-         spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
-         spLogic = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
-         spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
-         spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
- 
-         JPanel special = new JPanel(new GridBagLayout());
-         special.setBorder(BorderFactory.createTitledBorder("Special"));
-         GridBagConstraints sc = new GridBagConstraints();
-         sc.insets = new Insets(2,2,2,2);
-         sc.anchor = GridBagConstraints.WEST;
-         int srow = 0;
-         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
-         spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-         Dimension specialDim = new Dimension(60, spEdge.getPreferredSize().height);
-         spEdge.setPreferredSize(specialDim);
-         sc.gridx = 1; special.add(spEdge, sc); srow++;
-         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
-         spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01));
-         spEssence.setPreferredSize(specialDim);
-         sc.gridx = 1; special.add(spEssence, sc); srow++;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
--        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
--        spMagic.setPreferredSize(specialDim);
--        sc.gridx = 1; special.add(spMagic, sc); srow++;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
--        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
--        spResonance.setPreferredSize(specialDim);
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-+        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
-+        spMagic.setPreferredSize(specialDim);
-+        sc.gridx = 1; special.add(spMagic, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-+        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
-+        spResonance.setPreferredSize(specialDim);
-         sc.gridx = 1; special.add(spResonance, sc);
- 
-         c.gridx = 0; c.gridy = 0; panel.add(physical, c);
-         c.gridx = 1; panel.add(mental, c);
-         c.gridx = 2; panel.add(special, c);
- 
-         contentPanel.add(panel);
-     }
- 
- /*
-  * Future feature: Condition Monitor section
- private void buildConditionMonitorSection() {
-         JPanel panel = new JPanel(new GridBagLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Condition Monitor", TitledBorder.LEFT, TitledBorder.TOP));
-         GridBagConstraints c = new GridBagConstraints();
-         c.insets = new Insets(4, 4, 4, 4);
-         c.anchor = GridBagConstraints.WEST;
- 
-         int row = 0;
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Physical Damage Track Boxes:"), c);
-         tfPhysicalBoxes = new JTextField(5); c.gridx = 1; panel.add(tfPhysicalBoxes, c);
-         c.gridx = 2; panel.add(new JLabel("Stun Damage Track Boxes:"), c);
-         tfStunBoxes = new JTextField(5); c.gridx = 3; panel.add(tfStunBoxes, c);
- 
-         contentPanel.add(panel);
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 1a749e159edefc1170f974d8393929a9b54ef9e2..3c2c0ffd030b1fda7cf65c51f5a067f9b1f6cd01 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -932,119 +934,129 @@ private void buildConditionMonitorSection() {
-             } else if ("Language".equals(t)) {
+@@ -935,54 +935,52 @@ private void buildConditionMonitorSection() {
                  skill = "LG: " + tfLanguage.getText();
                  rank = (String) cbProf.getSelectedItem();
              }
@@ -181,16 +28,15 @@ index 1a749e159edefc1170f974d8393929a9b54ef9e2..3c2c0ffd030b1fda7cf65c51f5a067f9
          c.anchor = GridBagConstraints.WEST;
          int row = 0;
  
--        c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
--        JComboBox<String> cbCategory = new JComboBox<>(new String[]{"Magic","Matrix","Mental","Physical","Social","Vehicle"});
--        c.gridx = 1; main.add(cbCategory, c); row++;
-+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
-+        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList("Magic","Matrix","Mental","Physical","Social","Vehicle"));
-+        if (chkSurge.isSelected()) {
-+            cats.add("Metagenic");
-+        }
-+        JComboBox<String> cbCategory = new JComboBox<>(cats.toArray(new String[0]));
-+        c.gridx = 1; main.add(cbCategory, c); row++;
+         c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
+-        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList("Magic","Matrix","Mental","Physical","Social","Vehicle"));
+-        if (chkSurge.isSelected()) {
+-            cats.add("Metagenic");
+-        }
++        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList(
++                "Magic","Matrix","Mental","Physical","Social","Vehicle","Metagenic"));
+         JComboBox<String> cbCategory = new JComboBox<>(cats.toArray(new String[0]));
+         c.gridx = 1; main.add(cbCategory, c); row++;
  
          c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
          JComboBox<String> cbType = new JComboBox<>(new String[]{"Positive","Negative"});
@@ -214,108 +60,6 @@ index 1a749e159edefc1170f974d8393929a9b54ef9e2..3c2c0ffd030b1fda7cf65c51f5a067f9
          JButton btnSave = new JButton("Save");
          JButton btnCancel = new JButton("Cancel");
          btnPanel.add(btnSave); btnPanel.add(btnCancel);
-         c.gridx = 0; c.gridy = row; c.gridwidth = 2;
-         main.add(btnPanel, c);
- 
--        Runnable updateNames = () -> {
--            cbName.removeAllItems();
--            String cat = (String) cbCategory.getSelectedItem();
--            String type = (String) cbType.getSelectedItem();
--            for (QualityEntry qe : qualityEntries) {
--                if (qe.category.equalsIgnoreCase(cat) && qe.type.equalsIgnoreCase(type)) {
--                    cbName.addItem(qe);
--                }
--            }
--            if (cbName.getItemCount() > 0) {
--                cbName.setSelectedIndex(0);
--            } else {
--                tfKarma.setText("");
--                lblLevel.setVisible(false);
--                spLevel.setVisible(false);
--            }
--        };
--
--        Runnable updateFields = () -> {
--            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
--            if (qe == null) return;
--            boolean isLevel = "Level".equalsIgnoreCase(qe.instance);
--            lblLevel.setVisible(isLevel);
--            spLevel.setVisible(isLevel);
-+        Runnable updateNames = () -> {
-+            cbName.removeAllItems();
-+            String cat = (String) cbCategory.getSelectedItem();
-+            String type = (String) cbType.getSelectedItem();
-+            for (QualityEntry qe : qualityEntries) {
-+                if (qe.category.equalsIgnoreCase(cat) && qe.type.equalsIgnoreCase(type)) {
-+                    cbName.addItem(qe);
-+                }
-+            }
-+            if (cbName.getItemCount() > 0) {
-+                cbName.setSelectedIndex(0);
-+            } else {
-+                tfKarma.setText("");
-+                lblLevel.setVisible(false);
-+                spLevel.setVisible(false);
-+            }
-+            main.revalidate();
-+            dialog.pack();
-+            dialog.setLocationRelativeTo(frame);
-+        };
-+
-+        Runnable updateFields = () -> {
-+            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
-+            if (qe == null) return;
-+            boolean isLevel = "Level".equalsIgnoreCase(qe.instance);
-+            lblLevel.setVisible(isLevel);
-+            spLevel.setVisible(isLevel);
-             if (isLevel) {
-                 levelModel.setMinimum(qe.min);
-                 levelModel.setMaximum(qe.max);
-                 int cur = ((Number) spLevel.getValue()).intValue();
-                 if (cur < qe.min) spLevel.setValue(qe.min);
-                 else if (cur > qe.max) spLevel.setValue(qe.max);
-             } else {
-                 levelModel.setMinimum(1);
-                 levelModel.setMaximum(1);
-                 spLevel.setValue(1);
-             }
-             int lvl = ((Number) spLevel.getValue()).intValue();
--            int karma = qe.karma;
--            if (isLevel) karma = karma * lvl;
--            tfKarma.setText(String.valueOf(karma));
--        };
-+            int karma = qe.karma;
-+            if (isLevel) karma = karma * lvl;
-+            tfKarma.setText(String.valueOf(karma));
-+            main.revalidate();
-+            dialog.pack();
-+            dialog.setLocationRelativeTo(frame);
-+        };
- 
-         cbCategory.addActionListener(e -> { updateNames.run(); });
-         cbType.addActionListener(e -> { updateNames.run(); });
-         cbName.addActionListener(e -> { updateFields.run(); });
-         spLevel.addChangeListener(e -> { updateFields.run(); });
- 
-         updateNames.run();
- 
-         btnCancel.addActionListener(e -> dialog.dispose());
- 
-         btnSave.addActionListener(e -> {
-             QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
-             if (qe != null) {
-                 int lvl = ((Number) spLevel.getValue()).intValue();
-                 int karma = qe.karma;
-                 if ("Level".equalsIgnoreCase(qe.instance)) karma = karma * lvl;
-                 String name = qe.name;
-                 if ("Level".equalsIgnoreCase(qe.instance)) name = name + " (" + lvl + ")";
-                 qualitiesTableModel.addRow(new Object[]{qe.category, name, qe.type, String.valueOf(karma)});
-                 updateQualityCount();
-             }
-             dialog.dispose();
-         });
- 
-         dialog.getContentPane().add(main);
  
 EOF
 )
