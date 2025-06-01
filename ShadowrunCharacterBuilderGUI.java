@@ -170,7 +170,7 @@ public class ShadowrunCharacterBuilderGUI {
         c.anchor = GridBagConstraints.WEST;
 
         int row = 0;
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name/Primary Alias:"), c);
+        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name:"), c);
         tfName = new JTextField(20); c.gridx = 1; panel.add(tfName, c);
         c.gridx = 2; panel.add(new JLabel("Gender:"), c);
         cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
@@ -448,19 +448,69 @@ private void buildConditionMonitorSection() {
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
 
         qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Quality", "Type", "Karma"}, 0) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                if (c >= 2) return false;
+                Object cat = getValueAt(r, 0);
+                if ("Metatype".equals(cat) || "Metagenetic".equals(cat)) return false;
+                return true;
+            }
         };
         tableQualities = new JTable(qualitiesTableModel);
         tableQualities.setAutoCreateRowSorter(true);
         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
+
+        String[] qualityCats = {"Magic","Matrix","Mental","Physical","Social","Vehicle"};
+        TableColumn catCol = tableQualities.getColumnModel().getColumn(0);
+        catCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(qualityCats)));
+
+        TableColumn qualCol = tableQualities.getColumnModel().getColumn(1);
+        qualCol.setCellEditor(new DefaultCellEditor(new JComboBox<String>()) {
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                JComboBox<String> box = (JComboBox<String>) this.editorComponent;
+                box.removeAllItems();
+                Object catObj = table.getValueAt(row, 0);
+                String cat = catObj == null ? "" : catObj.toString();
+                for (QualityEntry qe : qualityEntries) {
+                    if (cat.equalsIgnoreCase(qe.category)) {
+                        box.addItem(qe.name);
+                    }
+                }
+                return super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            }
+        });
+
         JScrollPane sp = new JScrollPane(tableQualities);
 
         loadQualities();
 
+        qualitiesTableModel.addTableModelListener(e -> {
+            if (e.getType() != javax.swing.event.TableModelEvent.UPDATE) return;
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            if (row < 0) return;
+            if (col == 0) {
+                qualitiesTableModel.setValueAt("", row, 1);
+                qualitiesTableModel.setValueAt("", row, 2);
+                qualitiesTableModel.setValueAt("", row, 3);
+            } else if (col == 1) {
+                Object qVal = qualitiesTableModel.getValueAt(row, 1);
+                if (qVal != null) {
+                    for (QualityEntry qe : qualityEntries) {
+                        if (qe.name.equals(qVal.toString())) {
+                            qualitiesTableModel.setValueAt(qe.type, row, 2);
+                            qualitiesTableModel.setValueAt(String.valueOf(qe.karma), row, 3);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
         JButton btnAddQuality = new JButton("Add Quality");
         btnAddQuality.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                showAddQualityDialog();
+                qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
+                updateQualityCount();
             }
         });
         JButton btnRemoveQuality = new JButton("Remove Quality");
@@ -948,120 +998,6 @@ private void buildConditionMonitorSection() {
         dialog.setVisible(true);
     }
 
-    private void showAddQualityDialog() {
-        JDialog dialog = new JDialog(frame, "Add Quality Dialog", true);
-        JPanel main = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(4,4,4,4);
-        c.anchor = GridBagConstraints.WEST;
-        int row = 0;
-
-        c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
-        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList(
-                "Magic","Matrix","Mental","Physical","Social","Vehicle","Metagenic"));
-        JComboBox<String> cbCategory = new JComboBox<>(cats.toArray(new String[0]));
-        c.gridx = 1; main.add(cbCategory, c); row++;
-
-        c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
-        JComboBox<String> cbType = new JComboBox<>(new String[]{"Positive","Negative"});
-        c.gridx = 1; main.add(cbType, c); row++;
-
-        c.gridx = 0; c.gridy = row; main.add(new JLabel("Quality Name:"), c);
-        JComboBox<QualityEntry> cbName = new JComboBox<>();
-        c.gridx = 1; main.add(cbName, c); row++;
-
-        JLabel lblLevel = new JLabel("Level:");
-        c.gridx = 0; c.gridy = row; main.add(lblLevel, c);
-        SpinnerNumberModel levelModel = new SpinnerNumberModel(1,1,1,1);
-        JSpinner spLevel = new JSpinner(levelModel);
-        c.gridx = 1; main.add(spLevel, c); row++;
-
-        c.gridx = 0; c.gridy = row; main.add(new JLabel("Karma:"), c);
-        JTextField tfKarma = new JTextField(6); tfKarma.setEditable(false);
-        c.gridx = 1; main.add(tfKarma, c); row++;
-
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton btnSave = new JButton("Save");
-        JButton btnCancel = new JButton("Cancel");
-        btnPanel.add(btnSave); btnPanel.add(btnCancel);
-        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
-        main.add(btnPanel, c);
-
-        Runnable updateNames = () -> {
-            cbName.removeAllItems();
-            String cat = (String) cbCategory.getSelectedItem();
-            String type = (String) cbType.getSelectedItem();
-            for (QualityEntry qe : qualityEntries) {
-                if (qe.category.equalsIgnoreCase(cat) && qe.type.equalsIgnoreCase(type)) {
-                    cbName.addItem(qe);
-                }
-            }
-            if (cbName.getItemCount() > 0) {
-                cbName.setSelectedIndex(0);
-            } else {
-                tfKarma.setText("");
-                lblLevel.setVisible(false);
-                spLevel.setVisible(false);
-            }
-            main.revalidate();
-            dialog.pack();
-            dialog.setLocationRelativeTo(frame);
-        };
-
-        Runnable updateFields = () -> {
-            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
-            if (qe == null) return;
-            boolean isLevel = "Level".equalsIgnoreCase(qe.instance);
-            lblLevel.setVisible(isLevel);
-            spLevel.setVisible(isLevel);
-            if (isLevel) {
-                levelModel.setMinimum(qe.min);
-                levelModel.setMaximum(qe.max);
-                int cur = ((Number) spLevel.getValue()).intValue();
-                if (cur < qe.min) spLevel.setValue(qe.min);
-                else if (cur > qe.max) spLevel.setValue(qe.max);
-            } else {
-                levelModel.setMinimum(1);
-                levelModel.setMaximum(1);
-                spLevel.setValue(1);
-            }
-            int lvl = ((Number) spLevel.getValue()).intValue();
-            int karma = qe.karma;
-            if (isLevel) karma = karma * lvl;
-            tfKarma.setText(String.valueOf(karma));
-            main.revalidate();
-            dialog.pack();
-            dialog.setLocationRelativeTo(frame);
-        };
-
-        cbCategory.addActionListener(e -> { updateNames.run(); });
-        cbType.addActionListener(e -> { updateNames.run(); });
-        cbName.addActionListener(e -> { updateFields.run(); });
-        spLevel.addChangeListener(e -> { updateFields.run(); });
-
-        updateNames.run();
-
-        btnCancel.addActionListener(e -> dialog.dispose());
-
-        btnSave.addActionListener(e -> {
-            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
-            if (qe != null) {
-                int lvl = ((Number) spLevel.getValue()).intValue();
-                int karma = qe.karma;
-                if ("Level".equalsIgnoreCase(qe.instance)) karma = karma * lvl;
-                String name = qe.name;
-                if ("Level".equalsIgnoreCase(qe.instance)) name = name + " (" + lvl + ")";
-                qualitiesTableModel.addRow(new Object[]{qe.category, name, qe.type, String.valueOf(karma)});
-                updateQualityCount();
-            }
-            dialog.dispose();
-        });
-
-        dialog.getContentPane().add(main);
-        dialog.pack();
-        dialog.setLocationRelativeTo(frame);
-        dialog.setVisible(true);
-    }
 
     private void loadArchetypes() {
         cbRole.removeAllItems();
