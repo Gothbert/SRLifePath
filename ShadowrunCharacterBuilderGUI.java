@@ -58,6 +58,8 @@ public class ShadowrunCharacterBuilderGUI {
     private JLabel lblSkillCount;
     private JLabel lblQualityCount;
     private java.util.Map<String, double[]> metatypeMap = new java.util.LinkedHashMap<>();
+    private java.util.Map<String, Integer> metatypeKarmaMap = new java.util.LinkedHashMap<>();
+    private java.util.Map<String, Integer> surgeKarmaMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> archetypeMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
@@ -66,6 +68,7 @@ public class ShadowrunCharacterBuilderGUI {
 
     private JTable tableKarmaLog;
     private DefaultTableModel karmaLogModel;
+    private JLabel lblLoggedKarma;
 
     private static final String[] RANK_OPTIONS = {
             "1 - Novice",
@@ -231,7 +234,6 @@ public class ShadowrunCharacterBuilderGUI {
         tfKarma = new JTextField(5); tfKarma.setText("50"); c.gridx = 4; panel.add(tfKarma, c);
         c.gridx = 5; panel.add(new JLabel("Total Karma:"), c);
         tfTotalKarma = new JTextField(6); tfTotalKarma.setEditable(false); c.gridx = 6; panel.add(tfTotalKarma, c);
-        row++;
 
         chkSurge = new JCheckBox("SURGE");
         chkSurge.setPreferredSize(leftDim);
@@ -272,6 +274,7 @@ public class ShadowrunCharacterBuilderGUI {
             cbSurgeCollective.setSelectedItem("No Collective");
             if (!sel) {
                 removeMetageneticQualities();
+                removeKarma("Base", "SURGE");
             }
         });
 
@@ -279,6 +282,12 @@ public class ShadowrunCharacterBuilderGUI {
             if (chkSurge.isSelected()) {
                 String owner = (String) cbSurgeCollective.getSelectedItem();
                 loadRacialTraitsForCollective(owner);
+                if ("No Collective".equals(owner)) {
+                    removeKarma("Base", "SURGE");
+                } else {
+                    int cost = surgeKarmaMap.getOrDefault(owner, 0);
+                    addOrUpdateKarma("Base", "SURGE", cost);
+                }
             }
         });
 
@@ -317,13 +326,15 @@ public class ShadowrunCharacterBuilderGUI {
         pc.anchor = GridBagConstraints.WEST;
         int prow = 0;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Body:"), pc);
-        spBody = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
+        spBody = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
+        Dimension attrDim = new Dimension(60, spBody.getPreferredSize().height);
+        spBody.setPreferredSize(attrDim); pc.gridx = 1; physical.add(spBody, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Agility:"), pc);
-        spAgility = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
+        spAgility = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spAgility.setPreferredSize(attrDim); pc.gridx = 1; physical.add(spAgility, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Reaction:"), pc);
-        spReaction = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
+        spReaction = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spReaction.setPreferredSize(attrDim); pc.gridx = 1; physical.add(spReaction, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
-        spStrength = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spStrength, pc);
+        spStrength = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spStrength.setPreferredSize(attrDim); pc.gridx = 1; physical.add(spStrength, pc);
 
         JPanel mental = new JPanel(new GridBagLayout());
         mental.setBorder(BorderFactory.createTitledBorder("Mental"));
@@ -332,13 +343,13 @@ public class ShadowrunCharacterBuilderGUI {
         mc.anchor = GridBagConstraints.WEST;
         int mrow = 0;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
-        spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
+        spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spWillpower.setPreferredSize(attrDim); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
-        spLogic = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
+        spLogic = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spLogic.setPreferredSize(attrDim); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
-        spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
+        spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spIntuition.setPreferredSize(attrDim); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
-        spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
+        spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); spCharisma.setPreferredSize(attrDim); mc.gridx = 1; mental.add(spCharisma, mc);
 
         JPanel special = new JPanel(new GridBagLayout());
         special.setBorder(BorderFactory.createTitledBorder("Special"));
@@ -552,10 +563,20 @@ private void buildConditionMonitorSection() {
         });
 
         JButton btnAddQuality = new JButton("Add Quality");
+        JButton btnSaveQuality = new JButton("Save Quality");
+        CardLayout addSaveLayout = new CardLayout();
+        JPanel addSavePanel = new JPanel(addSaveLayout);
+        addSavePanel.add(btnAddQuality, "ADD");
+        addSavePanel.add(btnSaveQuality, "SAVE");
+        addSaveLayout.show(addSavePanel, "ADD");
+
         btnAddQuality.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
+                int newRow = qualitiesTableModel.getRowCount() - 1;
+                tableQualities.setRowSelectionInterval(newRow, newRow);
                 updateQualityCount();
+                addSaveLayout.show(addSavePanel, "SAVE");
             }
         });
         JButton btnRemoveQuality = new JButton("Remove Quality");
@@ -588,20 +609,24 @@ private void buildConditionMonitorSection() {
                 }
             }
         });
-        JButton btnSaveQuality = new JButton("Save Quality");
         btnSaveQuality.addActionListener(e -> {
             int row = tableQualities.getSelectedRow();
             if (row != -1) {
                 int modelRow = tableQualities.convertRowIndexToModel(row);
                 lockedQualityRows.add(modelRow);
+                String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
+                String karmaStr = (String) qualitiesTableModel.getValueAt(modelRow, 3);
+                int cost = 0;
+                try { cost = Integer.parseInt(karmaStr); } catch(Exception ex) {}
+                addOrUpdateKarma("Quality", name == null ? "" : name, cost);
                 tableQualities.clearSelection();
             }
+            addSaveLayout.show(addSavePanel, "ADD");
         });
         lblQualityCount = new JLabel("0 qualities");
         JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonSub.add(btnAddQuality);
+        buttonSub.add(addSavePanel);
         buttonSub.add(btnRemoveQuality);
-        buttonSub.add(btnSaveQuality);
         JPanel btnPanel = new JPanel(new BorderLayout());
         btnPanel.add(buttonSub, BorderLayout.WEST);
         btnPanel.add(lblQualityCount, BorderLayout.EAST);
@@ -680,15 +705,19 @@ private void buildConditionMonitorSection() {
     }
 
     private JPanel buildKarmaLogPanel() {
-        karmaLogModel = new DefaultTableModel(new Object[]{"Action", "Cost"}, 0) {
+        karmaLogModel = new DefaultTableModel(new Object[]{"Type", "Name", "Cost"}, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tableKarmaLog = new JTable(karmaLogModel);
-        tableKarmaLog.setPreferredScrollableViewportSize(new Dimension(150, 500));
+        tableKarmaLog.setPreferredScrollableViewportSize(new Dimension(250, 500));
         JScrollPane sp = new JScrollPane(tableKarmaLog);
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Karma Log", TitledBorder.LEFT, TitledBorder.TOP));
         panel.add(sp, BorderLayout.CENTER);
+        lblLoggedKarma = new JLabel("Logged Karma: 0");
+        JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        south.add(lblLoggedKarma);
+        panel.add(south, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -704,9 +733,52 @@ private void buildConditionMonitorSection() {
         }
     }
 
+    private Integer findKarmaRow(String type, String name) {
+        for (int i = 0; i < karmaLogModel.getRowCount(); i++) {
+            Object t = karmaLogModel.getValueAt(i, 0);
+            Object n = karmaLogModel.getValueAt(i, 1);
+            if (type.equals(t) && name.equals(n)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    private void addOrUpdateKarma(String type, String name, int cost) {
+        Integer row = findKarmaRow(type, name);
+        if (row == null) {
+            karmaLogModel.addRow(new Object[]{type, name, cost});
+        } else {
+            karmaLogModel.setValueAt(cost, row, 2);
+        }
+        updateLoggedKarma();
+    }
+
+    private void removeKarma(String type, String name) {
+        Integer row = findKarmaRow(type, name);
+        if (row != null) {
+            karmaLogModel.removeRow(row.intValue());
+        }
+        updateLoggedKarma();
+    }
+
+    private void updateLoggedKarma() {
+        int total = 0;
+        for (int i = 0; i < karmaLogModel.getRowCount(); i++) {
+            Object v = karmaLogModel.getValueAt(i, 2);
+            try {
+                total += Integer.parseInt(v.toString());
+            } catch (Exception ignored) {}
+        }
+        if (lblLoggedKarma != null) {
+            lblLoggedKarma.setText("Logged Karma: " + total);
+        }
+    }
+
     private void loadMetatypes() {
         cbMetatype.removeAllItems();
         metatypeMap.clear();
+        metatypeKarmaMap.clear();
         java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
         if (!file.exists()) return;
         try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
@@ -717,6 +789,8 @@ private void buildConditionMonitorSection() {
                 String[] parts = line.split(",");
                 if (parts.length < 6) continue;
                 String name = parts[0].trim();
+                int karma = 0;
+                try { karma = Integer.parseInt(parts[1].trim()); } catch(Exception ex) {}
                 String type = parts[2].trim();
                 String root = parts[3].trim();
                 if (type.equals("Metahuman") || type.equals("Metasapient")) {
@@ -727,19 +801,25 @@ private void buildConditionMonitorSection() {
             }
             for (String[] m : mains) {
                 String name = m[0].trim();
+                int karma = 0;
+                try { karma = Integer.parseInt(m[1].trim()); } catch(Exception ex) {}
                 double h = Double.parseDouble(m[4]);
                 double w = Double.parseDouble(m[5]);
                 MetaItem item = new MetaItem(name, false);
                 cbMetatype.addItem(item);
                 metatypeMap.put(name, new double[]{h, w});
+                metatypeKarmaMap.put(name, karma);
                 java.util.List<String[]> varList = variants.get(name);
                 if (varList != null) {
                     for (String[] v : varList) {
                         String varName = v[0].trim();
+                        int vkarma = 0;
+                        try { vkarma = Integer.parseInt(v[1].trim()); } catch(Exception ex) {}
                         double vh = Double.parseDouble(v[4]);
                         double vw = Double.parseDouble(v[5]);
                         cbMetatype.addItem(new MetaItem(varName, true));
                         metatypeMap.put(varName, new double[]{vh, vw});
+                        metatypeKarmaMap.put(varName, vkarma);
                     }
                 }
             }
@@ -755,6 +835,8 @@ private void buildConditionMonitorSection() {
                     updateHeightFeet();
                     updateWeightLbs();
                     loadRacialTraitsForMetatype(item.name);
+                    int cost = metatypeKarmaMap.getOrDefault(item.name, 0);
+                    addOrUpdateKarma("Base", "Metatype", cost);
                 }
             }
         });
@@ -763,6 +845,7 @@ private void buildConditionMonitorSection() {
     private void loadSurgeCollectives() {
         cbSurgeCollective.removeAllItems();
         cbSurgeCollective.addItem("No Collective");
+        surgeKarmaMap.clear();
         java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
         if (!file.exists()) return;
         try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
@@ -771,9 +854,12 @@ private void buildConditionMonitorSection() {
                 String[] parts = line.split(",", -1);
                 if (parts.length >= 3) {
                     String name = parts[0].trim();
+                    int karma = 0;
+                    try { karma = Integer.parseInt(parts[1].trim()); } catch(Exception ex) {}
                     String type = parts[2].trim();
                     if ("Changeling".equalsIgnoreCase(type)) {
                         cbSurgeCollective.addItem(name);
+                        surgeKarmaMap.put(name, karma);
                     }
                 }
             }
