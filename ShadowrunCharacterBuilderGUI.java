@@ -55,6 +55,7 @@ public class ShadowrunCharacterBuilderGUI {
     private java.util.Map<String, String[]> archetypeMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
+    private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
 
     private static final String[] RANK_OPTIONS = {
             "1 - Novice",
@@ -101,6 +102,20 @@ public class ShadowrunCharacterBuilderGUI {
         String name;
         boolean variant;
         MetaItem(String n, boolean v) { this.name = n; this.variant = v; }
+        public String toString() { return name; }
+    }
+
+    private static class QualityEntry {
+        String name;
+        String type;
+        String category;
+        int karma;
+        String instance;
+        int min;
+        int max;
+        QualityEntry(String n, String t, String c, int k, String i, int mn, int mx) {
+            name = n; type = t; category = c; karma = k; instance = i; min = mn; max = mx;
+        }
         public String toString() { return name; }
     }
     
@@ -403,14 +418,16 @@ private void buildConditionMonitorSection() {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tableQualities = new JTable(qualitiesTableModel);
+        tableQualities.setAutoCreateRowSorter(true);
         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
         JScrollPane sp = new JScrollPane(tableQualities);
+
+        loadQualities();
 
         JButton btnAddQuality = new JButton("Add Quality");
         btnAddQuality.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
-                updateQualityCount();
+                showAddQualityDialog();
             }
         });
         JButton btnRemoveQuality = new JButton("Remove Quality");
@@ -418,7 +435,15 @@ private void buildConditionMonitorSection() {
             public void actionPerformed(ActionEvent e) {
                 int row = tableQualities.getSelectedRow();
                 if (row != -1) {
-                    qualitiesTableModel.removeRow(row);
+                    int modelRow = tableQualities.convertRowIndexToModel(row);
+                    Object cat = qualitiesTableModel.getValueAt(modelRow, 3);
+                    if ("Metatype".equals(cat)) {
+                        JOptionPane.showMessageDialog(frame,
+                                "ERROR: Qualities inherited from a Metatype cannot be removed.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    qualitiesTableModel.removeRow(modelRow);
                     updateQualityCount();
                 }
             }
@@ -644,6 +669,30 @@ private void buildConditionMonitorSection() {
         } catch (Exception ignored) {}
     }
 
+    private void loadQualities() {
+        qualityEntries.clear();
+        java.io.File file = new java.io.File("Shadowrun_Qualities.csv");
+        if (!file.exists()) return;
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                if (parts.length >= 7) {
+                    String name = parts[0].replaceAll("^\"|\"$", "").trim();
+                    String type = parts[1].trim();
+                    String category = parts[2].trim();
+                    int karma = 0;
+                    try { karma = Integer.parseInt(parts[3].trim()); } catch (Exception ex) {}
+                    String instance = parts[4].trim();
+                    int mn = 1, mx = 1;
+                    try { mn = Integer.parseInt(parts[5].trim()); } catch (Exception ex) {}
+                    try { mx = Integer.parseInt(parts[6].trim()); } catch (Exception ex) {}
+                    qualityEntries.add(new QualityEntry(name, type, category, karma, instance, mn, mx));
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
     private void showAddSkillDialog() {
         JDialog dialog = new JDialog(frame, "Add Skill Dialog", true);
         JPanel main = new JPanel(new GridBagLayout());
@@ -789,6 +838,111 @@ private void buildConditionMonitorSection() {
             if (skill != null && !skill.trim().isEmpty()) {
                 skillsTableModel.addRow(new Object[]{t, skill, rank, attr, cat});
                 updateSkillCount();
+            }
+            dialog.dispose();
+        });
+
+        dialog.getContentPane().add(main);
+        dialog.pack();
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
+
+    private void showAddQualityDialog() {
+        JDialog dialog = new JDialog(frame, "Add Quality Dialog", true);
+        JPanel main = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(4,4,4,4);
+        c.anchor = GridBagConstraints.WEST;
+        int row = 0;
+
+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
+        JComboBox<String> cbCategory = new JComboBox<>(new String[]{"Magic","Matrix","Mental","Physical","Social","Vehicle"});
+        c.gridx = 1; main.add(cbCategory, c); row++;
+
+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
+        JComboBox<String> cbType = new JComboBox<>(new String[]{"Positive","Negative"});
+        c.gridx = 1; main.add(cbType, c); row++;
+
+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Quality Name:"), c);
+        JComboBox<QualityEntry> cbName = new JComboBox<>();
+        c.gridx = 1; main.add(cbName, c); row++;
+
+        JLabel lblLevel = new JLabel("Level:");
+        c.gridx = 0; c.gridy = row; main.add(lblLevel, c);
+        SpinnerNumberModel levelModel = new SpinnerNumberModel(1,1,1,1);
+        JSpinner spLevel = new JSpinner(levelModel);
+        c.gridx = 1; main.add(spLevel, c); row++;
+
+        c.gridx = 0; c.gridy = row; main.add(new JLabel("Karma:"), c);
+        JTextField tfKarma = new JTextField(6); tfKarma.setEditable(false);
+        c.gridx = 1; main.add(tfKarma, c); row++;
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnSave = new JButton("Save");
+        JButton btnCancel = new JButton("Cancel");
+        btnPanel.add(btnSave); btnPanel.add(btnCancel);
+        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
+        main.add(btnPanel, c);
+
+        Runnable updateNames = () -> {
+            cbName.removeAllItems();
+            String cat = (String) cbCategory.getSelectedItem();
+            String type = (String) cbType.getSelectedItem();
+            for (QualityEntry qe : qualityEntries) {
+                if (qe.category.equalsIgnoreCase(cat) && qe.type.equalsIgnoreCase(type)) {
+                    cbName.addItem(qe);
+                }
+            }
+            if (cbName.getItemCount() > 0) {
+                cbName.setSelectedIndex(0);
+            } else {
+                tfKarma.setText("");
+                lblLevel.setVisible(false);
+                spLevel.setVisible(false);
+            }
+        };
+
+        Runnable updateFields = () -> {
+            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
+            if (qe == null) return;
+            boolean isLevel = "Level".equalsIgnoreCase(qe.instance);
+            lblLevel.setVisible(isLevel);
+            spLevel.setVisible(isLevel);
+            if (isLevel) {
+                levelModel.setMinimum(qe.min);
+                levelModel.setMaximum(qe.max);
+                levelModel.setValue(Math.max(qe.min,1));
+            } else {
+                levelModel.setMinimum(1);
+                levelModel.setMaximum(1);
+                spLevel.setValue(1);
+            }
+            int lvl = ((Number) spLevel.getValue()).intValue();
+            int karma = qe.karma;
+            if (isLevel) karma = karma * lvl;
+            tfKarma.setText(String.valueOf(karma));
+        };
+
+        cbCategory.addActionListener(e -> { updateNames.run(); });
+        cbType.addActionListener(e -> { updateNames.run(); });
+        cbName.addActionListener(e -> { updateFields.run(); });
+        spLevel.addChangeListener(e -> { updateFields.run(); });
+
+        updateNames.run();
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+
+        btnSave.addActionListener(e -> {
+            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
+            if (qe != null) {
+                int lvl = ((Number) spLevel.getValue()).intValue();
+                int karma = qe.karma;
+                if ("Level".equalsIgnoreCase(qe.instance)) karma = karma * lvl;
+                String name = qe.name;
+                if ("Level".equalsIgnoreCase(qe.instance)) name = name + " (" + lvl + ")";
+                qualitiesTableModel.addRow(new Object[]{name, qe.type, String.valueOf(karma), qe.category});
+                updateQualityCount();
             }
             dialog.dispose();
         });

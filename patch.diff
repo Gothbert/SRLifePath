@@ -1,272 +1,148 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69ca726556b 100644
+index 23e9148e6c92cb2cdbd61f1d1d16cee00e5f657b..e50b14515f93b6f4cb5a3806ea3af3c32e7d48ce 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -133,94 +133,97 @@ public class ShadowrunCharacterBuilderGUI {
-         btnGenerate.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 generateReport();
-             }
-         });
-         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-         contentPanel.add(btnGenerate);
-         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+@@ -23,108 +23,123 @@ public class ShadowrunCharacterBuilderGUI {
+     
+     // PERSONAL DATA fields
+     private JTextField tfName, tfPlayer, tfAge,
+                        tfHeight, tfHeightFt, tfWeight, tfWeightLbs;
+     private JComboBox<String> cbRole;
+     private JComboBox<MetaItem> cbMetatype;
+     private JComboBox<String> cbGender;
+     private JTextField tfNuyen, tfPrimaryLifestyle, tfFakeIDs;
+     private JTextArea taNotes;
+     
+     // ATTRIBUTES fields
+     private JSpinner spBody, spAgility, spReaction, spStrength,
+                      spWillpower, spLogic, spIntuition, spCharisma,
+                      spEdge, spEssence, spMagic, spResonance;
+     // TODO later: initiative and other derived stats
+     // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
+     //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
+     //                    tfUnarmedAR, tfDefenseRating;
+     
+     // CONDITION MONITOR fields (future feature)
+     // private JTextField tfPhysicalBoxes, tfStunBoxes;
+     
+     // SKILLS table and QUALITIES/CONTACTS tables
+     private JTable tableSkills;
+     private DefaultTableModel skillsTableModel;
+-    private JTable tableQualities;
+-    private DefaultTableModel qualitiesTableModel;
+-    private JTable tableContacts;
+-    private DefaultTableModel contactsTableModel;
++    private JTable tableQualities;
++    private DefaultTableModel qualitiesTableModel;
++    private JTable tableContacts;
++    private DefaultTableModel contactsTableModel;
+     private JLabel lblSkillCount;
+     private JLabel lblQualityCount;
+     private java.util.Map<String, double[]> metatypeMap = new java.util.LinkedHashMap<>();
+     private java.util.Map<String, String[]> archetypeMap = new java.util.LinkedHashMap<>();
+     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
+-    private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
++    private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
++    private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
  
-         scrollPane = new JScrollPane(contentPanel);
-         frame.getContentPane().add(scrollPane);
-         frame.setVisible(true);
-     }
+     private static final String[] RANK_OPTIONS = {
+             "1 - Novice",
+             "2 - Advanced Beginner",
+             "3 - Journeyman",
+             "4 - Professional",
+             "5 - Advanced Professional",
+             "6 - Local Legend",
+             "7 - Elite",
+             "8 - Professional Elite",
+             "9 - National Elite",
+             "10 - Multinational Elite",
+             "11 - Global Elite",
+             "12 - GOAT"
+     };
+     
+     // WEAPONS, ARMOR: future feature
+     // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
+     
+     // MATRIX STATS - future feature
+     // private JTextField tfMatrixAttack, tfMatrixSleaze, tfMatrixDataProc, tfMatrixFirewall,
+     //                    tfMatrixConditionBoxes;
+     // private JTextArea taMatrixDevices;
+     
+     // AUGMENTATIONS - future feature
+     // private JTextArea taAugmentations;
+     
+     // VEHICLE - future feature
+     // private JTextField tfVehicleName, tfVehicleHandling, tfVehicleAcceleration,
+     //                    tfVehicleSpeedInterval, tfVehicleTopSpeed, tfVehicleBody,
+     //                    tfVehicleArmor, tfVehiclePilot, tfVehicleSensor, tfVehicleSeats;
+     // private JTextArea taVehicleNotes;
+     
+     // GEAR - to be developed later
+     // private JTextArea taGear;
+     
+     // SPELLS/ RITUALS/ COMPLEX FORMS - future feature
+     // private JTextArea taSpellsRituals;
+     
+     // ADEPT POWERS - future feature
+     // private JTextArea taAdeptPowers;
  
-     private void buildPersonalDataSection() {
-         JPanel panel = new JPanel(new GridBagLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Personal Data", TitledBorder.LEFT, TitledBorder.TOP));
-         GridBagConstraints c = new GridBagConstraints();
-         c.insets = new Insets(4, 4, 4, 4);
-         c.anchor = GridBagConstraints.WEST;
- 
-         int row = 0;
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name/Primary Alias:"), c);
-         tfName = new JTextField(20); c.gridx = 1; panel.add(tfName, c);
-         c.gridx = 2; panel.add(new JLabel("Gender:"), c);
--        cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
--        row++;
-+        cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
-+        row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Player Name:"), c);
-         tfPlayer = new JTextField(15); c.gridx = 1; panel.add(tfPlayer, c);
-         c.gridx = 2; panel.add(new JLabel("Age:"), c);
-         tfAge = new JTextField(5); c.gridx = 3; panel.add(tfAge, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Archetype/Role:"), c);
-         cbRole = new JComboBox<>(); c.gridx = 1; panel.add(cbRole, c);
-         JButton btnRoleInfo = new JButton("\u2139");
-         btnRoleInfo.setMargin(new Insets(0,0,0,0));
-         btnRoleInfo.setVisible(false);
-         c.gridx = 2; panel.add(btnRoleInfo, c);
-         c.gridx = 3; panel.add(new JLabel("Height (cm):"), c);
-         tfHeight = new JTextField(5); c.gridx = 4; panel.add(tfHeight, c);
-         c.gridx = 5; panel.add(new JLabel("Height (ft):"), c);
-         tfHeightFt = new JTextField(6); tfHeightFt.setEditable(false); c.gridx = 6; panel.add(tfHeightFt, c);
-         row++;
- 
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
-         cbMetatype = new JComboBox<>();
-         cbMetatype.setRenderer(new DefaultListCellRenderer() {
-             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                 if (value instanceof MetaItem) {
-                     MetaItem mi = (MetaItem) value;
-                     String text = mi.name;
-                     if (index >= 0 && mi.variant) text = " - " + text;
-                     lbl.setText(text);
-                 }
-                 return lbl;
-             }
-         });
-         c.gridx = 1; panel.add(cbMetatype, c);
-         c.gridx = 3; panel.add(new JLabel("Weight (kg):"), c);
-         tfWeight = new JTextField(5); c.gridx = 4; panel.add(tfWeight, c);
-         c.gridx = 5; panel.add(new JLabel("Weight (lbs):"), c);
-         tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
-         row++;
- 
--        loadMetatypes();
--        loadArchetypes();
-+        loadMetatypes();
-+        loadArchetypes();
-+        cbRole.setSelectedIndex(-1);
-+        cbMetatype.setSelectedIndex(-1);
-+        cbGender.setSelectedIndex(-1);
- 
-         tfHeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-             public void removeUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-             public void changedUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
-         });
-         tfWeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-             public void removeUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-             public void changedUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
-         });
- 
-         cbRole.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 String sel = (String) cbRole.getSelectedItem();
-                 btnRoleInfo.setVisible(sel != null && !sel.isEmpty());
-             }
-         });
-         btnRoleInfo.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 String sel = (String) cbRole.getSelectedItem();
-                 if (sel != null && archetypeMap.containsKey(sel)) {
-                     String[] vals = archetypeMap.get(sel);
-                     JOptionPane.showMessageDialog(frame,
-                             "Archetype: " + sel + "\nPrimary Focus: " + vals[2] + "\n" + vals[1],
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69ca726556b 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -253,165 +256,174 @@ public class ShadowrunCharacterBuilderGUI {
-         spReaction = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
-         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
-         spStrength = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
- 
-         JPanel mental = new JPanel(new GridBagLayout());
-         mental.setBorder(BorderFactory.createTitledBorder("Mental"));
-         GridBagConstraints mc = new GridBagConstraints();
-         mc.insets = new Insets(2,2,2,2);
-         mc.anchor = GridBagConstraints.WEST;
-         int mrow = 0;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
-         spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
-         spLogic = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
-         spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
-         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
-         spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
- 
-         JPanel special = new JPanel(new GridBagLayout());
-         special.setBorder(BorderFactory.createTitledBorder("Special"));
-         GridBagConstraints sc = new GridBagConstraints();
-         sc.insets = new Insets(2,2,2,2);
-         sc.anchor = GridBagConstraints.WEST;
-         int srow = 0;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
--        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
--        spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01));
--        spEssence.setPreferredSize(spEdge.getPreferredSize());
--        sc.gridx = 1; special.add(spEssence, sc); srow++;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
--        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
--        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
--        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
-+        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
-+        Dimension specialDim = new Dimension(60, spEdge.getPreferredSize().height);
-+        spEdge.setPreferredSize(specialDim);
-+        sc.gridx = 1; special.add(spEdge, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
-+        spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01));
-+        spEssence.setPreferredSize(specialDim);
-+        sc.gridx = 1; special.add(spEssence, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-+        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
-+        spMagic.setPreferredSize(specialDim);
-+        sc.gridx = 1; special.add(spMagic, sc); srow++;
-+        sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-+        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
-+        spResonance.setPreferredSize(specialDim);
-+        sc.gridx = 1; special.add(spResonance, sc);
- 
-         c.gridx = 0; c.gridy = 0; panel.add(physical, c);
-         c.gridx = 1; panel.add(mental, c);
-         c.gridx = 2; panel.add(special, c);
- 
-         contentPanel.add(panel);
-     }
- 
- /*
-  * Future feature: Condition Monitor section
- private void buildConditionMonitorSection() {
-         JPanel panel = new JPanel(new GridBagLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Condition Monitor", TitledBorder.LEFT, TitledBorder.TOP));
-         GridBagConstraints c = new GridBagConstraints();
-         c.insets = new Insets(4, 4, 4, 4);
-         c.anchor = GridBagConstraints.WEST;
- 
-         int row = 0;
-         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Physical Damage Track Boxes:"), c);
-         tfPhysicalBoxes = new JTextField(5); c.gridx = 1; panel.add(tfPhysicalBoxes, c);
-         c.gridx = 2; panel.add(new JLabel("Stun Damage Track Boxes:"), c);
-         tfStunBoxes = new JTextField(5); c.gridx = 3; panel.add(tfStunBoxes, c);
- 
-         contentPanel.add(panel);
-     }
- */
- 
-     private JPanel buildSkillsSection() {
-         JPanel panel = new JPanel(new BorderLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Skills", TitledBorder.LEFT, TitledBorder.TOP));
- 
--        skillsTableModel = new DefaultTableModel(new Object[]{"Skill", "Rank", "Type", "Attribute", "Category"}, 0) {
--            public boolean isCellEditable(int row, int column) {
--                return column < 2;
--            }
--        };
-+        skillsTableModel = new DefaultTableModel(new Object[]{"Type", "Skill", "Rank", "Attribute", "Category"}, 0) {
-+            public boolean isCellEditable(int row, int column) {
-+                return false;
-+            }
-+        };
-         tableSkills = new JTable(skillsTableModel);
-         tableSkills.setAutoCreateRowSorter(true);
- 
-         loadSkills();
-         loadSpecializations();
- 
--        TableColumn skillCol = tableSkills.getColumnModel().getColumn(0);
--        JComboBox<String> cbSkillNames = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
--        skillCol.setCellEditor(new DefaultCellEditor(cbSkillNames));
--
--        TableColumn rankCol = tableSkills.getColumnModel().getColumn(1);
--        rankCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(RANK_OPTIONS)));
-+        TableColumn skillCol = tableSkills.getColumnModel().getColumn(1);
-+        JComboBox<String> cbSkillNames = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
-+        skillCol.setCellEditor(new DefaultCellEditor(cbSkillNames));
+-    private static class MetaItem {
+-        String name;
+-        boolean variant;
+-        MetaItem(String n, boolean v) { this.name = n; this.variant = v; }
+-        public String toString() { return name; }
+-    }
++    private static class MetaItem {
++        String name;
++        boolean variant;
++        MetaItem(String n, boolean v) { this.name = n; this.variant = v; }
++        public String toString() { return name; }
++    }
 +
-+        TableColumn rankCol = tableSkills.getColumnModel().getColumn(2);
-+        rankCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(RANK_OPTIONS)));
++    private static class QualityEntry {
++        String name;
++        String type;
++        String category;
++        int karma;
++        String instance;
++        int min;
++        int max;
++        QualityEntry(String n, String t, String c, int k, String i, int mn, int mx) {
++            name = n; type = t; category = c; karma = k; instance = i; min = mn; max = mx;
++        }
++        public String toString() { return name; }
++    }
+     
+     public ShadowrunCharacterBuilderGUI() {
+         frame = new JFrame("Shadowrun 6e Character Builder");
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setSize(900, 600);
  
-         skillsTableModel.addTableModelListener(e -> {
--            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE && e.getColumn() == 0) {
--                int r = e.getFirstRow();
--                Object val = skillsTableModel.getValueAt(r, 0);
--                if (val != null && skillMap.containsKey(val.toString())) {
--                    String[] info = skillMap.get(val.toString());
--                    skillsTableModel.setValueAt("General", r, 2);
--                    skillsTableModel.setValueAt(info[0], r, 3);
--                    skillsTableModel.setValueAt(info[1], r, 4);
--                } else {
--                    skillsTableModel.setValueAt("", r, 2);
--                    skillsTableModel.setValueAt("", r, 3);
--                    skillsTableModel.setValueAt("", r, 4);
--                }
--            }
--        });
-+            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE && e.getColumn() == 1) {
-+                int r = e.getFirstRow();
-+                Object val = skillsTableModel.getValueAt(r, 1);
-+                if (val != null && skillMap.containsKey(val.toString())) {
-+                    String[] info = skillMap.get(val.toString());
-+                    skillsTableModel.setValueAt("General", r, 0);
-+                    skillsTableModel.setValueAt(info[0], r, 3);
-+                    skillsTableModel.setValueAt(info[1], r, 4);
-+                } else {
-+                    skillsTableModel.setValueAt("", r, 0);
-+                    skillsTableModel.setValueAt("", r, 3);
-+                    skillsTableModel.setValueAt("", r, 4);
-+                }
-+            }
-+        });
+         contentPanel = new JPanel();
+         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
  
-         JScrollPane sp = new JScrollPane(tableSkills);
-         tableSkills.setPreferredScrollableViewportSize(new Dimension(500, 150));
+         // Build each section
+         buildPersonalDataSection();
+         buildAttributesSection();
+         // buildConditionMonitorSection(); // TODO expand later
  
-         JButton btnAddSkill = new JButton("Add Skill");
-         btnAddSkill.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 showAddSkillDialog();
-             }
-         });
-         JButton btnRemoveSkill = new JButton("Remove Skill");
-         btnRemoveSkill.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 int row = tableSkills.getSelectedRow();
+         tabs = new JTabbedPane();
+         tabs.setPreferredSize(new Dimension(850, 250));
+         tabs.addTab("Skills", buildSkillsSection());
+         tabs.addTab("Qualities", buildQualitiesSection());
+         tabs.addTab("Contacts", buildContactsSection());
+         tabs.addTab("Lifestyle", buildLifestyleSection());
+         tabs.addTab("Notes", buildNotesSection());
+         contentPanel.add(tabs);
+ 
+         // Generate Button
+diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
+index 23e9148e6c92cb2cdbd61f1d1d16cee00e5f657b..e50b14515f93b6f4cb5a3806ea3af3c32e7d48ce 100644
+--- a/ShadowrunCharacterBuilderGUI.java
++++ b/ShadowrunCharacterBuilderGUI.java
+@@ -377,74 +392,84 @@ private void buildConditionMonitorSection() {
                  if (row != -1) {
                      skillsTableModel.removeRow(row);
                      updateSkillCount();
@@ -292,146 +168,100 @@ index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69c
          JPanel panel = new JPanel(new BorderLayout());
          panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
  
--        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0);
+-        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0) {
+-            public boolean isCellEditable(int r, int c) { return false; }
+-        };
+-        tableQualities = new JTable(qualitiesTableModel);
+-        tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
+-        JScrollPane sp = new JScrollPane(tableQualities);
+-
+-        JButton btnAddQuality = new JButton("Add Quality");
+-        btnAddQuality.addActionListener(new ActionListener() {
+-            public void actionPerformed(ActionEvent e) {
+-                qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
+-                updateQualityCount();
+-            }
+-        });
+-        JButton btnRemoveQuality = new JButton("Remove Quality");
+-        btnRemoveQuality.addActionListener(new ActionListener() {
+-            public void actionPerformed(ActionEvent e) {
+-                int row = tableQualities.getSelectedRow();
+-                if (row != -1) {
+-                    qualitiesTableModel.removeRow(row);
+-                    updateQualityCount();
+-                }
+-            }
+-        });
 +        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0) {
 +            public boolean isCellEditable(int r, int c) { return false; }
 +        };
-         tableQualities = new JTable(qualitiesTableModel);
-         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
-         JScrollPane sp = new JScrollPane(tableQualities);
- 
-         JButton btnAddQuality = new JButton("Add Quality");
-         btnAddQuality.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 qualitiesTableModel.addRow(new Object[]{"", "Positive", "", ""});
-                 updateQualityCount();
-             }
-         });
-         JButton btnRemoveQuality = new JButton("Remove Quality");
-         btnRemoveQuality.addActionListener(new ActionListener() {
-             public void actionPerformed(ActionEvent e) {
-                 int row = tableQualities.getSelectedRow();
-                 if (row != -1) {
-                     qualitiesTableModel.removeRow(row);
-                     updateQualityCount();
-                 }
-             }
-         });
++        tableQualities = new JTable(qualitiesTableModel);
++        tableQualities.setAutoCreateRowSorter(true);
++        tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
++        JScrollPane sp = new JScrollPane(tableQualities);
++
++        loadQualities();
++
++        JButton btnAddQuality = new JButton("Add Quality");
++        btnAddQuality.addActionListener(new ActionListener() {
++            public void actionPerformed(ActionEvent e) {
++                showAddQualityDialog();
++            }
++        });
++        JButton btnRemoveQuality = new JButton("Remove Quality");
++        btnRemoveQuality.addActionListener(new ActionListener() {
++            public void actionPerformed(ActionEvent e) {
++                int row = tableQualities.getSelectedRow();
++                if (row != -1) {
++                    int modelRow = tableQualities.convertRowIndexToModel(row);
++                    Object cat = qualitiesTableModel.getValueAt(modelRow, 3);
++                    if ("Metatype".equals(cat)) {
++                        JOptionPane.showMessageDialog(frame,
++                                "ERROR: Qualities inherited from a Metatype cannot be removed.",
++                                "Error", JOptionPane.ERROR_MESSAGE);
++                        return;
++                    }
++                    qualitiesTableModel.removeRow(modelRow);
++                    updateQualityCount();
++                }
++            }
++        });
          lblQualityCount = new JLabel("0 qualities");
          JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
          buttonSub.add(btnAddQuality);
          buttonSub.add(btnRemoveQuality);
+         JPanel btnPanel = new JPanel(new BorderLayout());
+         btnPanel.add(buttonSub, BorderLayout.WEST);
+         btnPanel.add(lblQualityCount, BorderLayout.EAST);
+ 
+         panel.add(new JLabel("Enter qualities:"), BorderLayout.NORTH);
+         panel.add(sp, BorderLayout.CENTER);
+         panel.add(btnPanel, BorderLayout.SOUTH);
+         updateQualityCount();
+         return panel;
+     }
+ 
+     private JPanel buildContactsSection() {
+         JPanel panel = new JPanel(new BorderLayout());
+         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Contacts", TitledBorder.LEFT, TitledBorder.TOP));
+ 
+         contactsTableModel = new DefaultTableModel(new Object[]{"Name", "Loyalty", "Connection"}, 0);
+         tableContacts = new JTable(contactsTableModel);
+         tableContacts.setPreferredScrollableViewportSize(new Dimension(500, 150));
+         JScrollPane sp = new JScrollPane(tableContacts);
+ 
+         JButton btnAddContact = new JButton("Add Contact");
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69ca726556b 100644
+index 23e9148e6c92cb2cdbd61f1d1d16cee00e5f657b..e50b14515f93b6f4cb5a3806ea3af3c32e7d48ce 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -512,85 +524,110 @@ private void buildConditionMonitorSection() {
-                     mains.add(parts);
-                 } else if (type.equals("Metavariant")) {
-                     variants.computeIfAbsent(root, k -> new java.util.ArrayList<>()).add(parts);
-                 }
-             }
-             for (String[] m : mains) {
-                 String name = m[0].trim();
-                 double h = Double.parseDouble(m[4]);
-                 double w = Double.parseDouble(m[5]);
-                 MetaItem item = new MetaItem(name, false);
-                 cbMetatype.addItem(item);
-                 metatypeMap.put(name, new double[]{h, w});
-                 java.util.List<String[]> varList = variants.get(name);
-                 if (varList != null) {
-                     for (String[] v : varList) {
-                         String varName = v[0].trim();
-                         double vh = Double.parseDouble(v[4]);
-                         double vw = Double.parseDouble(v[5]);
-                         cbMetatype.addItem(new MetaItem(varName, true));
-                         metatypeMap.put(varName, new double[]{vh, vw});
-                     }
+@@ -603,71 +628,95 @@ private void buildConditionMonitorSection() {
+                     qualitiesTableModel.addRow(new Object[]{trait, type, "0", "Metatype"});
                  }
              }
          } catch (Exception ignored) {}
- 
--        cbMetatype.addActionListener(new java.awt.event.ActionListener() {
--            public void actionPerformed(java.awt.event.ActionEvent e) {
--                MetaItem item = (MetaItem) cbMetatype.getSelectedItem();
--                if (item != null && metatypeMap.containsKey(item.name)) {
--                    double[] vals = metatypeMap.get(item.name);
--                    tfHeight.setText(String.format("%.0f", vals[0]));
--                    tfWeight.setText(String.format("%.0f", vals[1]));
--                    updateHeightFeet();
--                    updateWeightLbs();
--                }
--            }
--        });
-+        cbMetatype.addActionListener(new java.awt.event.ActionListener() {
-+            public void actionPerformed(java.awt.event.ActionEvent e) {
-+                MetaItem item = (MetaItem) cbMetatype.getSelectedItem();
-+                if (item != null && metatypeMap.containsKey(item.name)) {
-+                    double[] vals = metatypeMap.get(item.name);
-+                    tfHeight.setText(String.format("%.0f", vals[0]));
-+                    tfWeight.setText(String.format("%.0f", vals[1]));
-+                    updateHeightFeet();
-+                    updateWeightLbs();
-+                    loadRacialTraitsForMetatype(item.name);
-+                }
-+            }
-+        });
+         updateQualityCount();
      }
- 
-     private void updateHeightFeet() {
-         try {
-             double cm = Double.parseDouble(tfHeight.getText());
-             int totalInches = (int) Math.round(cm / 2.54);
-             int feet = totalInches / 12;
-             int inches = totalInches % 12;
-             tfHeightFt.setText(String.format("%d'%d\"", feet, inches));
-         } catch (Exception ex) {
-             tfHeightFt.setText("");
-         }
-     }
- 
--    private void updateWeightLbs() {
--        try {
--            double kg = Double.parseDouble(tfWeight.getText());
--            int lbs = (int) Math.round(kg * 2.20462);
--            tfWeightLbs.setText(String.valueOf(lbs));
--        } catch (Exception ex) {
--            tfWeightLbs.setText("");
--        }
--    }
-+    private void updateWeightLbs() {
-+        try {
-+            double kg = Double.parseDouble(tfWeight.getText());
-+            int lbs = (int) Math.round(kg * 2.20462);
-+            tfWeightLbs.setText(String.valueOf(lbs));
-+        } catch (Exception ex) {
-+            tfWeightLbs.setText("");
-+        }
-+    }
-+
-+    private void loadRacialTraitsForMetatype(String owner) {
-+        if (qualitiesTableModel == null) return;
-+        for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
-+            Object cat = qualitiesTableModel.getValueAt(i, 3);
-+            if ("Metatype".equals(cat)) {
-+                qualitiesTableModel.removeRow(i);
-+            }
-+        }
-+        java.io.File file = new java.io.File("Shadowrun_RacialTraits.csv");
-+        if (!file.exists()) { updateQualityCount(); return; }
-+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
-+            String line = br.readLine();
-+            while ((line = br.readLine()) != null) {
-+                String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-+                if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
-+                    String trait = parts[0].replaceAll("^\"|\"$", "").trim();
-+                    String type = parts[1].trim();
-+                    qualitiesTableModel.addRow(new Object[]{trait, type, "0", "Metatype"});
-+                }
-+            }
-+        } catch (Exception ignored) {}
-+        updateQualityCount();
-+    }
  
      private void loadSkills() {
          skillMap.clear();
@@ -451,72 +281,91 @@ index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69c
          } catch (Exception ignored) {}
      }
  
-     private void loadSpecializations() {
-         specializationMap.clear();
-         java.io.File file = new java.io.File("Shadowrun_Specializations.csv");
-         if (!file.exists()) return;
-         try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+-    private void loadSpecializations() {
+-        specializationMap.clear();
+-        java.io.File file = new java.io.File("Shadowrun_Specializations.csv");
+-        if (!file.exists()) return;
+-        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
++    private void loadSpecializations() {
++        specializationMap.clear();
++        java.io.File file = new java.io.File("Shadowrun_Specializations.csv");
++        if (!file.exists()) return;
++        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
              String line = br.readLine();
+             while ((line = br.readLine()) != null) {
+                 String[] parts = line.split(",", -1);
+                 if (parts.length >= 4) {
+                     String spec = parts[0].trim();
+                     String parent = parts[1].trim();
+                     String attr = parts[2].trim();
+                     String cat = parts[3].trim();
+                     specializationMap.put(spec, new String[]{parent, attr, cat});
+                 }
+             }
+-        } catch (Exception ignored) {}
+-    }
+-
+-    private void showAddSkillDialog() {
+-        JDialog dialog = new JDialog(frame, "Add Skill Dialog", true);
++        } catch (Exception ignored) {}
++    }
++
++    private void loadQualities() {
++        qualityEntries.clear();
++        java.io.File file = new java.io.File("Shadowrun_Qualities.csv");
++        if (!file.exists()) return;
++        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
++            String line = br.readLine();
++            while ((line = br.readLine()) != null) {
++                String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
++                if (parts.length >= 7) {
++                    String name = parts[0].replaceAll("^\"|\"$", "").trim();
++                    String type = parts[1].trim();
++                    String category = parts[2].trim();
++                    int karma = 0;
++                    try { karma = Integer.parseInt(parts[3].trim()); } catch (Exception ex) {}
++                    String instance = parts[4].trim();
++                    int mn = 1, mx = 1;
++                    try { mn = Integer.parseInt(parts[5].trim()); } catch (Exception ex) {}
++                    try { mx = Integer.parseInt(parts[6].trim()); } catch (Exception ex) {}
++                    qualityEntries.add(new QualityEntry(name, type, category, karma, instance, mn, mx));
++                }
++            }
++        } catch (Exception ignored) {}
++    }
++
++    private void showAddSkillDialog() {
++        JDialog dialog = new JDialog(frame, "Add Skill Dialog", true);
+         JPanel main = new JPanel(new GridBagLayout());
+         GridBagConstraints c = new GridBagConstraints();
+         c.insets = new Insets(4,4,4,4);
+         c.anchor = GridBagConstraints.WEST;
+         int row = 0;
+ 
+         c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
+         JComboBox<String> cbType = new JComboBox<>(new String[]{"General","Specialization","Knowledge","Language"});
+         c.gridx = 1; main.add(cbType, c); row++;
+ 
+         CardLayout cl = new CardLayout();
+         JPanel cards = new JPanel(cl);
+ 
+         // General card
+         JPanel general = new JPanel(new GridBagLayout());
+         GridBagConstraints gc = new GridBagConstraints();
+         gc.insets = new Insets(2,2,2,2); gc.anchor = GridBagConstraints.WEST;
+         int gr = 0;
+         gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Skill Name:"), gc);
+         JComboBox<String> cbGenSkill = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
+         gc.gridx=1; general.add(cbGenSkill, gc); gr++;
+         gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Category:"), gc);
+         JTextField tfGenCat = new JTextField(15); tfGenCat.setEditable(false);
+         gc.gridx=1; general.add(tfGenCat, gc); gr++;
+         gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Primary Attribute:"), gc);
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69ca726556b 100644
+index 23e9148e6c92cb2cdbd61f1d1d16cee00e5f657b..e50b14515f93b6f4cb5a3806ea3af3c32e7d48ce 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -682,99 +719,99 @@ private void buildConditionMonitorSection() {
-                 tfSpecAttr.setText(info[1]);
-                 tfSpecCat.setText(info[2]);
-             } else {
-                 tfParent.setText("");
-                 tfSpecAttr.setText("");
-                 tfSpecCat.setText("");
-             }
-         });
-         if(cbSpec.getItemCount()>0) cbSpec.setSelectedIndex(0);
- 
-         // Knowledge card
-         JPanel knowledge = new JPanel(new GridBagLayout());
-         GridBagConstraints kc = new GridBagConstraints();
-         kc.insets = new Insets(2,2,2,2); kc.anchor = GridBagConstraints.WEST;
-         kc.gridx=0; kc.gridy=0; knowledge.add(new JLabel("Area/Field:"), kc);
-         JTextField tfKnowledge = new JTextField(15);
-         kc.gridx=1; knowledge.add(tfKnowledge, kc);
- 
-         // Language card
-         JPanel language = new JPanel(new GridBagLayout());
-         GridBagConstraints lc = new GridBagConstraints();
-         lc.insets = new Insets(2,2,2,2); lc.anchor = GridBagConstraints.WEST;
-         lc.gridx=0; lc.gridy=0; language.add(new JLabel("Language:"), lc);
-         JTextField tfLanguage = new JTextField(15);
-         lc.gridx=1; language.add(tfLanguage, lc); lc.gridy=1; lc.gridx=0; language.add(new JLabel("Proficiency:"), lc);
--        JComboBox<String> cbProf = new JComboBox<>(new String[]{"Novice","Specialist","Expert","Native"});
-+        JComboBox<String> cbProf = new JComboBox<>(new String[]{"1 - Elementary","2 - Intermediate","3 - Proficient","4 - Native"});
-         lc.gridx=1; language.add(cbProf, lc);
- 
-         cards.add(general, "General");
-         cards.add(spec, "Specialization");
-         cards.add(knowledge, "Knowledge");
-         cards.add(language, "Language");
- 
-         c.gridx = 0; c.gridy = row; c.gridwidth = 2;
-         main.add(cards, c); row++;
- 
-         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-         JButton btnSave = new JButton("Save");
-         JButton btnCancel = new JButton("Cancel");
-         btnPanel.add(btnSave); btnPanel.add(btnCancel);
-         c.gridx=0; c.gridy=row; c.gridwidth=2; main.add(btnPanel,c);
- 
-         cbType.addActionListener(e -> {
-             String t = (String) cbType.getSelectedItem();
-             cl.show(cards, t);
-         });
-         cbType.setSelectedIndex(0);
- 
-         btnCancel.addActionListener(e -> dialog.dispose());
- 
-         btnSave.addActionListener(e -> {
-             String t = (String) cbType.getSelectedItem();
-             String skill=""; String rank=""; String attr=""; String cat="";
-             if ("General".equals(t)) {
+@@ -773,53 +822,158 @@ private void buildConditionMonitorSection() {
                  skill = (String) cbGenSkill.getSelectedItem();
                  rank = (String) cbGenRank.getSelectedItem();
                  attr = tfGenAttr.getText();
@@ -526,36 +375,133 @@ index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69c
                  rank = (String) cbSpecRank.getSelectedItem();
                  attr = tfSpecAttr.getText();
                  cat = tfSpecCat.getText();
--            } else if ("Knowledge".equals(t)) {
--                skill = tfKnowledge.getText();
--                rank = "N/A";
--            } else if ("Language".equals(t)) {
--                skill = tfLanguage.getText();
--                rank = (String) cbProf.getSelectedItem();
--            }
--            if (skill != null && !skill.trim().isEmpty()) {
--                skillsTableModel.addRow(new Object[]{skill, rank, t, attr, cat});
--                updateSkillCount();
--            }
-+            } else if ("Knowledge".equals(t)) {
-+                skill = "KB: " + tfKnowledge.getText();
-+                rank = "N/A";
-+            } else if ("Language".equals(t)) {
-+                skill = "LG: " + tfLanguage.getText();
-+                rank = (String) cbProf.getSelectedItem();
-+            }
-+            if (skill != null && !skill.trim().isEmpty()) {
-+                skillsTableModel.addRow(new Object[]{t, skill, rank, attr, cat});
-+                updateSkillCount();
-+            }
+             } else if ("Knowledge".equals(t)) {
+                 skill = "KB: " + tfKnowledge.getText();
+                 rank = "N/A";
+             } else if ("Language".equals(t)) {
+                 skill = "LG: " + tfLanguage.getText();
+                 rank = (String) cbProf.getSelectedItem();
+             }
+             if (skill != null && !skill.trim().isEmpty()) {
+                 skillsTableModel.addRow(new Object[]{t, skill, rank, attr, cat});
+                 updateSkillCount();
+             }
              dialog.dispose();
          });
  
          dialog.getContentPane().add(main);
          dialog.pack();
-         dialog.setLocationRelativeTo(frame);
-         dialog.setVisible(true);
-     }
+-        dialog.setLocationRelativeTo(frame);
+-        dialog.setVisible(true);
+-    }
++        dialog.setLocationRelativeTo(frame);
++        dialog.setVisible(true);
++    }
++
++    private void showAddQualityDialog() {
++        JDialog dialog = new JDialog(frame, "Add Quality Dialog", true);
++        JPanel main = new JPanel(new GridBagLayout());
++        GridBagConstraints c = new GridBagConstraints();
++        c.insets = new Insets(4,4,4,4);
++        c.anchor = GridBagConstraints.WEST;
++        int row = 0;
++
++        c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
++        JComboBox<String> cbCategory = new JComboBox<>(new String[]{"Magic","Matrix","Mental","Physical","Social","Vehicle"});
++        c.gridx = 1; main.add(cbCategory, c); row++;
++
++        c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
++        JComboBox<String> cbType = new JComboBox<>(new String[]{"Positive","Negative"});
++        c.gridx = 1; main.add(cbType, c); row++;
++
++        c.gridx = 0; c.gridy = row; main.add(new JLabel("Quality Name:"), c);
++        JComboBox<QualityEntry> cbName = new JComboBox<>();
++        c.gridx = 1; main.add(cbName, c); row++;
++
++        JLabel lblLevel = new JLabel("Level:");
++        c.gridx = 0; c.gridy = row; main.add(lblLevel, c);
++        SpinnerNumberModel levelModel = new SpinnerNumberModel(1,1,1,1);
++        JSpinner spLevel = new JSpinner(levelModel);
++        c.gridx = 1; main.add(spLevel, c); row++;
++
++        c.gridx = 0; c.gridy = row; main.add(new JLabel("Karma:"), c);
++        JTextField tfKarma = new JTextField(6); tfKarma.setEditable(false);
++        c.gridx = 1; main.add(tfKarma, c); row++;
++
++        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
++        JButton btnSave = new JButton("Save");
++        JButton btnCancel = new JButton("Cancel");
++        btnPanel.add(btnSave); btnPanel.add(btnCancel);
++        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
++        main.add(btnPanel, c);
++
++        Runnable updateNames = () -> {
++            cbName.removeAllItems();
++            String cat = (String) cbCategory.getSelectedItem();
++            String type = (String) cbType.getSelectedItem();
++            for (QualityEntry qe : qualityEntries) {
++                if (qe.category.equalsIgnoreCase(cat) && qe.type.equalsIgnoreCase(type)) {
++                    cbName.addItem(qe);
++                }
++            }
++            if (cbName.getItemCount() > 0) {
++                cbName.setSelectedIndex(0);
++            } else {
++                tfKarma.setText("");
++                lblLevel.setVisible(false);
++                spLevel.setVisible(false);
++            }
++        };
++
++        Runnable updateFields = () -> {
++            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
++            if (qe == null) return;
++            boolean isLevel = "Level".equalsIgnoreCase(qe.instance);
++            lblLevel.setVisible(isLevel);
++            spLevel.setVisible(isLevel);
++            if (isLevel) {
++                levelModel.setMinimum(qe.min);
++                levelModel.setMaximum(qe.max);
++                levelModel.setValue(Math.max(qe.min,1));
++            } else {
++                levelModel.setMinimum(1);
++                levelModel.setMaximum(1);
++                spLevel.setValue(1);
++            }
++            int lvl = ((Number) spLevel.getValue()).intValue();
++            int karma = qe.karma;
++            if (isLevel) karma = karma * lvl;
++            tfKarma.setText(String.valueOf(karma));
++        };
++
++        cbCategory.addActionListener(e -> { updateNames.run(); });
++        cbType.addActionListener(e -> { updateNames.run(); });
++        cbName.addActionListener(e -> { updateFields.run(); });
++        spLevel.addChangeListener(e -> { updateFields.run(); });
++
++        updateNames.run();
++
++        btnCancel.addActionListener(e -> dialog.dispose());
++
++        btnSave.addActionListener(e -> {
++            QualityEntry qe = (QualityEntry) cbName.getSelectedItem();
++            if (qe != null) {
++                int lvl = ((Number) spLevel.getValue()).intValue();
++                int karma = qe.karma;
++                if ("Level".equalsIgnoreCase(qe.instance)) karma = karma * lvl;
++                String name = qe.name;
++                if ("Level".equalsIgnoreCase(qe.instance)) name = name + " (" + lvl + ")";
++                qualitiesTableModel.addRow(new Object[]{name, qe.type, String.valueOf(karma), qe.category});
++                updateQualityCount();
++            }
++            dialog.dispose();
++        });
++
++        dialog.getContentPane().add(main);
++        dialog.pack();
++        dialog.setLocationRelativeTo(frame);
++        dialog.setVisible(true);
++    }
  
      private void loadArchetypes() {
          cbRole.removeAllItems();
@@ -573,89 +519,14 @@ index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69c
                      cbRole.addItem(name);
                      archetypeMap.put(name, new String[]{name, desc, focus});
                  }
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 561c20126c5795f3584fffd847a8e913dd16f66b..0f9ab358c6ad31344ae6bc7369b9a69ca726556b 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -970,64 +1007,64 @@ private void buildAdeptPowersSection() {
- 
-     private void generateReport() {
-         StringBuilder sb = new StringBuilder();
-         sb.append("=== Shadowrun 6e Character Report ===\n\n");
-         sb.append("-- Personal Data --\n");
-         sb.append(String.format("Name: %s\n", tfName.getText()));
-         sb.append(String.format("Player: %s\n", tfPlayer.getText()));
-         sb.append(String.format("Role: %s   Metatype: %s   Gender: %s   Age: %s   Height (cm): %s   Weight (kg): %s\n",
-                 cbRole.getSelectedItem(), cbMetatype.getSelectedItem(),
-                 cbGender.getSelectedItem(), tfAge.getText(),
-                 tfHeight.getText(), tfWeight.getText()));
- 
-         sb.append("\n-- Attributes --\n");
-         sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
-                 spBody.getValue(), spAgility.getValue(), spReaction.getValue(), spStrength.getValue(), spWillpower.getValue()));
-         sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n",
-                 spLogic.getValue(), spIntuition.getValue(), spCharisma.getValue(), spEdge.getValue(), spEssence.getValue()));
-         sb.append(String.format("Magic: %s   Resonance: %s\n",
-                 spMagic.getValue(), spResonance.getValue()));
-         // Initiative and other derived stats will be added later
- 
-         // Condition Monitor will be added in a future version
- 
-         sb.append("\n-- Skills --\n");
-         StringBuilder skillsBuilder = new StringBuilder();
--        for (int i = 0; i < skillsTableModel.getRowCount(); i++) {
--            String skill = (String) skillsTableModel.getValueAt(i, 0);
--            String rank = (String) skillsTableModel.getValueAt(i, 1);
--            String type = (String) skillsTableModel.getValueAt(i, 2);
--            String attribute = (String) skillsTableModel.getValueAt(i, 3);
--            String category = (String) skillsTableModel.getValueAt(i, 4);
--            if (skill != null && !skill.trim().isEmpty()) {
--                skillsBuilder.append(String.format("%s, %s, %s, %s, %s\n",
--                        skill,
--                        rank == null ? "" : rank,
--                        type == null ? "" : type,
--                        attribute == null ? "" : attribute,
--                        category == null ? "" : category));
--            }
-+        for (int i = 0; i < skillsTableModel.getRowCount(); i++) {
-+            String type = (String) skillsTableModel.getValueAt(i, 0);
-+            String skill = (String) skillsTableModel.getValueAt(i, 1);
-+            String rank = (String) skillsTableModel.getValueAt(i, 2);
-+            String attribute = (String) skillsTableModel.getValueAt(i, 3);
-+            String category = (String) skillsTableModel.getValueAt(i, 4);
-+            if (skill != null && !skill.trim().isEmpty()) {
-+                skillsBuilder.append(String.format("%s, %s, %s, %s, %s\n",
-+                        type == null ? "" : type,
-+                        skill,
-+                        rank == null ? "" : rank,
-+                        attribute == null ? "" : attribute,
-+                        category == null ? "" : category));
-+            }
-         }
-         sb.append(skillsBuilder.length() == 0 ? "None\n" : skillsBuilder.toString());
- 
-         sb.append("\n-- Qualities --\n");
-         StringBuilder qualBuilder = new StringBuilder();
-         for (int i = 0; i < qualitiesTableModel.getRowCount(); i++) {
-             String q = (String) qualitiesTableModel.getValueAt(i, 0);
-             String type = (String) qualitiesTableModel.getValueAt(i, 1);
-             String karma = (String) qualitiesTableModel.getValueAt(i, 2);
-             String cat = (String) qualitiesTableModel.getValueAt(i, 3);
-             if (q != null && !q.trim().isEmpty()) {
-                 qualBuilder.append(String.format("%s, %s, %s, %s\n",
-                         q, type == null ? "" : type,
-                         karma == null ? "" : karma,
-                         cat == null ? "" : cat));
              }
-         }
-         sb.append(qualBuilder.length() == 0 ? "None\n" : qualBuilder.toString());
+         } catch (Exception ignored) {}
+     }
  
-         sb.append("\n-- Contacts --\n");
-         StringBuilder contactBuilder = new StringBuilder();
-         for (int i = 0; i < contactsTableModel.getRowCount(); i++) {
-             String name = (String) contactsTableModel.getValueAt(i, 0);
-             String loyalty = (String) contactsTableModel.getValueAt(i, 1);
-             String connection = (String) contactsTableModel.getValueAt(i, 2);
+ /*
+  * Future feature: Weapons and Armor section
+ private void buildWeaponsArmorSection() {
+         JPanel panel = new JPanel();
  
 EOF
 )
