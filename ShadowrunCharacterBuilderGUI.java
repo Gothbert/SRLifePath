@@ -26,6 +26,9 @@ public class ShadowrunCharacterBuilderGUI {
                        tfHeight, tfHeightFt, tfWeight, tfWeightLbs;
     private JComboBox<String> cbRole;
     private JComboBox<MetaItem> cbMetatype;
+    private JCheckBox chkSurge;
+    private JLabel lblSurgeCollective;
+    private JComboBox<String> cbSurgeCollective;
     private JComboBox<String> cbGender;
     private JTextField tfNuyen, tfPrimaryLifestyle, tfFakeIDs;
     private JTextArea taNotes;
@@ -206,13 +209,24 @@ public class ShadowrunCharacterBuilderGUI {
             }
         });
         c.gridx = 1; panel.add(cbMetatype, c);
+        chkSurge = new JCheckBox("SURGE");
+        c.gridx = 2; panel.add(chkSurge, c);
         c.gridx = 3; panel.add(new JLabel("Weight (kg):"), c);
         tfWeight = new JTextField(5); c.gridx = 4; panel.add(tfWeight, c);
         c.gridx = 5; panel.add(new JLabel("Weight (lbs):"), c);
         tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
         row++;
 
+        lblSurgeCollective = new JLabel("SURGE Collective:");
+        cbSurgeCollective = new JComboBox<>();
+        c.gridx = 0; c.gridy = row; panel.add(lblSurgeCollective, c);
+        c.gridx = 1; panel.add(cbSurgeCollective, c);
+        lblSurgeCollective.setVisible(false);
+        cbSurgeCollective.setVisible(false);
+        row++;
+
         loadMetatypes();
+        loadSurgeCollectives();
         loadArchetypes();
         cbRole.setSelectedIndex(-1);
         cbMetatype.setSelectedIndex(-1);
@@ -227,6 +241,23 @@ public class ShadowrunCharacterBuilderGUI {
             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
             public void removeUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
             public void changedUpdate(javax.swing.event.DocumentEvent e) { updateWeightLbs(); }
+        });
+
+        chkSurge.addActionListener(e -> {
+            boolean sel = chkSurge.isSelected();
+            lblSurgeCollective.setVisible(sel);
+            cbSurgeCollective.setVisible(sel);
+            cbSurgeCollective.setSelectedItem("No Collective");
+            if (!sel) {
+                removeMetageneticQualities();
+            }
+        });
+
+        cbSurgeCollective.addActionListener(e -> {
+            if (chkSurge.isSelected()) {
+                String owner = (String) cbSurgeCollective.getSelectedItem();
+                loadRacialTraitsForCollective(owner);
+            }
         });
 
         cbRole.addActionListener(new ActionListener() {
@@ -414,7 +445,7 @@ private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
 
-        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0) {
+        qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Quality", "Type", "Karma"}, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tableQualities = new JTable(qualitiesTableModel);
@@ -436,10 +467,16 @@ private void buildConditionMonitorSection() {
                 int row = tableQualities.getSelectedRow();
                 if (row != -1) {
                     int modelRow = tableQualities.convertRowIndexToModel(row);
-                    Object cat = qualitiesTableModel.getValueAt(modelRow, 3);
+                    Object cat = qualitiesTableModel.getValueAt(modelRow, 0);
                     if ("Metatype".equals(cat)) {
                         JOptionPane.showMessageDialog(frame,
                                 "ERROR: Qualities inherited from a Metatype cannot be removed.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if ("Metagenetic".equals(cat)) {
+                        JOptionPane.showMessageDialog(frame,
+                                "ERROR: Qualities inherited by SURGE Collective cannot be removed.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -478,8 +515,19 @@ private void buildConditionMonitorSection() {
                 contactsTableModel.addRow(new Object[]{"", "", ""});
             }
         });
+        JButton btnRemoveContact = new JButton("Remove Contact");
+        btnRemoveContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int row = tableContacts.getSelectedRow();
+                if (row != -1) {
+                    int modelRow = tableContacts.convertRowIndexToModel(row);
+                    contactsTableModel.removeRow(modelRow);
+                }
+            }
+        });
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnPanel.add(btnAddContact);
+        btnPanel.add(btnRemoveContact);
 
         panel.add(new JLabel("Enter contacts:"), BorderLayout.NORTH);
         panel.add(sp, BorderLayout.CENTER);
@@ -586,6 +634,26 @@ private void buildConditionMonitorSection() {
         });
     }
 
+    private void loadSurgeCollectives() {
+        cbSurgeCollective.removeAllItems();
+        cbSurgeCollective.addItem("No Collective");
+        java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
+        if (!file.exists()) return;
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+                if (parts.length >= 3) {
+                    String name = parts[0].trim();
+                    String type = parts[2].trim();
+                    if ("Changeling".equalsIgnoreCase(type)) {
+                        cbSurgeCollective.addItem(name);
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
     private void updateHeightFeet() {
         try {
             double cm = Double.parseDouble(tfHeight.getText());
@@ -611,7 +679,7 @@ private void buildConditionMonitorSection() {
     private void loadRacialTraitsForMetatype(String owner) {
         if (qualitiesTableModel == null) return;
         for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
-            Object cat = qualitiesTableModel.getValueAt(i, 3);
+            Object cat = qualitiesTableModel.getValueAt(i, 0);
             if ("Metatype".equals(cat)) {
                 qualitiesTableModel.removeRow(i);
             }
@@ -625,7 +693,37 @@ private void buildConditionMonitorSection() {
                 if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
                     String trait = parts[0].replaceAll("^\"|\"$", "").trim();
                     String type = parts[1].trim();
-                    qualitiesTableModel.addRow(new Object[]{trait, type, "0", "Metatype"});
+                    qualitiesTableModel.addRow(new Object[]{"Metatype", trait, type, "0"});
+                }
+            }
+        } catch (Exception ignored) {}
+        updateQualityCount();
+    }
+
+    private void removeMetageneticQualities() {
+        if (qualitiesTableModel == null) return;
+        for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
+            Object cat = qualitiesTableModel.getValueAt(i, 0);
+            if ("Metagenetic".equals(cat)) {
+                qualitiesTableModel.removeRow(i);
+            }
+        }
+        updateQualityCount();
+    }
+
+    private void loadRacialTraitsForCollective(String owner) {
+        removeMetageneticQualities();
+        if (owner == null || owner.equals("No Collective")) { return; }
+        java.io.File file = new java.io.File("Shadowrun_RacialTraits.csv");
+        if (!file.exists()) { return; }
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
+                    String trait = parts[0].replaceAll("^\"|\"$", "").trim();
+                    String type = parts[1].trim();
+                    qualitiesTableModel.addRow(new Object[]{"Metagenetic", trait, type, "0"});
                 }
             }
         } catch (Exception ignored) {}
@@ -912,7 +1010,9 @@ private void buildConditionMonitorSection() {
             if (isLevel) {
                 levelModel.setMinimum(qe.min);
                 levelModel.setMaximum(qe.max);
-                levelModel.setValue(Math.max(qe.min,1));
+                int cur = ((Number) spLevel.getValue()).intValue();
+                if (cur < qe.min) spLevel.setValue(qe.min);
+                else if (cur > qe.max) spLevel.setValue(qe.max);
             } else {
                 levelModel.setMinimum(1);
                 levelModel.setMaximum(1);
@@ -941,7 +1041,7 @@ private void buildConditionMonitorSection() {
                 if ("Level".equalsIgnoreCase(qe.instance)) karma = karma * lvl;
                 String name = qe.name;
                 if ("Level".equalsIgnoreCase(qe.instance)) name = name + " (" + lvl + ")";
-                qualitiesTableModel.addRow(new Object[]{name, qe.type, String.valueOf(karma), qe.category});
+                qualitiesTableModel.addRow(new Object[]{qe.category, name, qe.type, String.valueOf(karma)});
                 updateQualityCount();
             }
             dialog.dispose();
@@ -1203,10 +1303,10 @@ private void buildAdeptPowersSection() {
         sb.append("\n-- Qualities --\n");
         StringBuilder qualBuilder = new StringBuilder();
         for (int i = 0; i < qualitiesTableModel.getRowCount(); i++) {
-            String q = (String) qualitiesTableModel.getValueAt(i, 0);
-            String type = (String) qualitiesTableModel.getValueAt(i, 1);
-            String karma = (String) qualitiesTableModel.getValueAt(i, 2);
-            String cat = (String) qualitiesTableModel.getValueAt(i, 3);
+            String cat = (String) qualitiesTableModel.getValueAt(i, 0);
+            String q = (String) qualitiesTableModel.getValueAt(i, 1);
+            String type = (String) qualitiesTableModel.getValueAt(i, 2);
+            String karma = (String) qualitiesTableModel.getValueAt(i, 3);
             if (q != null && !q.trim().isEmpty()) {
                 qualBuilder.append(String.format("%s, %s, %s, %s\n",
                         q, type == null ? "" : type,
