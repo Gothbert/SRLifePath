@@ -209,12 +209,14 @@ public class ShadowrunCharacterBuilderGUI {
             }
         });
         c.gridx = 1; panel.add(cbMetatype, c);
-        chkSurge = new JCheckBox("SURGE");
-        c.gridx = 2; panel.add(chkSurge, c);
         c.gridx = 3; panel.add(new JLabel("Weight (kg):"), c);
         tfWeight = new JTextField(5); c.gridx = 4; panel.add(tfWeight, c);
         c.gridx = 5; panel.add(new JLabel("Weight (lbs):"), c);
         tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
+        row++;
+
+        chkSurge = new JCheckBox("SURGE");
+        c.gridx = 1; c.gridy = row; panel.add(chkSurge, c);
         row++;
 
         lblSurgeCollective = new JLabel("SURGE Collective:");
@@ -334,11 +336,11 @@ public class ShadowrunCharacterBuilderGUI {
         spEssence.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spEssence, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
         spMagic.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spMagic, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
         spResonance.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spResonance, sc);
 
@@ -955,7 +957,11 @@ private void buildConditionMonitorSection() {
         int row = 0;
 
         c.gridx = 0; c.gridy = row; main.add(new JLabel("Category:"), c);
-        JComboBox<String> cbCategory = new JComboBox<>(new String[]{"Magic","Matrix","Mental","Physical","Social","Vehicle"});
+        java.util.List<String> cats = new java.util.ArrayList<>(java.util.Arrays.asList("Magic","Matrix","Mental","Physical","Social","Vehicle"));
+        if (chkSurge.isSelected()) {
+            cats.add("Metagenic");
+        }
+        JComboBox<String> cbCategory = new JComboBox<>(cats.toArray(new String[0]));
         c.gridx = 1; main.add(cbCategory, c); row++;
 
         c.gridx = 0; c.gridy = row; main.add(new JLabel("Type:"), c);
@@ -999,6 +1005,9 @@ private void buildConditionMonitorSection() {
                 lblLevel.setVisible(false);
                 spLevel.setVisible(false);
             }
+            main.revalidate();
+            dialog.pack();
+            dialog.setLocationRelativeTo(frame);
         };
 
         Runnable updateFields = () -> {
@@ -1022,6 +1031,9 @@ private void buildConditionMonitorSection() {
             int karma = qe.karma;
             if (isLevel) karma = karma * lvl;
             tfKarma.setText(String.valueOf(karma));
+            main.revalidate();
+            dialog.pack();
+            dialog.setLocationRelativeTo(frame);
         };
 
         cbCategory.addActionListener(e -> { updateNames.run(); });
