@@ -1,6 +1,6 @@
 Name,Type,Category,Karma,Instance,Min,Max,Source
 Accident Prone,Negative,Physical,4,Once,1,1,Double Clutch
-Achilles' Heel,Negative,Mental,6,Once,1,1,Hack & Slash
+Achilles Heel,Negative,Mental,6,Once,1,1,Hack & Slash
 Affinity for Transit (specific),Positive,Vehicle,-3,Once,1,1,Double Clutch
 All Business,Negative,Social,5,Once,1,1,Shadowrun Sixth World Companion
 Allergy (Common/Extreme),Negative,Physical,-18,Once,1,1,Shadowrun Sixth World Core Rulebook
@@ -150,10 +150,89 @@ Vehicle Empathy (Pilot Spec),Positive,Vehicle,-5,Once,1,1,Double Clutch
 Voider of Warranties,Positive,Matrix,-4,Once,1,1,Hack & Slash
 Wanted by GOD,Negative,Matrix,10,Once,1,1,Hack & Slash
 Weak Immune System,Negative,Physical,10,Once,1,1,Shadowrun Sixth World Core Rulebook
-"Addiction (Substance, 1 to 6)",Negative,Mental,-2,Level,1,6,Shadowrun Sixth World Core Rulebook
+Addiction (Substance),Negative,Mental,-2,Level,1,6,Shadowrun Sixth World Core Rulebook
 Augmentation Acclimation (1-10),Positive,Physical,-2,Level,1,10,Shadowrun Sixth World Companion
 Cyborg,Positive,Physical,-5,Level,1,10,Shadowrun Sixth World Companion
 Gremlins (Level 1-4),Negative,Matrix,3,Level,1,4,Shadowrun Sixth World Core Rulebook
-"In Debt (¥5,000 per level)",Negative,Social,1,Level,1,99,Shadowrun Sixth World Core Rulebook
+In Debt (5000 per level),Negative,Social,1,Level,1,99,Shadowrun Sixth World Core Rulebook
 Magic Resistance (1-3),Positive,Magic,-4,Level,1,3,Shadowrun Sixth World Core Rulebook
 Will to Live (1-3),Positive,Mental,-4,Level,1,3,Shadowrun Sixth World Core Rulebook
+360 Vision (Basic),Positive,Metagenic,-5,Once,1,1,Shadowrun Sixth World Companion
+360 Vision (Enhanced),Positive,Metagenic,-10,Once,1,1,Shadowrun Sixth World Companion
+Astral Beacon,Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Astral Hazing (Awakened),Negative,Metagenic,15,Once,1,1,Shadowrun Sixth World Companion
+Astral Hazing (Mundane),Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Asymmetric Deformity (Mild),Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Asymmetric Deformity (Severe),Negative,Metagenic,15,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia (Avian),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia (Canine/Feline),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia (Cephalopod),Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia (Rhino/Elephant),Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Balance Receptor,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Beak (Raptor),Positive,Metagenic,-11,Once,1,1,Shadowrun Sixth World Companion
+Beak (Standard),Positive,Metagenic,-9,Once,1,1,Shadowrun Sixth World Companion
+Berserker,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Bicardiac,Positive,Metagenic,-5,Once,1,1,Shadowrun Sixth World Companion
+Blubber (Insulating Fat),Positive,Metagenic,-3,Once,1,1,Shadowrun Sixth World Companion
+Broad Feet,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Camouflage (Basic),Positive,Metagenic,-5,Once,1,1,Shadowrun Sixth World Companion
+Camouflage (Dynamic),Positive,Metagenic,-10,Once,1,1,Shadowrun Sixth World Companion
+Celerity,Positive,Metagenic,-5,Once,1,1,Shadowrun Sixth World Companion
+Claws (Digging),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Claws (Razor),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Claws (Retractable),Positive,Metagenic,-10,Once,1,1,Shadowrun Sixth World Companion
+Cold-Blooded,Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Critter Spook,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Cyclopean Eye,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Bark),Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Dragon),Positive,Metagenic,-3,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Granite),Positive,Metagenic,-15,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Rhino),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Dermal Deposits (Natural Armor),Positive,Metagenic,-7,Once,1,1,Shadowrun Sixth World Companion
+Electrosense,Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Elongated Limbs (Long Reach),Positive,Metagenic,-12,Once,1,1,Shadowrun Sixth World Companion
+Fangs,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Feathers (Avian Feature),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Frog Tongue,Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Balance),Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Paddle),Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Prehensile),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Thagomizer),Positive,Metagenic,-10,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Whip),Positive,Metagenic,-10,Once,1,1,Shadowrun Sixth World Companion
+Functional Wings (Type 1 Arms),Positive,Metagenic,-12,Once,1,1,Shadowrun Sixth World Companion
+Functional Wings (Type 2 Back),Positive,Metagenic,-20,Once,1,1,Shadowrun Sixth World Companion
+Gills (Air-breathing),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Gills (Freshwater),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Gills (Saltwater),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Glamour,Positive,Metagenic,-12,Once,1,1,Shadowrun Sixth World Companion
+Goring Horns,Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Hairless,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Insectoid Features,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Keen-Eared,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Larger Tusks,Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Low-Light Vision,Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Magnetosense,Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Manasense,Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Marsupial Pouch,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Metagenic Attribute Improvement,Positive,Metagenic,-15,Once,1,1,Shadowrun Sixth World Companion
+Monkey Paws,Positive,Metagenic,-5,Once,1,1,Shadowrun Sixth World Companion
+Nasty Vibe,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Photometabolism,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Poor Healer,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Proboscis,Positive,Metagenic,-6,Once,1,1,Shadowrun Sixth World Companion
+Progeria (Accelerated Aging),Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Reflective Eyes,Negative,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion
+Satyr Legs,Positive,Metagenic,-12,Once,1,1,Shadowrun Sixth World Companion
+Scales (Cosmetic),Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Scent Glands (Overactive),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Shiva Arms (two arms),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Shiva Arms (four arms),Positive,Metagenic,-16,Once,1,1,Shadowrun Sixth World Companion
+Shiva Arms (six arms),Positive,Metagenic,-24,Once,1,1,Shadowrun Sixth World Companion
+Stubby Arms,Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Thermal Sense,Positive,Metagenic,-7,Once,1,1,Shadowrun Sixth World Companion
+Thermographic Vision,Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Third Eye,Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Tough Gut (Ogre Stomach),Positive,Metagenic,-8,Once,1,1,Shadowrun Sixth World Companion
+Unusual Hair/Fur,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Vestigial Tail,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Webbed Digits,Positive,Metagenic,-4,Once,1,1,Shadowrun Sixth World Companion

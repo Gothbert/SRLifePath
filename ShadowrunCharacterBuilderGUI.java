@@ -23,10 +23,11 @@ public class ShadowrunCharacterBuilderGUI {
     private JTabbedPane tabs;
     
     // PERSONAL DATA fields
-    private JTextField tfName, tfPlayer, tfAge,
+    private JTextField tfName, tfPlayer, tfAge, tfNationality,
                        tfHeight, tfHeightFt, tfWeight, tfWeightLbs,
                        tfKarma, tfTotalKarma;
     private JComboBox<String> cbRole;
+    private JComboBox<String> cbStatus;
     private JComboBox<MetaItem> cbMetatype;
     private JCheckBox chkSurge;
     private JLabel lblSurgeCollective;
@@ -65,6 +66,9 @@ public class ShadowrunCharacterBuilderGUI {
     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
     private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
     private java.util.Set<Integer> lockedQualityRows = new java.util.HashSet<>();
+
+    private String lastSurgeCollective = null;
+    private String lastMetatype = null;
 
     private JTable tableKarmaLog;
     private DefaultTableModel karmaLogModel;
@@ -197,6 +201,13 @@ public class ShadowrunCharacterBuilderGUI {
         tfAge = new JTextField(5); c.gridx = 3; panel.add(tfAge, c);
         row++;
 
+        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Nationality:"), c);
+        tfNationality = new JTextField(15); tfNationality.setPreferredSize(leftDim); c.gridx = 1; panel.add(tfNationality, c);
+        c.gridx = 2; panel.add(new JLabel("Status:"), c);
+        cbStatus = new JComboBox<>(new String[]{"Mundane","Full Magician","Aspected Magician","Mystic Adept","Adept","Technomancer"});
+        c.gridx = 3; panel.add(cbStatus, c);
+        row++;
+
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Archetype/Role:"), c);
         cbRole = new JComboBox<>(); cbRole.setPreferredSize(leftDim); c.gridx = 1; panel.add(cbRole, c);
         JButton btnRoleInfo = new JButton("\u2139");
@@ -255,6 +266,7 @@ public class ShadowrunCharacterBuilderGUI {
         cbRole.setSelectedIndex(-1);
         cbMetatype.setSelectedIndex(-1);
         cbGender.setSelectedIndex(-1);
+        cbStatus.setSelectedIndex(-1);
 
         tfHeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
@@ -273,8 +285,11 @@ public class ShadowrunCharacterBuilderGUI {
             cbSurgeCollective.setVisible(sel);
             cbSurgeCollective.setSelectedItem("No Collective");
             if (!sel) {
-                removeMetageneticQualities();
-                removeKarma("Base", "SURGE");
+                removeMetagenicQualities();
+                if (lastSurgeCollective != null) {
+                    removeKarma("SURGE", lastSurgeCollective);
+                    lastSurgeCollective = null;
+                }
             }
         });
 
@@ -282,11 +297,15 @@ public class ShadowrunCharacterBuilderGUI {
             if (chkSurge.isSelected()) {
                 String owner = (String) cbSurgeCollective.getSelectedItem();
                 loadRacialTraitsForCollective(owner);
-                if ("No Collective".equals(owner)) {
-                    removeKarma("Base", "SURGE");
-                } else {
+                if (lastSurgeCollective != null) {
+                    removeKarma("SURGE", lastSurgeCollective);
+                }
+                if (!"No Collective".equals(owner)) {
                     int cost = surgeKarmaMap.getOrDefault(owner, 0);
-                    addOrUpdateKarma("Base", "SURGE", cost);
+                    addOrUpdateKarma("SURGE", owner, cost);
+                    lastSurgeCollective = owner;
+                } else {
+                    lastSurgeCollective = null;
                 }
             }
         });
@@ -507,7 +526,7 @@ private void buildConditionMonitorSection() {
                 if (c >= 2) return false;
                 if (lockedQualityRows.contains(r)) return false;
                 Object cat = getValueAt(r, 0);
-                if ("Metatype".equals(cat) || "Metagenetic".equals(cat)) return false;
+                if ("Metatype".equals(cat) || "Metagenic".equals(cat)) return false;
                 return true;
             }
         };
@@ -515,7 +534,7 @@ private void buildConditionMonitorSection() {
         tableQualities.setAutoCreateRowSorter(true);
         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
 
-        String[] qualityCats = {"Magic","Matrix","Mental","Physical","Social","Vehicle"};
+        String[] qualityCats = {"Magic","Matrix","Mental","Physical","Social","Vehicle","Metagenic"};
         TableColumn catCol = tableQualities.getColumnModel().getColumn(0);
         catCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(qualityCats)));
 
@@ -592,13 +611,15 @@ private void buildConditionMonitorSection() {
                                 "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if ("Metagenetic".equals(cat)) {
+                    if ("Metagenic".equals(cat)) {
                         JOptionPane.showMessageDialog(frame,
                                 "ERROR: Qualities inherited by SURGE Collective cannot be removed.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                    String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
                     qualitiesTableModel.removeRow(modelRow);
+                    removeKarma("Quality", name == null ? "" : name);
                     java.util.Set<Integer> newSet = new java.util.HashSet<>();
                     for (int r : lockedQualityRows) {
                         if (r == modelRow) continue;
@@ -835,8 +856,12 @@ private void buildConditionMonitorSection() {
                     updateHeightFeet();
                     updateWeightLbs();
                     loadRacialTraitsForMetatype(item.name);
+                    if (lastMetatype != null) {
+                        removeKarma("Metatype", lastMetatype);
+                    }
                     int cost = metatypeKarmaMap.getOrDefault(item.name, 0);
-                    addOrUpdateKarma("Base", "Metatype", cost);
+                    addOrUpdateKarma("Metatype", item.name, cost);
+                    lastMetatype = item.name;
                 }
             }
         });
@@ -929,11 +954,11 @@ private void buildConditionMonitorSection() {
         updateQualityCount();
     }
 
-    private void removeMetageneticQualities() {
+    private void removeMetagenicQualities() {
         if (qualitiesTableModel == null) return;
         for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
             Object cat = qualitiesTableModel.getValueAt(i, 0);
-            if ("Metagenetic".equals(cat)) {
+            if ("Metagenic".equals(cat)) {
                 qualitiesTableModel.removeRow(i);
             }
         }
@@ -941,7 +966,7 @@ private void buildConditionMonitorSection() {
     }
 
     private void loadRacialTraitsForCollective(String owner) {
-        removeMetageneticQualities();
+        removeMetagenicQualities();
         if (owner == null || owner.equals("No Collective")) { return; }
         java.io.File file = new java.io.File("Shadowrun_RacialTraits.csv");
         if (!file.exists()) { return; }
@@ -952,7 +977,7 @@ private void buildConditionMonitorSection() {
                 if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
                     String trait = parts[0].replaceAll("^\"|\"$", "").trim();
                     String type = parts[1].trim();
-                    qualitiesTableModel.addRow(new Object[]{"Metagenetic", trait, type, "0"});
+                    qualitiesTableModel.addRow(new Object[]{"Metagenic", trait, type, "0"});
                 }
             }
         } catch (Exception ignored) {}
@@ -1392,6 +1417,8 @@ private void buildAdeptPowersSection() {
                 cbRole.getSelectedItem(), cbMetatype.getSelectedItem(),
                 cbGender.getSelectedItem(), tfAge.getText(),
                 tfHeight.getText(), tfWeight.getText()));
+        sb.append(String.format("Nationality: %s   Status: %s\n",
+                tfNationality.getText(), cbStatus.getSelectedItem()));
 
         sb.append("\n-- Attributes --\n");
         sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
