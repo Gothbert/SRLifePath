@@ -99,8 +99,10 @@ Dual Natured,Negative,Naga,Shadowrun: Sixth World Companion
 Guard,Positive,Naga,Shadowrun: Sixth World Companion
 Natural Weapon (Bite),Positive,Naga,Shadowrun: Sixth World Companion
 Venom,Positive,Naga,Shadowrun: Sixth World Companion
-Shiva Arms (1 or 2),Positive,Nartaki,Shadowrun: Sixth World Companion
-Striking Skin Pigmentation,Negative,Nartaki,Shadowrun: Sixth World Companion
+Shiva Arms (1),Positive,Nartaki (Four Arms),Shadowrun: Sixth World Companion
+Striking Skin Pigmentation,Negative,Nartaki (Four Arms),Shadowrun: Sixth World Companion
+Shiva Arms (2),Positive,Nartaki (Six Arms),Shadowrun: Sixth World Companion
+Striking Skin Pigmentation,Negative,Nartaki (Six Arms),Shadowrun: Sixth World Companion
 "Allergy (Sunlight, Mild)",Negative,Nocturna,Shadowrun: Sixth World Companion
 Low-Light Vision,Positive,Nocturna,Shadowrun: Sixth World Companion
 Keen-Eared,Positive,Nocturna,Shadowrun: Sixth World Companion
@@ -151,3 +153,10 @@ Low-Light Vision,Positive,Wakyambi,Shadowrun: Sixth World Companion
 Bioluminescence (UV),Negative,Xapiri Thepe,Shadowrun: Sixth World Companion
 Low-Light Vision,Positive,Xapiri Thepe,Shadowrun: Sixth World Companion
 Photometabolism,Positive,Xapiri Thepe,Shadowrun: Sixth World Companion
+Functional Tail (Balance),Positive,Tandoran,Astral Ways
+Functional Tail (Paddle),Positive,Tandoran,Astral Ways
+Hairless,Negative,Tandoran,Astral Ways
+Saurian,Negative,Tandoran,Astral Ways
+Scales,Negative,Tandoran,Astral Ways
+Tough Skin (Bark),Positive,Tandoran,Astral Ways
+Underwater Vision,Positive,Tandoran,Astral Ways
