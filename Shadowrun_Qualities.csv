@@ -1,159 +1,235 @@
 Name,Type,Category,Karma,Instance,Min,Max,Source
-Accident Prone,Negative,Physical,4,Once,0,0,Double Clutch
-Achilles' Heel,Negative,Mental,6,Once,0,0,Hack & Slash
+Accident Prone,Negative,Physical,4,Once,1,1,Double Clutch
+Achilles' Heel,Negative,Mental,6,Once,1,1,Hack & Slash
+Affinity for Transit (specific),Positive,Vehicle,-3,Once,1,1,Double Clutch
+All Business,Negative,Social,5,Once,1,1,Shadowrun Sixth World Companion
+Allergy (Common/Extreme),Negative,Physical,-18,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Common/Mild),Negative,Physical,-9,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Common/Moderate),Negative,Physical,-12,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Common/Severe),Negative,Physical,-15,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Rare/Extreme),Negative,Physical,-9,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Rare/Mild),Negative,Physical,0,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Rare/Moderate),Negative,Physical,-3,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Rare/Severe),Negative,Physical,-6,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Seasonal/Extreme),Negative,Physical,-15,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Seasonal/Mild),Negative,Physical,-6,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Seasonal/Moderate),Negative,Physical,-9,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Seasonal/Severe),Negative,Physical,-12,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Uncommon/Extreme),Negative,Physical,-12,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Uncommon/Mild),Negative,Physical,-3,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Uncommon/Moderate),Negative,Physical,-6,Once,1,1,Shadowrun Sixth World Core Rulebook
+Allergy (Uncommon/Severe),Negative,Physical,-9,Once,1,1,Shadowrun Sixth World Core Rulebook
+Always Ready,Positive,Physical,-4,Once,1,1,Double Clutch
+Ambidextrous,Positive,Physical,-4,Once,1,1,Shadowrun Sixth World Core Rulebook
+Analytical Mind,Positive,Mental,-5,Once,1,1,Shadowrun Sixth World Core Rulebook
+AR Vertigo,Negative,Matrix,3,Once,1,1,Shadowrun Sixth World Core Rulebook
+Arcane Resilience Training,Positive,Magic,-7,Once,1,1,Street Wyrd
+Astral Chameleon,Positive,Magic,-10,Once,1,1,Shadowrun Sixth World Core Rulebook
+At Home in the Matrix,Positive,Matrix,-4,Once,1,1,Hack & Slash
+Attribute Mastery (Determination),Positive,Mental,-8,Once,1,1,Double Clutch
+Bad Back,Negative,Physical,6,Once,1,1,Shadowrun Sixth World Companion
+Bad Luck,Negative,Mental,12,Once,1,1,Shadowrun Sixth World Core Rulebook
+Bermuda Gremlins,Negative,Matrix,6,Once,1,1,Double Clutch
+Binary Mentality,Negative,Mental,4,Once,1,1,Hack & Slash
+Blandness,Positive,Social,-8,Once,1,1,Shadowrun Sixth World Core Rulebook
+Borrowed Time,Negative,Physical,12,Once,1,1,Shadowrun Sixth World Companion
+Bounty,Negative,Social,8,Once,1,1,Shadowrun Sixth World Companion
+Bravado,Positive,Social,-6,Once,1,1,Shadowrun Sixth World Companion
+Brilliant Heuristics,Positive,Matrix,-6,Once,1,1,Hack & Slash
+Buddy System,Negative,Social,4,Once,1,1,Hack & Slash
+Bull in a China Shop,Negative,Matrix,5,Once,1,1,Hack & Slash
+Chronic Pain,Negative,Physical,6,Once,1,1,Shadowrun Sixth World Companion
+Combat Junkie,Negative,Mental,6,Once,1,1,Shadowrun Sixth World Companion
+Combat Paralysis,Negative,Mental,8,Once,1,1,Shadowrun Sixth World Core Rulebook
+Compulsive Archivist,Negative,Mental,4,Once,1,1,Hack & Slash
+Critter Dominator,Positive,Social,-10,Once,1,1,Shadowrun Sixth World Companion
+Critter Trainer,Positive,Social,-10,Once,1,1,Shadowrun Sixth World Companion
+Curiosity Killed the Cat,Negative,Mental,3,Once,1,1,Hack & Slash
+Cyber Psychosis,Negative,Mental,10,Once,1,1,Shadowrun Sixth World Companion
+Cyberjack Maximization,Positive,Matrix,-12,Once,1,1,Shadowrun Sixth World Companion
+Data Anomaly,Positive,Matrix,-3,Once,1,1,Hack & Slash
+Data Haven Membership,Positive,Matrix,-5,Once,1,1,Hack & Slash
+Data Liberator,Negative,Social,4,Once,1,1,Hack & Slash
+Dead Stick,Negative,Vehicle,4,Once,1,1,Double Clutch
+Deck Builder,Positive,Matrix,-4,Once,1,1,Hack & Slash
+Defective Attribute (Matrix),Negative,Matrix,5,Once,1,1,Hack & Slash
+Distinctive Style,Negative,Social,5,Once,1,1,Shadowrun Sixth World Core Rulebook
+Double-Jointed,Positive,Physical,-6,Once,1,1,Shadowrun Sixth World Core Rulebook
+Driving Style: Combat Ace,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Driving Style: Getaway Driver,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Driving Style: Interceptor,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Driving Style: Reckless Driver,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Driving Style: Stunt Driver,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Drone Animosity,Negative,Social,4,Once,1,1,Double Clutch
+Easy Mark,Negative,Social,4,Once,1,1,Double Clutch
+Fade to Black,Positive,Matrix,-7,Once,1,1,Hack & Slash
+Finesse,Negative,Mental,4,Once,1,1,Shadowrun Sixth World Companion
+First Impression,Positive,Social,-11,Once,1,1,Shadowrun Sixth World Core Rulebook
+Fractal Blast,Positive,Matrix,-5,Once,1,1,Hack & Slash
+Fuzz Magnet,Negative,Social,4,Once,1,1,Double Clutch
+Gear Acquisition Syndrome,Negative,Mental,4,Once,1,1,Shadowrun Sixth World Companion
+Glitchy,Negative,Matrix,4,Once,1,1,Shadowrun Sixth World Companion
+Golden Screwdriver,Positive,Matrix,-8,Once,1,1,Hack & Slash
+Gourmand,Negative,Physical,4,Once,1,1,Shadowrun Sixth World Companion
+Grease Monkey (Engineering),Positive,Vehicle,-8,Once,1,1,Double Clutch
+Hacker Combo,Positive,Matrix,-5,Once,1,1,Hack & Slash
+Hold the Door,Positive,Matrix,-6,Once,1,1,Hack & Slash
+Honorbound (Code of Honor),Negative,Mental,10,Once,1,1,Firing Squad
+Hooder,Negative,Social,4,Once,1,1,Shadowrun Sixth World Companion
+Hunted,Negative,Social,6,Once,1,1,Shadowrun Sixth World Companion
+ICU (‚ÄúI See You‚Äù),Positive,Matrix,-4,Once,1,1,Hack & Slash
+Impenetrable Logic,Positive,Matrix,-8,Once,1,1,Hack & Slash
+Indecisive,Negative,Mental,4,Once,1,1,Shadowrun Sixth World Companion
+Injury Prone,Negative,Physical,4,Once,1,1,Shadowrun Sixth World Companion
+Jack Jockey,Positive,Matrix,-5,Once,1,1,Hack & Slash
+Junkyard King,Positive,Vehicle,-6,Once,1,1,Double Clutch
+Killer,Negative,Mental,6,Once,1,1,Shadowrun Sixth World Companion
+Like a Boss,Negative,Social,4,Once,1,1,Hack & Slash
+Limited Attributes,Negative,Physical,8,Once,1,1,Shadowrun Sixth World Companion
+Limited Skills,Negative,Mental,8,Once,1,1,Shadowrun Sixth World Companion
+Loonet,Positive,Matrix,-4,Once,1,1,Hack & Slash
+Martial Arts Prodigy,Positive,Physical,-6,Once,1,1,Shadowrun Sixth World Companion
+Maximum Overdrive,Positive,Physical,-7,Once,1,1,Shadowrun Sixth World Companion
+Mentor Spirit,Positive,Magic,-5,Once,1,1,Shadowrun Sixth World Core Rulebook
+Mode Lock,Negative,Matrix,3,Once,1,1,Hack & Slash
+Momentous Misfortune,Negative,Mental,8,Once,1,1,Shadowrun Sixth World Companion
+More Machine than Metahuman,Positive,Physical,-10,Once,1,1,Shadowrun Sixth World Companion
+Motion Sickness,Negative,Physical,3,Once,1,1,Double Clutch
+Muscles,Positive,Physical,-18,Once,1,1,Shadowrun Sixth World Companion
+Natural Hacker,Positive,Matrix,-8,Once,1,1,Hack & Slash
+Non-Lethal,Negative,Mental,4,Once,1,1,Shadowrun Sixth World Companion
+Perforated Firewall,Negative,Matrix,4,Once,1,1,Double Clutch
+Polyglot,Positive,Mental,-4,Once,1,1,Shadowrun Sixth World Companion
+Possession Tradition,Negative,Magic,10,Once,1,1,Street Wyrd
+Prejudiced (Group),Negative,Social,-8,Once,1,1,Shadowrun Sixth World Core Rulebook
+Profiler,Positive,Matrix,-6,Once,1,1,Hack & Slash
+Program Dependency,Negative,Matrix,4,Once,1,1,Hack & Slash
+Pusillanimous Summoner,Negative,Magic,8,Once,1,1,Street Wyrd
+Quick Config,Positive,Matrix,-4,Once,1,1,Hack & Slash
+Quick Healer,Positive,Physical,-3,Once,1,1,Shadowrun Sixth World Core Rulebook
+Relentless Tracker,Positive,Mental,-6,Once,1,1,Shadowrun Sixth World Companion
+Remote Pilot,Negative,Vehicle,4,Once,1,1,Double Clutch
+Representation I,Negative,Magic,5,Once,1,1,Street Wyrd
+Representation II,Negative,Magic,8,Once,1,1,Street Wyrd
+Resonance Burn,Negative,Matrix,8,Once,1,1,Hack & Slash
+Reverberant,Positive,Matrix,-8,Once,1,1,Hack & Slash
+Road Rage,Negative,Mental,4,Once,1,1,Double Clutch
+Rote Alchemist,Positive,Magic,-6,Once,1,1,Shadowrun Sixth World Companion
+Satisfaction,Positive,Matrix,-5,Once,1,1,Hack & Slash
+Sensitive System,Negative,Physical,12,Once,1,1,Shadowrun Sixth World Core Rulebook
+Shamanic Mask,Positive,Magic,-4,Once,1,1,Street Wyrd
+Signature Maneuver,Positive,Vehicle,-5,Once,1,1,Double Clutch
+Silver Lining,Positive,Matrix,-4,Once,1,1,Double Clutch
+Simsense Dependency,Negative,Mental,4,Once,1,1,Hack & Slash
+Simsense Vertigo,Negative,Matrix,5,Once,1,1,Shadowrun Sixth World Core Rulebook
+SINner (Corporate),Negative,Social,15,Once,1,1,Shadowrun Sixth World Core Rulebook
+SINner (Criminal),Negative,Social,10,Once,1,1,Shadowrun Sixth World Core Rulebook
+SINner (National),Negative,Social,5,Once,1,1,Shadowrun Sixth World Core Rulebook
+Sloppy Coder,Negative,Matrix,4,Once,1,1,Hack & Slash
+Software Optimization,Positive,Matrix,-8,Once,1,1,Shadowrun Sixth World Companion
+Soothing Static,Positive,Matrix,-6,Once,1,1,Shadowrun Sixth World Companion
+Sore Thumb,Negative,Social,4,Once,1,1,Double Clutch
+Specialist,Negative,Mental,4,Once,1,1,Double Clutch
+Speed Racer,Positive,Vehicle,-6,Once,1,1,Double Clutch
+Spell Components,Positive,Magic,-6,Once,1,1,Shadowrun Sixth World Companion
+Spirit Affinity (Type),Positive,Magic,-7,Once,1,1,Shadowrun Sixth World Core Rulebook
+Stim Patch Allergy,Negative,Physical,3,Once,1,1,Shadowrun Sixth World Companion
+Surgical Strike,Positive,Matrix,-6,Once,1,1,Hack & Slash
+Target Fixation,Negative,Mental,4,Once,1,1,Double Clutch
+Team Player,Positive,Social,-11,Once,1,1,Shadowrun Sixth World Companion
+Teflon Coated,Positive,Social,-8,Once,1,1,Shadowrun Sixth World Companion
+The Motorpool,Positive,Vehicle,-8,Once,1,1,Double Clutch
+Toughness,Positive,Physical,-3,Once,1,1,Shadowrun Sixth World Core Rulebook
+Toxin Susceptibility (Specific),Negative,Physical,4,Once,1,1,Shadowrun Sixth World Companion
+Trust Issues,Negative,Mental,10,Once,1,1,Shadowrun Sixth World Companion
+Twitchy,Negative,Mental,4,Once,1,1,Shadowrun Sixth World Companion
+Uncouth,Negative,Social,14,Once,1,1,Shadowrun Sixth World Core Rulebook
+Underdog,Positive,Vehicle,-6,Once,1,1,Double Clutch
+Uneducated,Negative,Mental,8,Once,1,1,Shadowrun Sixth World Core Rulebook
+Vehicle Empathy (Pilot Spec),Positive,Vehicle,-5,Once,1,1,Double Clutch
+Voider of Warranties,Positive,Matrix,-4,Once,1,1,Hack & Slash
+Wanted by GOD,Negative,Matrix,10,Once,1,1,Hack & Slash
+Weak Immune System,Negative,Physical,10,Once,1,1,Shadowrun Sixth World Core Rulebook
 "Addiction (Substance, 1 to 6)",Negative,Mental,-2,Level,1,6,Shadowrun Sixth World Core Rulebook
-Affinity for Transit (specific),Positive,Vehicle,-3,Once,0,0,Double Clutch
-All Business,Negative,Social,5,Once,0,0,Shadowrun Sixth World Companion
-Allergy (Common/Extreme),Negative,Physical,-18,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Common/Mild),Negative,Physical,-9,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Common/Moderate),Negative,Physical,-12,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Common/Severe),Negative,Physical,-15,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Rare/Extreme),Negative,Physical,-9,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Rare/Mild),Negative,Physical,0,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Rare/Moderate),Negative,Physical,-3,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Rare/Severe),Negative,Physical,-6,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Seasonal/Extreme),Negative,Physical,-15,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Seasonal/Mild),Negative,Physical,-6,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Seasonal/Moderate),Negative,Physical,-9,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Seasonal/Severe),Negative,Physical,-12,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Uncommon/Extreme),Negative,Physical,-12,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Uncommon/Mild),Negative,Physical,-3,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Uncommon/Moderate),Negative,Physical,-6,Once,0,0,Shadowrun Sixth World Core Rulebook
-Allergy (Uncommon/Severe),Negative,Physical,-9,Once,0,0,Shadowrun Sixth World Core Rulebook
-Always Ready,Positive,Physical,-4,Once,0,0,Double Clutch
-Ambidextrous,Positive,Physical,-4,Once,0,0,Shadowrun Sixth World Core Rulebook
-Analytical Mind,Positive,Mental,-5,Once,0,0,Shadowrun Sixth World Core Rulebook
-AR Vertigo,Negative,Matrix,3,Once,0,0,Shadowrun Sixth World Core Rulebook
-Arcane Resilience Training,Positive,Magic,-7,Once,0,0,Street Wyrd
-Astral Chameleon,Positive,Magic,-10,Once,0,0,Shadowrun Sixth World Core Rulebook
-At Home in the Matrix,Positive,Matrix,-4,Once,0,0,Hack & Slash
-Attribute Mastery (Determination),Positive,Mental,-8,Once,0,0,Double Clutch
 Augmentation Acclimation (1-10),Positive,Physical,-2,Level,1,10,Shadowrun Sixth World Companion
-Bad Back,Negative,Physical,6,Once,0,0,Shadowrun Sixth World Companion
-Bad Luck,Negative,Mental,12,Once,0,0,Shadowrun Sixth World Core Rulebook
-Bermuda Gremlins,Negative,Matrix,6,Once,0,0,Double Clutch
-Binary Mentality,Negative,Mental,4,Once,0,0,Hack & Slash
-Blandness,Positive,Social,-8,Once,0,0,Shadowrun Sixth World Core Rulebook
-Borrowed Time,Negative,Physical,12,Once,0,0,Shadowrun Sixth World Companion
-Bounty,Negative,Social,8,Once,0,0,Shadowrun Sixth World Companion
-Bravado,Positive,Social,-6,Once,0,0,Shadowrun Sixth World Companion
-Brilliant Heuristics,Positive,Matrix,-6,Once,0,0,Hack & Slash
-Buddy System,Negative,Social,4,Once,0,0,Hack & Slash
-Bull in a China Shop,Negative,Matrix,5,Once,0,0,Hack & Slash
-Chronic Pain,Negative,Physical,6,Once,0,0,Shadowrun Sixth World Companion
-Combat Junkie,Negative,Mental,6,Once,0,0,Shadowrun Sixth World Companion
-Combat Paralysis,Negative,Mental,8,Once,0,0,Shadowrun Sixth World Core Rulebook
-Compulsive Archivist,Negative,Mental,4,Once,0,0,Hack & Slash
-Critter Dominator,Positive,Social,-10,Once,0,0,Shadowrun Sixth World Companion
-Critter Trainer,Positive,Social,-10,Once,0,0,Shadowrun Sixth World Companion
-Curiosity Killed the Cat,Negative,Mental,3,Once,0,0,Hack & Slash
-Cyber Psychosis,Negative,Mental,10,Once,0,0,Shadowrun Sixth World Companion
-Cyberjack Maximization,Positive,Matrix,-12,Once,0,0,Shadowrun Sixth World Companion
 Cyborg,Positive,Physical,-5,Level,1,10,Shadowrun Sixth World Companion
-Data Anomaly,Positive,Matrix,-3,Once,0,0,Hack & Slash
-Data Haven Membership,Positive,Matrix,-5,Once,0,0,Hack & Slash
-Data Liberator,Negative,Social,4,Once,0,0,Hack & Slash
-Dead Stick,Negative,Vehicle,4,Once,0,0,Double Clutch
-Deck Builder,Positive,Matrix,-4,Once,0,0,Hack & Slash
-Defective Attribute (Matrix),Negative,Matrix,5,Once,0,0,Hack & Slash
-Distinctive Style,Negative,Social,5,Once,0,0,Shadowrun Sixth World Core Rulebook
-Double-Jointed,Positive,Physical,-6,Once,0,0,Shadowrun Sixth World Core Rulebook
-Driving Style: Combat Ace,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Driving Style: Getaway Driver,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Driving Style: Interceptor,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Driving Style: Reckless Driver,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Driving Style: Stunt Driver,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Drone Animosity,Negative,Social,4,Once,0,0,Double Clutch
-Easy Mark,Negative,Social,4,Once,0,0,Double Clutch
-Fade to Black,Positive,Matrix,-7,Once,0,0,Hack & Slash
-Finesse,Negative,Mental,4,Once,0,0,Shadowrun Sixth World Companion
-First Impression,Positive,Social,-11,Once,0,0,Shadowrun Sixth World Core Rulebook
-Fractal Blast,Positive,Matrix,-5,Once,0,0,Hack & Slash
-Fuzz Magnet,Negative,Social,4,Once,0,0,Double Clutch
-Gear Acquisition Syndrome,Negative,Mental,4,Once,0,0,Shadowrun Sixth World Companion
-Glitchy,Negative,Matrix,4,Once,0,0,Shadowrun Sixth World Companion
-Golden Screwdriver,Positive,Matrix,-8,Once,0,0,Hack & Slash
-Gourmand,Negative,Physical,4,Once,0,0,Shadowrun Sixth World Companion
-Grease Monkey (Engineering),Positive,Vehicle,-8,Once,0,0,Double Clutch
 Gremlins (Level 1-4),Negative,Matrix,3,Level,1,4,Shadowrun Sixth World Core Rulebook
-Hacker Combo,Positive,Matrix,-5,Once,0,0,Hack & Slash
-Hold the Door,Positive,Matrix,-6,Once,0,0,Hack & Slash
-Honorbound (Code of Honor),Negative,Mental,10,Once,0,0,Firing Squad
-Hooder,Negative,Social,4,Once,0,0,Shadowrun Sixth World Companion
-Hunted,Negative,Social,6,Once,0,0,Shadowrun Sixth World Companion
-ICU (‚ÄúI See You‚Äù),Positive,Matrix,-4,Once,0,0,Hack & Slash
-Impenetrable Logic,Positive,Matrix,-8,Once,0,0,Hack & Slash
 "In Debt (•5,000 per level)",Negative,Social,1,Level,1,99,Shadowrun Sixth World Core Rulebook
-Indecisive,Negative,Mental,4,Once,0,0,Shadowrun Sixth World Companion
-Injury Prone,Negative,Physical,4,Once,0,0,Shadowrun Sixth World Companion
-Jack Jockey,Positive,Matrix,-5,Once,0,0,Hack & Slash
-Junkyard King,Positive,Vehicle,-6,Once,0,0,Double Clutch
-Killer,Negative,Mental,6,Once,0,0,Shadowrun Sixth World Companion
-Like a Boss,Negative,Social,4,Once,0,0,Hack & Slash
-Limited Attributes,Negative,Physical,8,Once,0,0,Shadowrun Sixth World Companion
-Limited Skills,Negative,Mental,8,Once,0,0,Shadowrun Sixth World Companion
-Loonet,Positive,Matrix,-4,Once,0,0,Hack & Slash
 Magic Resistance (1-3),Positive,Magic,-4,Level,1,3,Shadowrun Sixth World Core Rulebook
-Martial Arts Prodigy,Positive,Physical,-6,Once,0,0,Shadowrun Sixth World Companion
-Maximum Overdrive,Positive,Physical,-7,Once,0,0,Shadowrun Sixth World Companion
-Mentor Spirit,Positive,Magic,-5,Once,0,0,Shadowrun Sixth World Core Rulebook
-Mode Lock,Negative,Matrix,3,Once,0,0,Hack & Slash
-Momentous Misfortune,Negative,Mental,8,Once,0,0,Shadowrun Sixth World Companion
-More Machine than Metahuman,Positive,Physical,-10,Once,0,0,Shadowrun Sixth World Companion
-Motion Sickness,Negative,Physical,3,Once,0,0,Double Clutch
-Muscles,Positive,Physical,-18,Once,0,0,Shadowrun Sixth World Companion
-Natural Hacker,Positive,Matrix,-8,Once,0,0,Hack & Slash
-Non-Lethal,Negative,Mental,4,Once,0,0,Shadowrun Sixth World Companion
-Perforated Firewall,Negative,Matrix,4,Once,0,0,Double Clutch
-Polyglot,Positive,Mental,-4,Once,0,0,Shadowrun Sixth World Companion
-Possession Tradition,Negative,Magic,10,Once,0,0,Street Wyrd
-Prejudiced (Group),Negative,Social,-8,Once,0,0,Shadowrun Sixth World Core Rulebook
-Profiler,Positive,Matrix,-6,Once,0,0,Hack & Slash
-Program Dependency,Negative,Matrix,4,Once,0,0,Hack & Slash
-Pusillanimous Summoner,Negative,Magic,8,Once,0,0,Street Wyrd
-Quick Config,Positive,Matrix,-4,Once,0,0,Hack & Slash
-Quick Healer,Positive,Physical,-3,Once,0,0,Shadowrun Sixth World Core Rulebook
-Relentless Tracker,Positive,Mental,-6,Once,0,0,Shadowrun Sixth World Companion
-Remote Pilot,Negative,Vehicle,4,Once,0,0,Double Clutch
-Representation I,Negative,Magic,5,Once,0,0,Street Wyrd
-Representation II,Negative,Magic,8,Once,0,0,Street Wyrd
-Resonance Burn,Negative,Matrix,8,Once,0,0,Hack & Slash
-Reverberant,Positive,Matrix,-8,Once,0,0,Hack & Slash
-Road Rage,Negative,Mental,4,Once,0,0,Double Clutch
-Rote Alchemist,Positive,Magic,-6,Once,0,0,Shadowrun Sixth World Companion
-Satisfaction,Positive,Matrix,-5,Once,0,0,Hack & Slash
-Sensitive System,Negative,Physical,12,Once,0,0,Shadowrun Sixth World Core Rulebook
-Shamanic Mask,Positive,Magic,-4,Once,0,0,Street Wyrd
-Signature Maneuver,Positive,Vehicle,-5,Once,0,0,Double Clutch
-Silver Lining,Positive,Matrix,-4,Once,0,0,Double Clutch
-Simsense Dependency,Negative,Mental,4,Once,0,0,Hack & Slash
-Simsense Vertigo,Negative,Matrix,5,Once,0,0,Shadowrun Sixth World Core Rulebook
-SINner (Corporate),Negative,Social,15,Once,0,0,Shadowrun Sixth World Core Rulebook
-SINner (Criminal),Negative,Social,10,Once,0,0,Shadowrun Sixth World Core Rulebook
-SINner (National),Negative,Social,5,Once,0,0,Shadowrun Sixth World Core Rulebook
-Sloppy Coder,Negative,Matrix,4,Once,0,0,Hack & Slash
-Software Optimization,Positive,Matrix,-8,Once,0,0,Shadowrun Sixth World Companion
-Soothing Static,Positive,Matrix,-6,Once,0,0,Shadowrun Sixth World Companion
-Sore Thumb,Negative,Social,4,Once,0,0,Double Clutch
-Specialist,Negative,Mental,4,Once,0,0,Double Clutch
-Speed Racer,Positive,Vehicle,-6,Once,0,0,Double Clutch
-Spell Components,Positive,Magic,-6,Once,0,0,Shadowrun Sixth World Companion
-Spirit Affinity (Type),Positive,Magic,-7,Once,0,0,Shadowrun Sixth World Core Rulebook
-Stim Patch Allergy,Negative,Physical,3,Once,0,0,Shadowrun Sixth World Companion
-Surgical Strike,Positive,Matrix,-6,Once,0,0,Hack & Slash
-Target Fixation,Negative,Mental,4,Once,0,0,Double Clutch
-Team Player,Positive,Social,-11,Once,0,0,Shadowrun Sixth World Companion
-Teflon Coated,Positive,Social,-8,Once,0,0,Shadowrun Sixth World Companion
-The Motorpool,Positive,Vehicle,-8,Once,0,0,Double Clutch
-Toughness,Positive,Physical,-3,Once,0,0,Shadowrun Sixth World Core Rulebook
-Toxin Susceptibility (Specific),Negative,Physical,4,Once,0,0,Shadowrun Sixth World Companion
-Trust Issues,Negative,Mental,10,Once,0,0,Shadowrun Sixth World Companion
-Twitchy,Negative,Mental,4,Once,0,0,Shadowrun Sixth World Companion
-Uncouth,Negative,Social,14,Once,0,0,Shadowrun Sixth World Core Rulebook
-Underdog,Positive,Vehicle,-6,Once,0,0,Double Clutch
-Uneducated,Negative,Mental,8,Once,0,0,Shadowrun Sixth World Core Rulebook
-Vehicle Empathy (Pilot Spec),Positive,Vehicle,-5,Once,0,0,Double Clutch
-Voider of Warranties,Positive,Matrix,-4,Once,0,0,Hack & Slash
-Wanted by GOD,Negative,Matrix,10,Once,0,0,Hack & Slash
-Weak Immune System,Negative,Physical,10,Once,0,0,Shadowrun Sixth World Core Rulebook
 Will to Live (1-3),Positive,Mental,-4,Level,1,3,Shadowrun Sixth World Core Rulebook
+360∞ Vision (Basic),Positive,Metagenic,ñ5,Once,1,1,Shadowrun Sixth World Companion
+360∞ Vision (Enhanced),Positive,Metagenic,ñ10,Once,1,1,Shadowrun Sixth World Companion
+Astral Beacon,Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Astral Hazing (Awakened),Negative,Metagenic,15,Once,1,1,Shadowrun Sixth World Companion
+Astral Hazing (Mundane),Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Asymmetric Deformity (Mild),Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Asymmetric Deformity (Severe),Negative,Metagenic,15,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia ñ Avian,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia ñ Canine/Feline,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia ñ Cephalopod,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Aural Helix Dysmorphia ñ Pachy (Rhino/Elephant),Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Balance Receptor,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Beak (Raptor),Positive,Metagenic,ñ11,Once,1,1,Shadowrun Sixth World Companion
+Beak (Standard),Positive,Metagenic,ñ9,Once,1,1,Shadowrun Sixth World Companion
+Berserker,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Bicardiac,Positive,Metagenic,ñ5,Once,1,1,Shadowrun Sixth World Companion
+Blubber (Insulating Fat),Positive,Metagenic,ñ3,Once,1,1,Shadowrun Sixth World Companion
+Broad Feet,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Camouflage (Basic),Positive,Metagenic,ñ5,Once,1,1,Shadowrun Sixth World Companion
+Camouflage (Dynamic),Positive,Metagenic,ñ10,Once,1,1,Shadowrun Sixth World Companion
+Celerity,Positive,Metagenic,ñ5,Once,1,1,Shadowrun Sixth World Companion
+Claws (Digging),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Claws (Razor),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Claws (Retractable),Positive,Metagenic,ñ10,Once,1,1,Shadowrun Sixth World Companion
+Cold-Blooded,Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Critter Spook,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Cyclopean Eye,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Bark),Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Dragon),Positive,Metagenic,ñ3,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Granite),Positive,Metagenic,ñ15,Once,1,1,Shadowrun Sixth World Companion
+Dermal Alteration (Rhino),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Dermal Deposits (Natural Armor),Positive,Metagenic,ñ7,Once,1,1,Shadowrun Sixth World Companion
+Electrosense,Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Elongated Limbs (Long Reach),Positive,Metagenic,ñ12,Once,1,1,Shadowrun Sixth World Companion
+Fangs,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Feathers (Avian Feature),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Frog Tongue,Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Balance),Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Paddle),Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Prehensile),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Thagomizer),Positive,Metagenic,ñ10,Once,1,1,Shadowrun Sixth World Companion
+Functional Tail (Whip),Positive,Metagenic,ñ10,Once,1,1,Shadowrun Sixth World Companion
+Functional Wings (Type 1 Arms),Positive,Metagenic,ñ12,Once,1,1,Shadowrun Sixth World Companion
+Functional Wings (Type 2 Back),Positive,Metagenic,ñ20,Once,1,1,Shadowrun Sixth World Companion
+Gills (Air-breathing),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Gills (Freshwater),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Gills (Saltwater),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Glamour,Positive,Metagenic,ñ12,Once,1,1,Shadowrun Sixth World Companion
+Goring Horns,Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Hairless,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Insectoid Features,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Keen-Eared,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Larger Tusks,Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Low-Light Vision,Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Magnetosense,Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Manasense,Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Marsupial Pouch,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Metagenic Attribute Improvement,Positive,Metagenic,ñ15,Once,1,1,Shadowrun Sixth World Companion
+Monkey Paws,Positive,Metagenic,ñ5,Once,1,1,Shadowrun Sixth World Companion
+Nasty Vibe,Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Photometabolism,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
+Poor Healer,Negative,Metagenic,8,Once,1,1,Shadowrun Sixth World Companion
+Proboscis,Positive,Metagenic,ñ6,Once,1,1,Shadowrun Sixth World Companion
+Progeria (Accelerated Aging),Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Satyr Legs,Positive,Metagenic,ñ12,Once,1,1,Shadowrun Sixth World Companion
+Scales (Cosmetic),Negative,Metagenic,6,Once,1,1,Shadowrun Sixth World Companion
+Scent Glands (Overactive),Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+"Shiva Arms (Extra Arms, per lvl)",Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Stubby Arms,Negative,Metagenic,10,Once,1,1,Shadowrun Sixth World Companion
+Thermal Sense,Positive,Metagenic,ñ7,Once,1,1,Shadowrun Sixth World Companion
+Thermographic Vision,Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Third Eye,Negative,Metagenic,5,Once,1,1,Shadowrun Sixth World Companion
+Tough Gut (Ogre Stomach),Positive,Metagenic,ñ8,Once,1,1,Shadowrun Sixth World Companion
+Unusual Hair/Fur,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Vestigial Tail,Negative,Metagenic,4,Once,1,1,Shadowrun Sixth World Companion
+Webbed Digits,Positive,Metagenic,ñ4,Once,1,1,Shadowrun Sixth World Companion
