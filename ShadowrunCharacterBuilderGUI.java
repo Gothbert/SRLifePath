@@ -199,6 +199,9 @@ public class ShadowrunCharacterBuilderGUI {
 
         loadMetatypes();
         loadArchetypes();
+        cbRole.setSelectedIndex(-1);
+        cbMetatype.setSelectedIndex(-1);
+        cbGender.setSelectedIndex(-1);
 
         tfHeight.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void insertUpdate(javax.swing.event.DocumentEvent e) { updateHeightFeet(); }
@@ -276,15 +279,22 @@ public class ShadowrunCharacterBuilderGUI {
         sc.anchor = GridBagConstraints.WEST;
         int srow = 0;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
-        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); sc.gridx = 1; special.add(spEdge, sc); srow++;
+        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        Dimension specialDim = new Dimension(60, spEdge.getPreferredSize().height);
+        spEdge.setPreferredSize(specialDim);
+        sc.gridx = 1; special.add(spEdge, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
         spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01));
-        spEssence.setPreferredSize(spEdge.getPreferredSize());
+        spEssence.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spEssence, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spMagic, sc); srow++;
+        spMagic = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        spMagic.setPreferredSize(specialDim);
+        sc.gridx = 1; special.add(spMagic, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1)); sc.gridx = 1; special.add(spResonance, sc);
+        spResonance = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        spResonance.setPreferredSize(specialDim);
+        sc.gridx = 1; special.add(spResonance, sc);
 
         c.gridx = 0; c.gridy = 0; panel.add(physical, c);
         c.gridx = 1; panel.add(mental, c);
@@ -316,9 +326,9 @@ private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Skills", TitledBorder.LEFT, TitledBorder.TOP));
 
-        skillsTableModel = new DefaultTableModel(new Object[]{"Skill", "Rank", "Type", "Attribute", "Category"}, 0) {
+        skillsTableModel = new DefaultTableModel(new Object[]{"Type", "Skill", "Rank", "Attribute", "Category"}, 0) {
             public boolean isCellEditable(int row, int column) {
-                return column < 2;
+                return false;
             }
         };
         tableSkills = new JTable(skillsTableModel);
@@ -327,24 +337,24 @@ private void buildConditionMonitorSection() {
         loadSkills();
         loadSpecializations();
 
-        TableColumn skillCol = tableSkills.getColumnModel().getColumn(0);
+        TableColumn skillCol = tableSkills.getColumnModel().getColumn(1);
         JComboBox<String> cbSkillNames = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
         skillCol.setCellEditor(new DefaultCellEditor(cbSkillNames));
 
-        TableColumn rankCol = tableSkills.getColumnModel().getColumn(1);
+        TableColumn rankCol = tableSkills.getColumnModel().getColumn(2);
         rankCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(RANK_OPTIONS)));
 
         skillsTableModel.addTableModelListener(e -> {
-            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE && e.getColumn() == 0) {
+            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE && e.getColumn() == 1) {
                 int r = e.getFirstRow();
-                Object val = skillsTableModel.getValueAt(r, 0);
+                Object val = skillsTableModel.getValueAt(r, 1);
                 if (val != null && skillMap.containsKey(val.toString())) {
                     String[] info = skillMap.get(val.toString());
-                    skillsTableModel.setValueAt("General", r, 2);
+                    skillsTableModel.setValueAt("General", r, 0);
                     skillsTableModel.setValueAt(info[0], r, 3);
                     skillsTableModel.setValueAt(info[1], r, 4);
                 } else {
-                    skillsTableModel.setValueAt("", r, 2);
+                    skillsTableModel.setValueAt("", r, 0);
                     skillsTableModel.setValueAt("", r, 3);
                     skillsTableModel.setValueAt("", r, 4);
                 }
@@ -389,7 +399,9 @@ private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
 
-        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0);
+        qualitiesTableModel = new DefaultTableModel(new Object[]{"Quality", "Type", "Karma", "Category"}, 0) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
         tableQualities = new JTable(qualitiesTableModel);
         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
         JScrollPane sp = new JScrollPane(tableQualities);
@@ -543,6 +555,7 @@ private void buildConditionMonitorSection() {
                     tfWeight.setText(String.format("%.0f", vals[1]));
                     updateHeightFeet();
                     updateWeightLbs();
+                    loadRacialTraitsForMetatype(item.name);
                 }
             }
         });
@@ -568,6 +581,30 @@ private void buildConditionMonitorSection() {
         } catch (Exception ex) {
             tfWeightLbs.setText("");
         }
+    }
+
+    private void loadRacialTraitsForMetatype(String owner) {
+        if (qualitiesTableModel == null) return;
+        for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
+            Object cat = qualitiesTableModel.getValueAt(i, 3);
+            if ("Metatype".equals(cat)) {
+                qualitiesTableModel.removeRow(i);
+            }
+        }
+        java.io.File file = new java.io.File("Shadowrun_RacialTraits.csv");
+        if (!file.exists()) { updateQualityCount(); return; }
+        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
+                    String trait = parts[0].replaceAll("^\"|\"$", "").trim();
+                    String type = parts[1].trim();
+                    qualitiesTableModel.addRow(new Object[]{trait, type, "0", "Metatype"});
+                }
+            }
+        } catch (Exception ignored) {}
+        updateQualityCount();
     }
 
     private void loadSkills() {
@@ -704,7 +741,7 @@ private void buildConditionMonitorSection() {
         lc.gridx=0; lc.gridy=0; language.add(new JLabel("Language:"), lc);
         JTextField tfLanguage = new JTextField(15);
         lc.gridx=1; language.add(tfLanguage, lc); lc.gridy=1; lc.gridx=0; language.add(new JLabel("Proficiency:"), lc);
-        JComboBox<String> cbProf = new JComboBox<>(new String[]{"Novice","Specialist","Expert","Native"});
+        JComboBox<String> cbProf = new JComboBox<>(new String[]{"1 - Elementary","2 - Intermediate","3 - Proficient","4 - Native"});
         lc.gridx=1; language.add(cbProf, lc);
 
         cards.add(general, "General");
@@ -743,14 +780,14 @@ private void buildConditionMonitorSection() {
                 attr = tfSpecAttr.getText();
                 cat = tfSpecCat.getText();
             } else if ("Knowledge".equals(t)) {
-                skill = tfKnowledge.getText();
+                skill = "KB: " + tfKnowledge.getText();
                 rank = "N/A";
             } else if ("Language".equals(t)) {
-                skill = tfLanguage.getText();
+                skill = "LG: " + tfLanguage.getText();
                 rank = (String) cbProf.getSelectedItem();
             }
             if (skill != null && !skill.trim().isEmpty()) {
-                skillsTableModel.addRow(new Object[]{skill, rank, t, attr, cat});
+                skillsTableModel.addRow(new Object[]{t, skill, rank, attr, cat});
                 updateSkillCount();
             }
             dialog.dispose();
@@ -993,16 +1030,16 @@ private void buildAdeptPowersSection() {
         sb.append("\n-- Skills --\n");
         StringBuilder skillsBuilder = new StringBuilder();
         for (int i = 0; i < skillsTableModel.getRowCount(); i++) {
-            String skill = (String) skillsTableModel.getValueAt(i, 0);
-            String rank = (String) skillsTableModel.getValueAt(i, 1);
-            String type = (String) skillsTableModel.getValueAt(i, 2);
+            String type = (String) skillsTableModel.getValueAt(i, 0);
+            String skill = (String) skillsTableModel.getValueAt(i, 1);
+            String rank = (String) skillsTableModel.getValueAt(i, 2);
             String attribute = (String) skillsTableModel.getValueAt(i, 3);
             String category = (String) skillsTableModel.getValueAt(i, 4);
             if (skill != null && !skill.trim().isEmpty()) {
                 skillsBuilder.append(String.format("%s, %s, %s, %s, %s\n",
+                        type == null ? "" : type,
                         skill,
                         rank == null ? "" : rank,
-                        type == null ? "" : type,
                         attribute == null ? "" : attribute,
                         category == null ? "" : category));
             }
