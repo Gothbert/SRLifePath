@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
@@ -23,7 +24,8 @@ public class ShadowrunCharacterBuilderGUI {
     
     // PERSONAL DATA fields
     private JTextField tfName, tfPlayer, tfAge,
-                       tfHeight, tfHeightFt, tfWeight, tfWeightLbs;
+                       tfHeight, tfHeightFt, tfWeight, tfWeightLbs,
+                       tfKarma, tfTotalKarma;
     private JComboBox<String> cbRole;
     private JComboBox<MetaItem> cbMetatype;
     private JCheckBox chkSurge;
@@ -37,6 +39,7 @@ public class ShadowrunCharacterBuilderGUI {
     private JSpinner spBody, spAgility, spReaction, spStrength,
                      spWillpower, spLogic, spIntuition, spCharisma,
                      spEdge, spEssence, spMagic, spResonance;
+    private JTextField tfComposure, tfJudgeIntentions, tfMemory, tfLiftCarry;
     // TODO later: initiative and other derived stats
     // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
     //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
@@ -59,6 +62,10 @@ public class ShadowrunCharacterBuilderGUI {
     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
     private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
+    private java.util.Set<Integer> lockedQualityRows = new java.util.HashSet<>();
+
+    private JTable tableKarmaLog;
+    private DefaultTableModel karmaLogModel;
 
     private static final String[] RANK_OPTIONS = {
             "1 - Novice",
@@ -158,7 +165,10 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         scrollPane = new JScrollPane(contentPanel);
-        frame.getContentPane().add(scrollPane);
+        JPanel rootPanel = new JPanel(new BorderLayout());
+        rootPanel.add(scrollPane, BorderLayout.CENTER);
+        rootPanel.add(buildKarmaLogPanel(), BorderLayout.EAST);
+        frame.getContentPane().add(rootPanel);
         frame.setVisible(true);
     }
 
@@ -171,19 +181,21 @@ public class ShadowrunCharacterBuilderGUI {
 
         int row = 0;
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Character Name:"), c);
-        tfName = new JTextField(20); c.gridx = 1; panel.add(tfName, c);
+        tfName = new JTextField(15); c.gridx = 1; panel.add(tfName, c);
+        Dimension leftDim = new Dimension(150, tfName.getPreferredSize().height);
+        tfName.setPreferredSize(leftDim);
         c.gridx = 2; panel.add(new JLabel("Gender:"), c);
         cbGender = new JComboBox<>(new String[]{"Male", "Female"}); c.gridx = 3; panel.add(cbGender, c);
         row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Player Name:"), c);
-        tfPlayer = new JTextField(15); c.gridx = 1; panel.add(tfPlayer, c);
+        tfPlayer = new JTextField(15); tfPlayer.setPreferredSize(leftDim); c.gridx = 1; panel.add(tfPlayer, c);
         c.gridx = 2; panel.add(new JLabel("Age:"), c);
         tfAge = new JTextField(5); c.gridx = 3; panel.add(tfAge, c);
         row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Archetype/Role:"), c);
-        cbRole = new JComboBox<>(); c.gridx = 1; panel.add(cbRole, c);
+        cbRole = new JComboBox<>(); cbRole.setPreferredSize(leftDim); c.gridx = 1; panel.add(cbRole, c);
         JButton btnRoleInfo = new JButton("\u2139");
         btnRoleInfo.setMargin(new Insets(0,0,0,0));
         btnRoleInfo.setVisible(false);
@@ -195,7 +207,7 @@ public class ShadowrunCharacterBuilderGUI {
         row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Metatype:"), c);
-        cbMetatype = new JComboBox<>();
+        cbMetatype = new JComboBox<>(); cbMetatype.setPreferredSize(leftDim);
         cbMetatype.setRenderer(new DefaultListCellRenderer() {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel lbl = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -215,12 +227,20 @@ public class ShadowrunCharacterBuilderGUI {
         tfWeightLbs = new JTextField(6); tfWeightLbs.setEditable(false); c.gridx = 6; panel.add(tfWeightLbs, c);
         row++;
 
+        c.gridx = 3; c.gridy = row; panel.add(new JLabel("Karma:"), c);
+        tfKarma = new JTextField(5); tfKarma.setText("50"); c.gridx = 4; panel.add(tfKarma, c);
+        c.gridx = 5; panel.add(new JLabel("Total Karma:"), c);
+        tfTotalKarma = new JTextField(6); tfTotalKarma.setEditable(false); c.gridx = 6; panel.add(tfTotalKarma, c);
+        row++;
+
         chkSurge = new JCheckBox("SURGE");
+        chkSurge.setPreferredSize(leftDim);
         c.gridx = 1; c.gridy = row; panel.add(chkSurge, c);
         row++;
 
         lblSurgeCollective = new JLabel("SURGE Collective:");
         cbSurgeCollective = new JComboBox<>();
+        cbSurgeCollective.setPreferredSize(leftDim);
         c.gridx = 0; c.gridy = row; panel.add(lblSurgeCollective, c);
         c.gridx = 1; panel.add(cbSurgeCollective, c);
         lblSurgeCollective.setVisible(false);
@@ -297,13 +317,13 @@ public class ShadowrunCharacterBuilderGUI {
         pc.anchor = GridBagConstraints.WEST;
         int prow = 0;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Body:"), pc);
-        spBody = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
+        spBody = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spBody, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Agility:"), pc);
-        spAgility = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
+        spAgility = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spAgility, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Reaction:"), pc);
-        spReaction = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
+        spReaction = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spReaction, pc); prow++;
         pc.gridx = 0; pc.gridy = prow; physical.add(new JLabel("Strength:"), pc);
-        spStrength = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); pc.gridx = 1; physical.add(spStrength, pc);
+        spStrength = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); pc.gridx = 1; physical.add(spStrength, pc);
 
         JPanel mental = new JPanel(new GridBagLayout());
         mental.setBorder(BorderFactory.createTitledBorder("Mental"));
@@ -312,13 +332,13 @@ public class ShadowrunCharacterBuilderGUI {
         mc.anchor = GridBagConstraints.WEST;
         int mrow = 0;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Willpower:"), mc);
-        spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
+        spWillpower = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spWillpower, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Logic:"), mc);
-        spLogic = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
+        spLogic = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spLogic, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Intuition:"), mc);
-        spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
+        spIntuition = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spIntuition, mc); mrow++;
         mc.gridx = 0; mc.gridy = mrow; mental.add(new JLabel("Charisma:"), mc);
-        spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
+        spCharisma = new JSpinner(new SpinnerNumberModel(1, 1, null, 1)); mc.gridx = 1; mental.add(spCharisma, mc);
 
         JPanel special = new JPanel(new GridBagLayout());
         special.setBorder(BorderFactory.createTitledBorder("Special"));
@@ -327,28 +347,52 @@ public class ShadowrunCharacterBuilderGUI {
         sc.anchor = GridBagConstraints.WEST;
         int srow = 0;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Edge:"), sc);
-        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        spEdge = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
         Dimension specialDim = new Dimension(60, spEdge.getPreferredSize().height);
         spEdge.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spEdge, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Essence:"), sc);
-        spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.00, 6.00, 0.01));
+        spEssence = new JSpinner(new SpinnerNumberModel(6.00, 0.01, 6.00, 0.01));
         spEssence.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spEssence, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Magic:"), sc);
-        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        spMagic = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
         spMagic.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spMagic, sc); srow++;
         sc.gridx = 0; sc.gridy = srow; special.add(new JLabel("Resonance:"), sc);
-        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        spResonance = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
         spResonance.setPreferredSize(specialDim);
         sc.gridx = 1; special.add(spResonance, sc);
+
+        JPanel derived = new JPanel(new GridBagLayout());
+        derived.setBorder(BorderFactory.createTitledBorder("Derived"));
+        GridBagConstraints dc = new GridBagConstraints();
+        dc.insets = new Insets(2,2,2,2);
+        dc.anchor = GridBagConstraints.WEST;
+        int drow = 0;
+        dc.gridx = 0; dc.gridy = drow; derived.add(new JLabel("Composure:"), dc);
+        tfComposure = new JTextField(5); tfComposure.setEditable(false); dc.gridx = 1; derived.add(tfComposure, dc); drow++;
+        dc.gridx = 0; dc.gridy = drow; derived.add(new JLabel("Judge Intentions:"), dc);
+        tfJudgeIntentions = new JTextField(5); tfJudgeIntentions.setEditable(false); dc.gridx = 1; derived.add(tfJudgeIntentions, dc); drow++;
+        dc.gridx = 0; dc.gridy = drow; derived.add(new JLabel("Memory:"), dc);
+        tfMemory = new JTextField(5); tfMemory.setEditable(false); dc.gridx = 1; derived.add(tfMemory, dc); drow++;
+        dc.gridx = 0; dc.gridy = drow; derived.add(new JLabel("Lift/Carry:"), dc);
+        tfLiftCarry = new JTextField(5); tfLiftCarry.setEditable(false); dc.gridx = 1; derived.add(tfLiftCarry, dc);
 
         c.gridx = 0; c.gridy = 0; panel.add(physical, c);
         c.gridx = 1; panel.add(mental, c);
         c.gridx = 2; panel.add(special, c);
+        c.gridx = 3; panel.add(derived, c);
 
         contentPanel.add(panel);
+        ChangeListener derivedListener = e -> updateDerivedAttributes();
+        spWillpower.addChangeListener(derivedListener);
+        spCharisma.addChangeListener(derivedListener);
+        spIntuition.addChangeListener(derivedListener);
+        spLogic.addChangeListener(derivedListener);
+        spStrength.addChangeListener(derivedListener);
+        spBody.addChangeListener(derivedListener);
+        updateDerivedAttributes();
     }
 
 /*
@@ -450,6 +494,7 @@ private void buildConditionMonitorSection() {
         qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Quality", "Type", "Karma"}, 0) {
             public boolean isCellEditable(int r, int c) {
                 if (c >= 2) return false;
+                if (lockedQualityRows.contains(r)) return false;
                 Object cat = getValueAt(r, 0);
                 if ("Metatype".equals(cat) || "Metagenetic".equals(cat)) return false;
                 return true;
@@ -464,15 +509,15 @@ private void buildConditionMonitorSection() {
         catCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(qualityCats)));
 
         TableColumn qualCol = tableQualities.getColumnModel().getColumn(1);
-        qualCol.setCellEditor(new DefaultCellEditor(new JComboBox<String>()) {
+        JComboBox<String> qualityBox = new JComboBox<>();
+        qualCol.setCellEditor(new DefaultCellEditor(qualityBox) {
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                JComboBox<String> box = (JComboBox<String>) this.editorComponent;
-                box.removeAllItems();
+                qualityBox.removeAllItems();
                 Object catObj = table.getValueAt(row, 0);
                 String cat = catObj == null ? "" : catObj.toString();
                 for (QualityEntry qe : qualityEntries) {
                     if (cat.equalsIgnoreCase(qe.category)) {
-                        box.addItem(qe.name);
+                        qualityBox.addItem(qe.name);
                     }
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, row, column);
@@ -533,14 +578,30 @@ private void buildConditionMonitorSection() {
                         return;
                     }
                     qualitiesTableModel.removeRow(modelRow);
+                    java.util.Set<Integer> newSet = new java.util.HashSet<>();
+                    for (int r : lockedQualityRows) {
+                        if (r == modelRow) continue;
+                        newSet.add(r > modelRow ? r - 1 : r);
+                    }
+                    lockedQualityRows = newSet;
                     updateQualityCount();
                 }
+            }
+        });
+        JButton btnSaveQuality = new JButton("Save Quality");
+        btnSaveQuality.addActionListener(e -> {
+            int row = tableQualities.getSelectedRow();
+            if (row != -1) {
+                int modelRow = tableQualities.convertRowIndexToModel(row);
+                lockedQualityRows.add(modelRow);
+                tableQualities.clearSelection();
             }
         });
         lblQualityCount = new JLabel("0 qualities");
         JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonSub.add(btnAddQuality);
         buttonSub.add(btnRemoveQuality);
+        buttonSub.add(btnSaveQuality);
         JPanel btnPanel = new JPanel(new BorderLayout());
         btnPanel.add(buttonSub, BorderLayout.WEST);
         btnPanel.add(lblQualityCount, BorderLayout.EAST);
@@ -615,6 +676,19 @@ private void buildConditionMonitorSection() {
         taNotes.setLineWrap(true);
         taNotes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         panel.add(new JScrollPane(taNotes), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel buildKarmaLogPanel() {
+        karmaLogModel = new DefaultTableModel(new Object[]{"Action", "Cost"}, 0) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tableKarmaLog = new JTable(karmaLogModel);
+        tableKarmaLog.setPreferredScrollableViewportSize(new Dimension(150, 500));
+        JScrollPane sp = new JScrollPane(tableKarmaLog);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Karma Log", TitledBorder.LEFT, TitledBorder.TOP));
+        panel.add(sp, BorderLayout.CENTER);
         return panel;
     }
 
@@ -725,6 +799,23 @@ private void buildConditionMonitorSection() {
             tfWeightLbs.setText(String.valueOf(lbs));
         } catch (Exception ex) {
             tfWeightLbs.setText("");
+        }
+    }
+
+    private void updateDerivedAttributes() {
+        try {
+            int will = ((Number) spWillpower.getValue()).intValue();
+            int cha = ((Number) spCharisma.getValue()).intValue();
+            int intui = ((Number) spIntuition.getValue()).intValue();
+            int log = ((Number) spLogic.getValue()).intValue();
+            int str = ((Number) spStrength.getValue()).intValue();
+            int bod = ((Number) spBody.getValue()).intValue();
+            tfComposure.setText(String.valueOf(will + cha));
+            tfJudgeIntentions.setText(String.valueOf(intui + cha));
+            tfMemory.setText(String.valueOf(log + will));
+            tfLiftCarry.setText(String.valueOf(str + bod));
+        } catch (Exception ex) {
+            // ignore
         }
     }
 
