@@ -65,7 +65,7 @@ public class ShadowrunCharacterBuilderGUI {
     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
     private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
-    private java.util.Set<Integer> lockedQualityRows = new java.util.HashSet<>();
+    private int editingQualityRow = -1;
 
     private String lastSurgeCollective = null;
     private String lastMetatype = null;
@@ -523,11 +523,7 @@ private void buildConditionMonitorSection() {
 
         qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Quality", "Type", "Karma"}, 0) {
             public boolean isCellEditable(int r, int c) {
-                if (c >= 2) return false;
-                if (lockedQualityRows.contains(r)) return false;
-                Object cat = getValueAt(r, 0);
-                if ("Metatype".equals(cat) || "Metagenic".equals(cat)) return false;
-                return true;
+                return r == editingQualityRow && c < 2;
             }
         };
         tableQualities = new JTable(qualitiesTableModel);
@@ -594,6 +590,7 @@ private void buildConditionMonitorSection() {
                 qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
                 int newRow = qualitiesTableModel.getRowCount() - 1;
                 tableQualities.setRowSelectionInterval(newRow, newRow);
+                editingQualityRow = newRow;
                 updateQualityCount();
                 addSaveLayout.show(addSavePanel, "SAVE");
             }
@@ -620,27 +617,25 @@ private void buildConditionMonitorSection() {
                     String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
                     qualitiesTableModel.removeRow(modelRow);
                     removeKarma("Quality", name == null ? "" : name);
-                    java.util.Set<Integer> newSet = new java.util.HashSet<>();
-                    for (int r : lockedQualityRows) {
-                        if (r == modelRow) continue;
-                        newSet.add(r > modelRow ? r - 1 : r);
+                    if (editingQualityRow == modelRow) {
+                        editingQualityRow = -1;
+                    } else if (editingQualityRow > modelRow) {
+                        editingQualityRow--;
                     }
-                    lockedQualityRows = newSet;
                     updateQualityCount();
                 }
             }
         });
         btnSaveQuality.addActionListener(e -> {
-            int row = tableQualities.getSelectedRow();
-            if (row != -1) {
-                int modelRow = tableQualities.convertRowIndexToModel(row);
-                lockedQualityRows.add(modelRow);
+            if (editingQualityRow != -1) {
+                int modelRow = editingQualityRow;
                 String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
                 String karmaStr = (String) qualitiesTableModel.getValueAt(modelRow, 3);
                 int cost = 0;
-                try { cost = Integer.parseInt(karmaStr); } catch(Exception ex) {}
+                try { cost = Integer.parseInt(karmaStr); } catch (Exception ex) {}
                 addOrUpdateKarma("Quality", name == null ? "" : name, cost);
                 tableQualities.clearSelection();
+                editingQualityRow = -1;
             }
             addSaveLayout.show(addSavePanel, "ADD");
         });
