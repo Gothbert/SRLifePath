@@ -534,7 +534,7 @@ private void buildConditionMonitorSection() {
         tableQualities.setAutoCreateRowSorter(true);
         tableQualities.setPreferredScrollableViewportSize(new Dimension(500, 150));
 
-        String[] qualityCats = {"Magic","Matrix","Mental","Physical","Social","Vehicle","Metagenic"};
+        String[] qualityCats = {"Magic","Matrix","Mental","Metagenic","Physical","Social","Vehicle"};
         TableColumn catCol = tableQualities.getColumnModel().getColumn(0);
         catCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(qualityCats)));
 
