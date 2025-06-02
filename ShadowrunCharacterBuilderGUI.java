@@ -73,6 +73,8 @@ public class ShadowrunCharacterBuilderGUI {
     private JTable tableKarmaLog;
     private DefaultTableModel karmaLogModel;
     private JLabel lblLoggedKarma;
+    private JPanel karmaLogPanel;
+    private JButton btnToggleKarmaLog;
 
     private static final String[] QUALITY_CATEGORIES = {
             "Magic","Matrix","Mental","Metagenic","Physical","Social","Vehicle"
@@ -182,9 +184,22 @@ public class ShadowrunCharacterBuilderGUI {
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         scrollPane = new JScrollPane(contentPanel);
+        karmaLogPanel = buildKarmaLogPanel();
+        karmaLogPanel.setVisible(false);
+        btnToggleKarmaLog = new JButton("Karma Log >>>");
+        btnToggleKarmaLog.addActionListener(e -> {
+            boolean vis = karmaLogPanel.isVisible();
+            karmaLogPanel.setVisible(!vis);
+            btnToggleKarmaLog.setText(vis ? "Karma Log >>>" : "<<< Karma Log");
+            frame.revalidate();
+        });
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.add(btnToggleKarmaLog);
+
         JPanel rootPanel = new JPanel(new BorderLayout());
+        rootPanel.add(topPanel, BorderLayout.NORTH);
         rootPanel.add(scrollPane, BorderLayout.CENTER);
-        rootPanel.add(buildKarmaLogPanel(), BorderLayout.EAST);
+        rootPanel.add(karmaLogPanel, BorderLayout.EAST);
         frame.getContentPane().add(rootPanel);
         frame.setVisible(true);
     }
@@ -531,9 +546,9 @@ private void buildConditionMonitorSection() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Qualities", TitledBorder.LEFT, TitledBorder.TOP));
 
-        qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Quality", "Type", "Karma"}, 0) {
+        qualitiesTableModel = new DefaultTableModel(new Object[]{"Category", "Type", "Quality", "Karma"}, 0) {
             public boolean isCellEditable(int r, int c) {
-                return r == editingQualityRow && c < 2;
+                return r == editingQualityRow && c < 3;
             }
         };
         tableQualities = new JTable(qualitiesTableModel);
@@ -543,16 +558,20 @@ private void buildConditionMonitorSection() {
         String[] qualityCats = {"Magic","Matrix","Mental","Metagenic","Physical","Social","Vehicle"};
         TableColumn catCol = tableQualities.getColumnModel().getColumn(0);
         catCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(qualityCats)));
+        TableColumn typeCol = tableQualities.getColumnModel().getColumn(1);
+        typeCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"Positive","Negative"})));
 
-        TableColumn qualCol = tableQualities.getColumnModel().getColumn(1);
+        TableColumn qualCol = tableQualities.getColumnModel().getColumn(2);
         JComboBox<String> qualityBox = new JComboBox<>();
         qualCol.setCellEditor(new DefaultCellEditor(qualityBox) {
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                 qualityBox.removeAllItems();
                 Object catObj = table.getValueAt(row, 0);
                 String cat = catObj == null ? "" : catObj.toString();
+                Object typeObj = table.getValueAt(row, 1);
+                String type = typeObj == null ? "" : typeObj.toString();
                 for (QualityEntry qe : qualityEntries) {
-                    if (cat.equalsIgnoreCase(qe.category)) {
+                    if (cat.equalsIgnoreCase(qe.category) && type.equalsIgnoreCase(qe.type)) {
                         qualityBox.addItem(qe.name);
                     }
                 }
@@ -569,16 +588,15 @@ private void buildConditionMonitorSection() {
             int row = e.getFirstRow();
             int col = e.getColumn();
             if (row < 0) return;
-            if (col == 0) {
-                qualitiesTableModel.setValueAt("", row, 1);
+            if (col == 0 || col == 1) {
                 qualitiesTableModel.setValueAt("", row, 2);
                 qualitiesTableModel.setValueAt("", row, 3);
-            } else if (col == 1) {
-                Object qVal = qualitiesTableModel.getValueAt(row, 1);
+            } else if (col == 2) {
+                Object qVal = qualitiesTableModel.getValueAt(row, 2);
                 if (qVal != null) {
                     for (QualityEntry qe : qualityEntries) {
                         if (qe.name.equals(qVal.toString())) {
-                            qualitiesTableModel.setValueAt(qe.type, row, 2);
+                            qualitiesTableModel.setValueAt(qe.type, row, 1);
                             qualitiesTableModel.setValueAt(String.valueOf(qe.karma), row, 3);
                             break;
                         }
@@ -637,7 +655,7 @@ private void buildConditionMonitorSection() {
         btnSaveQuality.addActionListener(e -> {
             if (editingQualityRow != -1) {
                 int modelRow = editingQualityRow;
-                String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
+                String name = (String) qualitiesTableModel.getValueAt(modelRow, 2);
                 String karmaStr = (String) qualitiesTableModel.getValueAt(modelRow, 3);
                 int cost = 0;
                 try { cost = Integer.parseInt(karmaStr); } catch (Exception ex) {}
@@ -759,18 +777,18 @@ private void buildConditionMonitorSection() {
 
     private void removeQualityRow(int rowIndex) {
         if (rowIndex < 0 || rowIndex >= qualitiesTableModel.getRowCount()) return;
-        Object nameObj = qualitiesTableModel.getValueAt(rowIndex, 1);
+        Object nameObj = qualitiesTableModel.getValueAt(rowIndex, 2);
         String qName = nameObj == null ? "" : nameObj.toString();
         qualitiesTableModel.removeRow(rowIndex);
         removeKarma("Quality", qName);
     }
 
     private void addQuality(String category, String name) {
-        qualitiesTableModel.addRow(new Object[]{category, name, "", ""});
+        qualitiesTableModel.addRow(new Object[]{category, "", name, ""});
         int row = qualitiesTableModel.getRowCount() - 1;
         for (QualityEntry qe : qualityEntries) {
             if (qe.name.equals(name)) {
-                qualitiesTableModel.setValueAt(qe.type, row, 2);
+                qualitiesTableModel.setValueAt(qe.type, row, 1);
                 qualitiesTableModel.setValueAt(String.valueOf(qe.karma), row, 3);
                 addOrUpdateKarma("Quality", name, qe.karma);
                 break;
@@ -977,6 +995,8 @@ private void buildConditionMonitorSection() {
         cbGender.setSelectedIndex(-1);
         chkSurge.setSelected(false);
         cbSurgeCollective.setSelectedIndex(0);
+        lblSurgeCollective.setVisible(false);
+        cbSurgeCollective.setVisible(false);
 
         spBody.setValue(1);
         spAgility.setValue(1);
@@ -1112,7 +1132,7 @@ private void buildConditionMonitorSection() {
                 if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
                     String trait = parts[0].replaceAll("^\"|\"$", "").trim();
                     String type = parts[1].trim();
-                    qualitiesTableModel.addRow(new Object[]{"Metatype", trait, type, "0"});
+                    qualitiesTableModel.addRow(new Object[]{"Metatype", type, trait, "0"});
                 }
             }
         } catch (Exception ignored) {}
@@ -1142,7 +1162,7 @@ private void buildConditionMonitorSection() {
                 if (parts.length >= 3 && parts[2].trim().equalsIgnoreCase(owner)) {
                     String trait = parts[0].replaceAll("^\"|\"$", "").trim();
                     String type = parts[1].trim();
-                    qualitiesTableModel.addRow(new Object[]{"Metagenic", trait, type, "0"});
+                    qualitiesTableModel.addRow(new Object[]{"Metagenic", type, trait, "0"});
                 }
             }
         } catch (Exception ignored) {}
@@ -1578,13 +1598,15 @@ private void buildAdeptPowersSection() {
         // ===== Stage 1: Born This Way =====
         java.util.List<String> metaNames = new java.util.ArrayList<>();
         for (int i = 0; i < cbMetatype.getItemCount(); i++) {
-            metaNames.add(cbMetatype.getItemAt(i).toString());
+            MetaItem mi = cbMetatype.getItemAt(i);
+            metaNames.add(mi.variant ? " - " + mi.name : mi.name);
         }
-        String meta = (String) JOptionPane.showInputDialog(frame,
+        String metaChoice = (String) JOptionPane.showInputDialog(frame,
                 "Choose Metatype:", "Stage 1 - Born This Way",
                 JOptionPane.QUESTION_MESSAGE, null,
                 metaNames.toArray(new String[0]), null);
-        if (meta == null) return;
+        if (metaChoice == null) return;
+        String meta = metaChoice.replaceFirst("^\\s*-\\s*", "");
         for (int i = 0; i < cbMetatype.getItemCount(); i++) {
             MetaItem mi = cbMetatype.getItemAt(i);
             if (mi.name.equals(meta)) { cbMetatype.setSelectedIndex(i); break; }
@@ -1596,6 +1618,8 @@ private void buildAdeptPowersSection() {
                 "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
         if (surge == JOptionPane.YES_OPTION) {
             chkSurge.setSelected(true);
+            lblSurgeCollective.setVisible(true);
+            cbSurgeCollective.setVisible(true);
             java.util.List<String> colls = new java.util.ArrayList<>();
             for (int i = 0; i < cbSurgeCollective.getItemCount(); i++) {
                 colls.add(cbSurgeCollective.getItemAt(i));
@@ -1609,6 +1633,8 @@ private void buildAdeptPowersSection() {
             }
         } else {
             chkSurge.setSelected(false);
+            lblSurgeCollective.setVisible(false);
+            cbSurgeCollective.setVisible(false);
         }
 
         String[] statusOpts = new String[cbStatus.getItemCount()];
@@ -1750,8 +1776,8 @@ private void buildAdeptPowersSection() {
         StringBuilder qualBuilder = new StringBuilder();
         for (int i = 0; i < qualitiesTableModel.getRowCount(); i++) {
             String cat = (String) qualitiesTableModel.getValueAt(i, 0);
-            String q = (String) qualitiesTableModel.getValueAt(i, 1);
-            String type = (String) qualitiesTableModel.getValueAt(i, 2);
+            String type = (String) qualitiesTableModel.getValueAt(i, 1);
+            String q = (String) qualitiesTableModel.getValueAt(i, 2);
             String karma = (String) qualitiesTableModel.getValueAt(i, 3);
             if (q != null && !q.trim().isEmpty()) {
                 qualBuilder.append(String.format("%s, %s, %s, %s\n",
