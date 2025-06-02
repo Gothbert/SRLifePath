@@ -862,31 +862,47 @@ private void buildConditionMonitorSection() {
         wizardNationalityField = new JTextField(10);
         wizardLanguageField = new JTextField(10);
 
-        wizardSurgeCheck.addActionListener(e -> wizardSurgeCombo.setVisible(wizardSurgeCheck.isSelected()));
+        wizardSurgeCheck.addActionListener(e -> {
+            boolean sel = wizardSurgeCheck.isSelected();
+            wizardSurgeCombo.setVisible(sel);
+            if (!sel) {
+                wizardSurgeCombo.setSelectedItem("No Collective");
+            }
+        });
 
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Life Path Wizard", TitledBorder.LEFT, TitledBorder.TOP));
+
+        JPanel stage1 = new JPanel(new GridBagLayout());
+        stage1.setBorder(BorderFactory.createTitledBorder("Stage 1: Born This Way"));
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(4,4,4,4);
         c.anchor = GridBagConstraints.WEST;
         int row = 0;
 
-        c.gridx=0; c.gridy=row; panel.add(new JLabel("Metatype:"), c);
-        c.gridx=1; panel.add(wizardMetaCombo, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(new JLabel("Metatype:"), c);
+        c.gridx=1; stage1.add(wizardMetaCombo, c); row++;
 
-        c.gridx=0; c.gridy=row; panel.add(wizardSurgeCheck, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(wizardSurgeCheck, c); row++;
 
-        c.gridx=0; c.gridy=row; panel.add(new JLabel("SURGE Collective:"), c);
-        c.gridx=1; panel.add(wizardSurgeCombo, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(new JLabel("SURGE Collective:"), c);
+        c.gridx=1; stage1.add(wizardSurgeCombo, c); row++;
 
-        c.gridx=0; c.gridy=row; panel.add(new JLabel("Status:"), c);
-        c.gridx=1; panel.add(wizardStatusCombo, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(new JLabel("Status:"), c);
+        c.gridx=1; stage1.add(wizardStatusCombo, c); row++;
 
-        c.gridx=0; c.gridy=row; panel.add(new JLabel("Nationality:"), c);
-        c.gridx=1; panel.add(wizardNationalityField, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(new JLabel("Nationality:"), c);
+        c.gridx=1; stage1.add(wizardNationalityField, c); row++;
 
-        c.gridx=0; c.gridy=row; panel.add(new JLabel("Native Language:"), c);
-        c.gridx=1; panel.add(wizardLanguageField, c); row++;
+        c.gridx=0; c.gridy=row; stage1.add(new JLabel("Native Language:"), c);
+        c.gridx=1; stage1.add(wizardLanguageField, c); row++;
+
+        JPanel stage2 = new JPanel();
+        stage2.setBorder(BorderFactory.createTitledBorder("Stage 2: Growing Up"));
+
+        JPanel stage3 = new JPanel();
+        stage3.setBorder(BorderFactory.createTitledBorder("Stage 3: Coming of Age"));
 
         JButton btnApply = new JButton("Apply Changes");
         JButton btnCancel = new JButton("Cancel Wizard");
@@ -895,7 +911,11 @@ private void buildConditionMonitorSection() {
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.add(btnApply);
         btnPanel.add(btnCancel);
-        c.gridx=0; c.gridy=row; c.gridwidth=2; panel.add(btnPanel, c);
+
+        panel.add(stage1);
+        panel.add(stage2);
+        panel.add(stage3);
+        panel.add(btnPanel);
 
         return panel;
     }
@@ -916,6 +936,8 @@ private void buildConditionMonitorSection() {
         cbSurgeCollective.setVisible(surge);
         if (surge) {
             cbSurgeCollective.setSelectedItem(wizardSurgeCombo.getSelectedItem());
+        } else {
+            cbSurgeCollective.setSelectedItem("No Collective");
         }
 
         String statusSel = (String) wizardStatusCombo.getSelectedItem();
@@ -1722,8 +1744,13 @@ private void buildAdeptPowersSection() {
         MetaItem selMeta = (MetaItem) cbMetatype.getSelectedItem();
         if (selMeta != null) wizardMetaCombo.setSelectedItem(selMeta.name); else wizardMetaCombo.setSelectedIndex(-1);
         wizardSurgeCheck.setSelected(chkSurge.isSelected());
-        wizardSurgeCombo.setVisible(chkSurge.isSelected());
-        wizardSurgeCombo.setSelectedItem(cbSurgeCollective.getSelectedItem());
+        boolean sel = chkSurge.isSelected();
+        wizardSurgeCombo.setVisible(sel);
+        if (sel) {
+            wizardSurgeCombo.setSelectedItem(cbSurgeCollective.getSelectedItem());
+        } else {
+            wizardSurgeCombo.setSelectedItem("No Collective");
+        }
         wizardStatusCombo.setSelectedItem(cbStatus.getSelectedItem());
         wizardNationalityField.setText(tfNationality.getText());
         wizardLanguageField.setText("");
