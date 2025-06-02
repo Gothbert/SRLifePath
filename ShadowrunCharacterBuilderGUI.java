@@ -186,17 +186,6 @@ public class ShadowrunCharacterBuilderGUI {
                 generateReport();
             }
         });
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        contentPanel.add(btnWizard);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        contentPanel.add(btnGenerate);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        scrollPane = new JScrollPane(contentPanel);
-        karmaLogPanel = buildKarmaLogPanel();
-        karmaLogPanel.setVisible(false);
-        wizardPanel = buildWizardPanel();
-        wizardPanel.setVisible(false);
         btnToggleKarmaLog = new JButton("Karma Log >>>");
         btnToggleKarmaLog.addActionListener(e -> {
             boolean vis = karmaLogPanel.isVisible();
@@ -204,17 +193,26 @@ public class ShadowrunCharacterBuilderGUI {
             btnToggleKarmaLog.setText(vis ? "Karma Log >>>" : "<<< Karma Log");
             frame.revalidate();
         });
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(btnToggleKarmaLog);
+
+        JPanel bottomButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomButtons.add(btnWizard);
+        bottomButtons.add(btnGenerate);
+        bottomButtons.add(btnToggleKarmaLog);
+
+        scrollPane = new JScrollPane(contentPanel);
+        karmaLogPanel = buildKarmaLogPanel();
+        karmaLogPanel.setVisible(false);
+        wizardPanel = buildWizardPanel();
+        wizardPanel.setVisible(false);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(wizardPanel, BorderLayout.EAST);
 
         JPanel rootPanel = new JPanel(new BorderLayout());
-        rootPanel.add(topPanel, BorderLayout.NORTH);
         rootPanel.add(mainPanel, BorderLayout.CENTER);
         rootPanel.add(karmaLogPanel, BorderLayout.EAST);
+        rootPanel.add(bottomButtons, BorderLayout.SOUTH);
         frame.getContentPane().add(rootPanel);
         frame.setVisible(true);
     }
@@ -542,10 +540,40 @@ private void buildConditionMonitorSection() {
                 }
             }
         });
+        JButton btnRaiseSkill = new JButton("Raise Skill");
+        btnRaiseSkill.addActionListener(e -> {
+            int row = tableSkills.getSelectedRow();
+            if (row != -1) {
+                int modelRow = tableSkills.convertRowIndexToModel(row);
+                Object rankObj = skillsTableModel.getValueAt(modelRow, 2);
+                if (rankObj != null) {
+                    int idx = java.util.Arrays.asList(RANK_OPTIONS).indexOf(rankObj.toString());
+                    if (idx >= 0 && idx < RANK_OPTIONS.length - 1) {
+                        skillsTableModel.setValueAt(RANK_OPTIONS[idx + 1], modelRow, 2);
+                    }
+                }
+            }
+        });
+        JButton btnLowerSkill = new JButton("Lower Skill");
+        btnLowerSkill.addActionListener(e -> {
+            int row = tableSkills.getSelectedRow();
+            if (row != -1) {
+                int modelRow = tableSkills.convertRowIndexToModel(row);
+                Object rankObj = skillsTableModel.getValueAt(modelRow, 2);
+                if (rankObj != null) {
+                    int idx = java.util.Arrays.asList(RANK_OPTIONS).indexOf(rankObj.toString());
+                    if (idx > 0) {
+                        skillsTableModel.setValueAt(RANK_OPTIONS[idx - 1], modelRow, 2);
+                    }
+                }
+            }
+        });
         lblSkillCount = new JLabel("0 skills");
         JPanel buttonSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonSub.add(btnAddSkill);
         buttonSub.add(btnRemoveSkill);
+        buttonSub.add(btnRaiseSkill);
+        buttonSub.add(btnLowerSkill);
         JPanel btnPanel = new JPanel(new BorderLayout());
         btnPanel.add(buttonSub, BorderLayout.WEST);
         btnPanel.add(lblSkillCount, BorderLayout.EAST);
@@ -669,6 +697,9 @@ private void buildConditionMonitorSection() {
         });
         btnSaveQuality.addActionListener(e -> {
             if (editingQualityRow != -1) {
+                if (tableQualities.isEditing()) {
+                    tableQualities.getCellEditor().stopCellEditing();
+                }
                 int modelRow = editingQualityRow;
                 String name = (String) qualitiesTableModel.getValueAt(modelRow, 2);
                 String karmaStr = (String) qualitiesTableModel.getValueAt(modelRow, 3);
@@ -1384,7 +1415,9 @@ private void buildConditionMonitorSection() {
         gc.insets = new Insets(2,2,2,2); gc.anchor = GridBagConstraints.WEST;
         int gr = 0;
         gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Skill Name:"), gc);
-        JComboBox<String> cbGenSkill = new JComboBox<>(skillMap.keySet().toArray(new String[0]));
+        java.util.List<String> genSkills = new java.util.ArrayList<>(skillMap.keySet());
+        java.util.Collections.sort(genSkills);
+        JComboBox<String> cbGenSkill = new JComboBox<>(genSkills.toArray(new String[0]));
         gc.gridx=1; general.add(cbGenSkill, gc); gr++;
         gc.gridx=0; gc.gridy=gr; general.add(new JLabel("Category:"), gc);
         JTextField tfGenCat = new JTextField(15); tfGenCat.setEditable(false);
@@ -1415,7 +1448,9 @@ private void buildConditionMonitorSection() {
         sc.insets = new Insets(2,2,2,2); sc.anchor = GridBagConstraints.WEST;
         int sr = 0;
         sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Specialization:"), sc);
-        JComboBox<String> cbSpec = new JComboBox<>(specializationMap.keySet().toArray(new String[0]));
+        java.util.List<String> specSkills = new java.util.ArrayList<>(specializationMap.keySet());
+        java.util.Collections.sort(specSkills);
+        JComboBox<String> cbSpec = new JComboBox<>(specSkills.toArray(new String[0]));
         sc.gridx=1; spec.add(cbSpec, sc); sr++;
         sc.gridx=0; sc.gridy=sr; spec.add(new JLabel("Parent Skill:"), sc);
         JTextField tfParent = new JTextField(15); tfParent.setEditable(false);
