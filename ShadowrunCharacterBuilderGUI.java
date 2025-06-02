@@ -159,7 +159,11 @@ public class ShadowrunCharacterBuilderGUI {
         tabs.addTab("Notes", buildNotesSection());
         contentPanel.add(tabs);
 
-        // Generate Button
+        // Life Path Wizard and Generate buttons
+        JButton btnWizard = new JButton("Run Life Path Wizard");
+        btnWizard.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnWizard.addActionListener(e -> runLifePathWizard());
+
         JButton btnGenerate = new JButton("Generate Report");
         btnGenerate.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnGenerate.addActionListener(new ActionListener() {
@@ -167,6 +171,8 @@ public class ShadowrunCharacterBuilderGUI {
                 generateReport();
             }
         });
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        contentPanel.add(btnWizard);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         contentPanel.add(btnGenerate);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -201,11 +207,11 @@ public class ShadowrunCharacterBuilderGUI {
         tfAge = new JTextField(5); c.gridx = 3; panel.add(tfAge, c);
         row++;
 
-        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Nationality:"), c);
-        tfNationality = new JTextField(15); tfNationality.setPreferredSize(leftDim); c.gridx = 1; panel.add(tfNationality, c);
-        c.gridx = 2; panel.add(new JLabel("Status:"), c);
+        c.gridx = 0; c.gridy = row; panel.add(new JLabel("Status:"), c);
         cbStatus = new JComboBox<>(new String[]{"Mundane","Full Magician","Aspected Magician","Mystic Adept","Adept","Technomancer"});
-        c.gridx = 3; panel.add(cbStatus, c);
+        c.gridx = 1; panel.add(cbStatus, c);
+        c.gridx = 2; panel.add(new JLabel("Nationality:"), c);
+        tfNationality = new JTextField(15); tfNationality.setPreferredSize(leftDim); c.gridx = 3; panel.add(tfNationality, c);
         row++;
 
         c.gridx = 0; c.gridy = row; panel.add(new JLabel("Archetype/Role:"), c);
@@ -614,9 +620,7 @@ private void buildConditionMonitorSection() {
                                 "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    String name = (String) qualitiesTableModel.getValueAt(modelRow, 1);
-                    qualitiesTableModel.removeRow(modelRow);
-                    removeKarma("Quality", name == null ? "" : name);
+                    removeQualityRow(modelRow);
                     if (editingQualityRow == modelRow) {
                         editingQualityRow = -1;
                     } else if (editingQualityRow > modelRow) {
@@ -747,6 +751,14 @@ private void buildConditionMonitorSection() {
         if (lblQualityCount != null) {
             lblQualityCount.setText(qualitiesTableModel.getRowCount() + " qualities");
         }
+    }
+
+    private void removeQualityRow(int rowIndex) {
+        if (rowIndex < 0 || rowIndex >= qualitiesTableModel.getRowCount()) return;
+        Object nameObj = qualitiesTableModel.getValueAt(rowIndex, 1);
+        String qName = nameObj == null ? "" : nameObj.toString();
+        qualitiesTableModel.removeRow(rowIndex);
+        removeKarma("Quality", qName);
     }
 
     private Integer findKarmaRow(String type, String name) {
@@ -930,7 +942,7 @@ private void buildConditionMonitorSection() {
         for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
             Object cat = qualitiesTableModel.getValueAt(i, 0);
             if ("Metatype".equals(cat)) {
-                qualitiesTableModel.removeRow(i);
+                removeQualityRow(i);
             }
         }
         java.io.File file = new java.io.File("Shadowrun_RacialTraits.csv");
@@ -954,7 +966,7 @@ private void buildConditionMonitorSection() {
         for (int i = qualitiesTableModel.getRowCount() - 1; i >= 0; i--) {
             Object cat = qualitiesTableModel.getValueAt(i, 0);
             if ("Metagenic".equals(cat)) {
-                qualitiesTableModel.removeRow(i);
+                removeQualityRow(i);
             }
         }
         updateQualityCount();
@@ -1401,6 +1413,95 @@ private void buildAdeptPowersSection() {
         contentPanel.add(panel);
     }
 */
+
+    private void runLifePathWizard() {
+        // Stage 1: Born This Way
+        java.util.List<String> metaNames = new java.util.ArrayList<>();
+        for (int i = 0; i < cbMetatype.getItemCount(); i++) {
+            metaNames.add(cbMetatype.getItemAt(i).toString());
+        }
+        String meta = (String) JOptionPane.showInputDialog(frame,
+                "Choose Metatype:", "Stage 1 - Born This Way",
+                JOptionPane.QUESTION_MESSAGE, null,
+                metaNames.toArray(new String[0]), null);
+        if (meta != null) {
+            for (int i = 0; i < cbMetatype.getItemCount(); i++) {
+                MetaItem mi = cbMetatype.getItemAt(i);
+                if (mi.name.equals(meta)) { cbMetatype.setSelectedIndex(i); break; }
+            }
+        }
+
+        int surge = JOptionPane.showConfirmDialog(frame,
+                "Will this character be affected by SURGE?",
+                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
+        if (surge == JOptionPane.YES_OPTION) {
+            chkSurge.setSelected(true);
+            java.util.List<String> colls = new java.util.ArrayList<>();
+            for (int i = 0; i < cbSurgeCollective.getItemCount(); i++) {
+                colls.add(cbSurgeCollective.getItemAt(i));
+            }
+            String coll = (String) JOptionPane.showInputDialog(frame,
+                    "Select SURGE Collective:", "Stage 1 - Born This Way",
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    colls.toArray(new String[0]), cbSurgeCollective.getItemAt(0));
+            if (coll != null) {
+                cbSurgeCollective.setSelectedItem(coll);
+            }
+        } else {
+            chkSurge.setSelected(false);
+        }
+
+        String[] statusOpts = new String[cbStatus.getItemCount()];
+        for (int i = 0; i < cbStatus.getItemCount(); i++) {
+            statusOpts[i] = cbStatus.getItemAt(i);
+        }
+        String statusSel = (String) JOptionPane.showInputDialog(frame,
+                "Character Status:", "Stage 1 - Born This Way",
+                JOptionPane.QUESTION_MESSAGE, null, statusOpts, null);
+        if (statusSel != null) {
+            cbStatus.setSelectedItem(statusSel);
+            switch (statusSel) {
+                case "Technomancer":
+                    spResonance.setValue(1);
+                    break;
+                case "Aspected Magician":
+                    spMagic.setValue(2);
+                    break;
+                case "Full Magician":
+                case "Mystic Adept":
+                case "Adept":
+                    spMagic.setValue(1);
+                    break;
+                case "Mundane":
+                    spEdge.setValue(2);
+                    break;
+            }
+        }
+
+        String nat = JOptionPane.showInputDialog(frame,
+                "Enter nationality of birth:", tfNationality.getText());
+        if (nat != null) tfNationality.setText(nat);
+
+        String lang = JOptionPane.showInputDialog(frame,
+                "Enter native language:");
+        if (lang != null && !lang.trim().isEmpty()) {
+            skillsTableModel.addRow(new Object[]{"Language", "LG: " + lang, "Native", "", ""});
+            updateSkillCount();
+        }
+
+        int pos = JOptionPane.showConfirmDialog(frame,
+                "Would you like to choose a positive quality?\n(A negative quality will also be required)",
+                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
+        if (pos == JOptionPane.YES_OPTION) {
+            qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
+            qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
+            updateQualityCount();
+        }
+
+        JOptionPane.showMessageDialog(frame,
+                "Stage 1 complete. Further stages will be implemented later.",
+                "Life Path Wizard", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     private void generateReport() {
         StringBuilder sb = new StringBuilder();
