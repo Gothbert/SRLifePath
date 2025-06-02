@@ -1075,15 +1075,19 @@ private void buildConditionMonitorSection() {
             while ((line = br.readLine()) != null) {
                 String[] p = line.split(",", -1);
                 if (p.length >= 15 && p[0].trim().equalsIgnoreCase(meta)) {
-                    if (!p[6].trim().isEmpty()) spBody.setValue(2);
-                    if (!p[7].trim().isEmpty()) spAgility.setValue(2);
-                    if (!p[8].trim().isEmpty()) spReaction.setValue(2);
-                    if (!p[9].trim().isEmpty()) spStrength.setValue(2);
-                    if (!p[10].trim().isEmpty()) spWillpower.setValue(2);
-                    if (!p[11].trim().isEmpty()) spLogic.setValue(2);
-                    if (!p[12].trim().isEmpty()) spIntuition.setValue(2);
-                    if (!p[13].trim().isEmpty()) spCharisma.setValue(2);
-                    if (!p[14].trim().isEmpty()) spEdge.setValue(2);
+                    try {
+                        if (!p[6].trim().isEmpty() && Integer.parseInt(p[6].trim()) > 6) spBody.setValue(2);
+                        if (!p[7].trim().isEmpty() && Integer.parseInt(p[7].trim()) > 6) spAgility.setValue(2);
+                        if (!p[8].trim().isEmpty() && Integer.parseInt(p[8].trim()) > 6) spReaction.setValue(2);
+                        if (!p[9].trim().isEmpty() && Integer.parseInt(p[9].trim()) > 6) spStrength.setValue(2);
+                        if (!p[10].trim().isEmpty() && Integer.parseInt(p[10].trim()) > 6) spWillpower.setValue(2);
+                        if (!p[11].trim().isEmpty() && Integer.parseInt(p[11].trim()) > 6) spLogic.setValue(2);
+                        if (!p[12].trim().isEmpty() && Integer.parseInt(p[12].trim()) > 6) spIntuition.setValue(2);
+                        if (!p[13].trim().isEmpty() && Integer.parseInt(p[13].trim()) > 6) spCharisma.setValue(2);
+                        if (!p[14].trim().isEmpty() && Integer.parseInt(p[14].trim()) > 6) spEdge.setValue(2);
+                    } catch (NumberFormatException ex) {
+                        // ignore malformed numbers
+                    }
                     break;
                 }
             }

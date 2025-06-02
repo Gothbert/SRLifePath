@@ -1,337 +1,52 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc559cbb88fb 100644
+index a18643a22122d62673cfbd89d163c5d94e7782aa..567edcfd728ec6d7b3f18be88346928edaf1ee73 100644
 --- a/ShadowrunCharacterBuilderGUI.java
 +++ b/ShadowrunCharacterBuilderGUI.java
-@@ -30,71 +30,75 @@ public class ShadowrunCharacterBuilderGUI {
-     private JComboBox<String> cbStatus;
-     private JComboBox<MetaItem> cbMetatype;
-     private JCheckBox chkSurge;
-     private JLabel lblSurgeCollective;
-     private JComboBox<String> cbSurgeCollective;
-     private JComboBox<String> cbGender;
-     private JTextField tfNuyen, tfPrimaryLifestyle, tfFakeIDs;
-     private JTextArea taNotes;
-     
-     // ATTRIBUTES fields
-     private JSpinner spBody, spAgility, spReaction, spStrength,
-                      spWillpower, spLogic, spIntuition, spCharisma,
-                      spEdge, spEssence, spMagic, spResonance;
-     private JTextField tfComposure, tfJudgeIntentions, tfMemory, tfLiftCarry;
-     // TODO later: initiative and other derived stats
-     // private JTextField tfInitiative, tfMatrixInitiative, tfAstralInitiative,
-     //                    tfJudgeIntentions, tfMemory, tfLiftCarry, tfMovement,
-     //                    tfUnarmedAR, tfDefenseRating;
-     
-     // CONDITION MONITOR fields (future feature)
-     // private JTextField tfPhysicalBoxes, tfStunBoxes;
-     
-     // SKILLS table and QUALITIES/CONTACTS tables
-     private JTable tableSkills;
-     private DefaultTableModel skillsTableModel;
--    private JTable tableQualities;
--    private DefaultTableModel qualitiesTableModel;
-+    private JTable tableQualities;
-+    private DefaultTableModel qualitiesTableModel;
-     private JTable tableContacts;
-     private DefaultTableModel contactsTableModel;
-     private JLabel lblSkillCount;
-     private JLabel lblQualityCount;
-     private java.util.Map<String, double[]> metatypeMap = new java.util.LinkedHashMap<>();
-     private java.util.Map<String, Integer> metatypeKarmaMap = new java.util.LinkedHashMap<>();
-     private java.util.Map<String, Integer> surgeKarmaMap = new java.util.LinkedHashMap<>();
-     private java.util.Map<String, String[]> archetypeMap = new java.util.LinkedHashMap<>();
-     private java.util.Map<String, String[]> skillMap = new java.util.LinkedHashMap<>();
-     private java.util.Map<String, String[]> specializationMap = new java.util.LinkedHashMap<>();
-     private java.util.List<QualityEntry> qualityEntries = new java.util.ArrayList<>();
-     private int editingQualityRow = -1;
+@@ -1048,68 +1048,72 @@ private void buildConditionMonitorSection() {
+         c.gridy=2; c.gridx=0; panel.add(cbPosQual, c);
+         c.gridx=1; panel.add(cbNegQual, c);
  
-     private String lastSurgeCollective = null;
-     private String lastMetatype = null;
- 
-     private JTable tableKarmaLog;
-     private DefaultTableModel karmaLogModel;
--    private JLabel lblLoggedKarma;
-+    private JLabel lblLoggedKarma;
-+
-+    private static final String[] QUALITY_CATEGORIES = {
-+            "Magic","Matrix","Mental","Metagenic","Physical","Social","Vehicle"
-+    };
- 
-     private static final String[] RANK_OPTIONS = {
-             "1 - Novice",
-             "2 - Advanced Beginner",
-             "3 - Journeyman",
-             "4 - Professional",
-             "5 - Advanced Professional",
-             "6 - Local Legend",
-             "7 - Elite",
-             "8 - Professional Elite",
-             "9 - National Elite",
-             "10 - Multinational Elite",
-             "11 - Global Elite",
-             "12 - GOAT"
-     };
-     
-     // WEAPONS, ARMOR: future feature
-     // private JTextArea taRangedWeapons, taMeleeWeapons, taArmor;
-     
-     // MATRIX STATS - future feature
-     // private JTextField tfMatrixAttack, tfMatrixSleaze, tfMatrixDataProc, tfMatrixFirewall,
-     //                    tfMatrixConditionBoxes;
-     // private JTextArea taMatrixDevices;
-     
-     // AUGMENTATIONS - future feature
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc559cbb88fb 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -731,57 +735,71 @@ private void buildConditionMonitorSection() {
-         tableKarmaLog = new JTable(karmaLogModel);
-         tableKarmaLog.setPreferredScrollableViewportSize(new Dimension(250, 500));
-         JScrollPane sp = new JScrollPane(tableKarmaLog);
-         JPanel panel = new JPanel(new BorderLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Karma Log", TitledBorder.LEFT, TitledBorder.TOP));
-         panel.add(sp, BorderLayout.CENTER);
-         lblLoggedKarma = new JLabel("Logged Karma: 0");
-         JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
-         south.add(lblLoggedKarma);
-         panel.add(south, BorderLayout.SOUTH);
-         return panel;
-     }
- 
-     private void updateSkillCount() {
-         if (lblSkillCount != null) {
-             lblSkillCount.setText(skillsTableModel.getRowCount() + " skills");
-         }
-     }
- 
-     private void updateQualityCount() {
-         if (lblQualityCount != null) {
-             lblQualityCount.setText(qualitiesTableModel.getRowCount() + " qualities");
-         }
-     }
- 
--    private void removeQualityRow(int rowIndex) {
--        if (rowIndex < 0 || rowIndex >= qualitiesTableModel.getRowCount()) return;
--        Object nameObj = qualitiesTableModel.getValueAt(rowIndex, 1);
--        String qName = nameObj == null ? "" : nameObj.toString();
--        qualitiesTableModel.removeRow(rowIndex);
--        removeKarma("Quality", qName);
--    }
-+    private void removeQualityRow(int rowIndex) {
-+        if (rowIndex < 0 || rowIndex >= qualitiesTableModel.getRowCount()) return;
-+        Object nameObj = qualitiesTableModel.getValueAt(rowIndex, 1);
-+        String qName = nameObj == null ? "" : nameObj.toString();
-+        qualitiesTableModel.removeRow(rowIndex);
-+        removeKarma("Quality", qName);
-+    }
-+
-+    private void addQuality(String category, String name) {
-+        qualitiesTableModel.addRow(new Object[]{category, name, "", ""});
-+        int row = qualitiesTableModel.getRowCount() - 1;
-+        for (QualityEntry qe : qualityEntries) {
-+            if (qe.name.equals(name)) {
-+                qualitiesTableModel.setValueAt(qe.type, row, 2);
-+                qualitiesTableModel.setValueAt(String.valueOf(qe.karma), row, 3);
-+                addOrUpdateKarma("Quality", name, qe.karma);
-+                break;
-+            }
-+        }
-+        updateQualityCount();
-+    }
- 
-     private Integer findKarmaRow(String type, String name) {
-         for (int i = 0; i < karmaLogModel.getRowCount(); i++) {
-             Object t = karmaLogModel.getValueAt(i, 0);
-             Object n = karmaLogModel.getValueAt(i, 1);
-             if (type.equals(t) && name.equals(n)) {
-                 return i;
+         while (true) {
+             int opt = JOptionPane.showOptionDialog(frame, panel, title,
+                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                     null, new Object[]{"OK","Skip"}, "OK");
+             if (opt != JOptionPane.OK_OPTION) return null;
+             Object pq = cbPosQual.getSelectedItem();
+             Object nq = cbNegQual.getSelectedItem();
+             if (pq != null && nq != null) {
+                 return new String[][]{
+                         {(String) cbPosCat.getSelectedItem(), pq.toString()},
+                         {(String) cbNegCat.getSelectedItem(), nq.toString()}
+                 };
              }
-         }
-         return null;
-     }
- 
-     private void addOrUpdateKarma(String type, String name, int cost) {
-         Integer row = findKarmaRow(type, name);
-         if (row == null) {
-             karmaLogModel.addRow(new Object[]{type, name, cost});
-         } else {
-             karmaLogModel.setValueAt(cost, row, 2);
-         }
-         updateLoggedKarma();
-     }
- 
-     private void removeKarma(String type, String name) {
-         Integer row = findKarmaRow(type, name);
-         if (row != null) {
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc559cbb88fb 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -898,66 +916,206 @@ private void buildConditionMonitorSection() {
-         } catch (Exception ignored) {}
-     }
- 
-     private void updateHeightFeet() {
-         try {
-             double cm = Double.parseDouble(tfHeight.getText());
-             int totalInches = (int) Math.round(cm / 2.54);
-             int feet = totalInches / 12;
-             int inches = totalInches % 12;
-             tfHeightFt.setText(String.format("%d'%d\"", feet, inches));
-         } catch (Exception ex) {
-             tfHeightFt.setText("");
+             JOptionPane.showMessageDialog(frame,
+                     "Both qualities must be selected or choose Skip.",
+                     title, JOptionPane.ERROR_MESSAGE);
          }
      }
  
-     private void updateWeightLbs() {
-         try {
-             double kg = Double.parseDouble(tfWeight.getText());
-             int lbs = (int) Math.round(kg * 2.20462);
-             tfWeightLbs.setText(String.valueOf(lbs));
-         } catch (Exception ex) {
-             tfWeightLbs.setText("");
-         }
-     }
- 
--    private void updateDerivedAttributes() {
--        try {
--            int will = ((Number) spWillpower.getValue()).intValue();
-+    private void updateDerivedAttributes() {
-+        try {
-+            int will = ((Number) spWillpower.getValue()).intValue();
-             int cha = ((Number) spCharisma.getValue()).intValue();
-             int intui = ((Number) spIntuition.getValue()).intValue();
-             int log = ((Number) spLogic.getValue()).intValue();
-             int str = ((Number) spStrength.getValue()).intValue();
-             int bod = ((Number) spBody.getValue()).intValue();
-             tfComposure.setText(String.valueOf(will + cha));
-             tfJudgeIntentions.setText(String.valueOf(intui + cha));
-             tfMemory.setText(String.valueOf(log + will));
-             tfLiftCarry.setText(String.valueOf(str + bod));
-         } catch (Exception ex) {
-             // ignore
--        }
--    }
-+        }
-+    }
-+
-+    private void clearForm() {
-+        tfName.setText("");
-+        tfPlayer.setText("");
-+        tfAge.setText("");
-+        tfNationality.setText("");
-+        tfHeight.setText("");
-+        tfHeightFt.setText("");
-+        tfWeight.setText("");
-+        tfWeightLbs.setText("");
-+        tfKarma.setText("50");
-+        tfTotalKarma.setText("");
-+        tfNuyen.setText("");
-+        tfPrimaryLifestyle.setText("");
-+        tfFakeIDs.setText("");
-+        taNotes.setText("");
-+
-+        cbRole.setSelectedIndex(-1);
-+        cbStatus.setSelectedIndex(-1);
-+        cbMetatype.setSelectedIndex(-1);
-+        cbGender.setSelectedIndex(-1);
-+        chkSurge.setSelected(false);
-+        cbSurgeCollective.setSelectedIndex(0);
-+
-+        spBody.setValue(1);
-+        spAgility.setValue(1);
-+        spReaction.setValue(1);
-+        spStrength.setValue(1);
-+        spWillpower.setValue(1);
-+        spLogic.setValue(1);
-+        spIntuition.setValue(1);
-+        spCharisma.setValue(1);
-+        spEdge.setValue(1);
-+        spEssence.setValue(6.0);
-+        spMagic.setValue(0);
-+        spResonance.setValue(0);
-+
-+        skillsTableModel.setRowCount(0);
-+        updateSkillCount();
-+        qualitiesTableModel.setRowCount(0);
-+        updateQualityCount();
-+        contactsTableModel.setRowCount(0);
-+        karmaLogModel.setRowCount(0);
-+        updateLoggedKarma();
-+
-+        lastMetatype = null;
-+        lastSurgeCollective = null;
-+
-+        updateDerivedAttributes();
-+    }
-+
-+    private String[][] showQualityPairDialog(String title) {
-+        JComboBox<String> cbPosCat = new JComboBox<>(QUALITY_CATEGORIES);
-+        JComboBox<String> cbNegCat = new JComboBox<>(QUALITY_CATEGORIES);
-+        JComboBox<String> cbPosQual = new JComboBox<>();
-+        JComboBox<String> cbNegQual = new JComboBox<>();
-+
-+        java.awt.event.ActionListener posListener = e -> {
-+            cbPosQual.removeAllItems();
-+            String cat = (String) cbPosCat.getSelectedItem();
-+            for (QualityEntry qe : qualityEntries) {
-+                if ("Positive".equalsIgnoreCase(qe.type) && qe.category.equalsIgnoreCase(cat)) {
-+                    cbPosQual.addItem(qe.name);
-+                }
-+            }
-+        };
-+        java.awt.event.ActionListener negListener = e -> {
-+            cbNegQual.removeAllItems();
-+            String cat = (String) cbNegCat.getSelectedItem();
-+            for (QualityEntry qe : qualityEntries) {
-+                if ("Negative".equalsIgnoreCase(qe.type) && qe.category.equalsIgnoreCase(cat)) {
-+                    cbNegQual.addItem(qe.name);
-+                }
-+            }
-+        };
-+        cbPosCat.addActionListener(posListener);
-+        cbNegCat.addActionListener(negListener);
-+        if (cbPosCat.getItemCount() > 0) cbPosCat.setSelectedIndex(0);
-+        if (cbNegCat.getItemCount() > 0) cbNegCat.setSelectedIndex(0);
-+
-+        JPanel panel = new JPanel(new GridBagLayout());
-+        GridBagConstraints c = new GridBagConstraints();
-+        c.insets = new Insets(4,4,4,4);
-+        c.anchor = GridBagConstraints.WEST;
-+
-+        c.gridx=0; c.gridy=0; panel.add(new JLabel("Positive"), c);
-+        c.gridx=1; panel.add(new JLabel("Negative"), c);
-+
-+        c.gridy=1; c.gridx=0; panel.add(cbPosCat, c);
-+        c.gridx=1; panel.add(cbNegCat, c);
-+
-+        c.gridy=2; c.gridx=0; panel.add(cbPosQual, c);
-+        c.gridx=1; panel.add(cbNegQual, c);
-+
-+        while (true) {
-+            int opt = JOptionPane.showOptionDialog(frame, panel, title,
-+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-+                    null, new Object[]{"OK","Skip"}, "OK");
-+            if (opt != JOptionPane.OK_OPTION) return null;
-+            Object pq = cbPosQual.getSelectedItem();
-+            Object nq = cbNegQual.getSelectedItem();
-+            if (pq != null && nq != null) {
-+                return new String[][]{
-+                        {(String) cbPosCat.getSelectedItem(), pq.toString()},
-+                        {(String) cbNegCat.getSelectedItem(), nq.toString()}
-+                };
-+            }
-+            JOptionPane.showMessageDialog(frame,
-+                    "Both qualities must be selected or choose Skip.",
-+                    title, JOptionPane.ERROR_MESSAGE);
-+        }
-+    }
-+
-+    private void setBaseAttributesForMetatype(String meta) {
-+        java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
-+        if (!file.exists() || meta == null) return;
+     private void setBaseAttributesForMetatype(String meta) {
+         java.io.File file = new java.io.File("Shadowrun_Metatype.csv");
+         if (!file.exists() || meta == null) return;
+-        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+-            String line = br.readLine();
+-            while ((line = br.readLine()) != null) {
+-                String[] p = line.split(",", -1);
+-                if (p.length >= 15 && p[0].trim().equalsIgnoreCase(meta)) {
+-                    if (!p[6].trim().isEmpty()) spBody.setValue(2);
+-                    if (!p[7].trim().isEmpty()) spAgility.setValue(2);
+-                    if (!p[8].trim().isEmpty()) spReaction.setValue(2);
+-                    if (!p[9].trim().isEmpty()) spStrength.setValue(2);
+-                    if (!p[10].trim().isEmpty()) spWillpower.setValue(2);
+-                    if (!p[11].trim().isEmpty()) spLogic.setValue(2);
+-                    if (!p[12].trim().isEmpty()) spIntuition.setValue(2);
+-                    if (!p[13].trim().isEmpty()) spCharisma.setValue(2);
+-                    if (!p[14].trim().isEmpty()) spEdge.setValue(2);
+-                    break;
+-                }
+-            }
+-        } catch (Exception ignored) {}
 +        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
 +            String line = br.readLine();
 +            while ((line = br.readLine()) != null) {
@@ -354,8 +69,8 @@ index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc55
 +                }
 +            }
 +        } catch (Exception ignored) {}
-+        updateDerivedAttributes();
-+    }
+         updateDerivedAttributes();
+     }
  
      private void loadRacialTraitsForMetatype(String owner) {
          if (qualitiesTableModel == null) return;
@@ -379,281 +94,6 @@ index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc55
              }
          } catch (Exception ignored) {}
          updateQualityCount();
-     }
- 
-diff --git a/ShadowrunCharacterBuilderGUI.java b/ShadowrunCharacterBuilderGUI.java
-index 819fcf756ac215daade13c7006dab4680cc5e931..bba0174a5019b6330dc3a9d3dce4dc559cbb88fb 100644
---- a/ShadowrunCharacterBuilderGUI.java
-+++ b/ShadowrunCharacterBuilderGUI.java
-@@ -1392,138 +1550,180 @@ private void buildSpellsSection() {
-         taSpellsRituals = new JTextArea(4, 60);
-         taSpellsRituals.setLineWrap(true);
-         taSpellsRituals.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-         JScrollPane sp = new JScrollPane(taSpellsRituals);
-         panel.add(new JLabel("Enter spells/rituals/complex forms (one per line, format: Type, Name, Target/Range, Duration, Drain):"), BorderLayout.NORTH);
-         panel.add(sp, BorderLayout.CENTER);
-         contentPanel.add(panel);
-     }
- 
- */
- /*
-  * Future feature: Adept Powers or Other Abilities section
- private void buildAdeptPowersSection() {
-         JPanel panel = new JPanel(new BorderLayout());
-         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Adept Powers / Other Abilities", TitledBorder.LEFT, TitledBorder.TOP));
-         taAdeptPowers = new JTextArea(3, 60);
-         taAdeptPowers.setLineWrap(true);
-         taAdeptPowers.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-         JScrollPane sp = new JScrollPane(taAdeptPowers);
-         panel.add(new JLabel("Enter adept powers or other abilities (one per line, format: Name, Level, Notes):"), BorderLayout.NORTH);
-         panel.add(sp, BorderLayout.CENTER);
-         contentPanel.add(panel);
-     }
- */
- 
--    private void runLifePathWizard() {
--        // Stage 1: Born This Way
--        java.util.List<String> metaNames = new java.util.ArrayList<>();
--        for (int i = 0; i < cbMetatype.getItemCount(); i++) {
--            metaNames.add(cbMetatype.getItemAt(i).toString());
--        }
--        String meta = (String) JOptionPane.showInputDialog(frame,
--                "Choose Metatype:", "Stage 1 - Born This Way",
--                JOptionPane.QUESTION_MESSAGE, null,
--                metaNames.toArray(new String[0]), null);
--        if (meta != null) {
--            for (int i = 0; i < cbMetatype.getItemCount(); i++) {
--                MetaItem mi = cbMetatype.getItemAt(i);
--                if (mi.name.equals(meta)) { cbMetatype.setSelectedIndex(i); break; }
--            }
--        }
--
--        int surge = JOptionPane.showConfirmDialog(frame,
--                "Will this character be affected by SURGE?",
--                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
--        if (surge == JOptionPane.YES_OPTION) {
--            chkSurge.setSelected(true);
--            java.util.List<String> colls = new java.util.ArrayList<>();
--            for (int i = 0; i < cbSurgeCollective.getItemCount(); i++) {
--                colls.add(cbSurgeCollective.getItemAt(i));
--            }
--            String coll = (String) JOptionPane.showInputDialog(frame,
--                    "Select SURGE Collective:", "Stage 1 - Born This Way",
--                    JOptionPane.QUESTION_MESSAGE, null,
--                    colls.toArray(new String[0]), cbSurgeCollective.getItemAt(0));
--            if (coll != null) {
--                cbSurgeCollective.setSelectedItem(coll);
--            }
--        } else {
--            chkSurge.setSelected(false);
--        }
--
--        String[] statusOpts = new String[cbStatus.getItemCount()];
--        for (int i = 0; i < cbStatus.getItemCount(); i++) {
--            statusOpts[i] = cbStatus.getItemAt(i);
--        }
--        String statusSel = (String) JOptionPane.showInputDialog(frame,
--                "Character Status:", "Stage 1 - Born This Way",
--                JOptionPane.QUESTION_MESSAGE, null, statusOpts, null);
--        if (statusSel != null) {
--            cbStatus.setSelectedItem(statusSel);
--            switch (statusSel) {
--                case "Technomancer":
--                    spResonance.setValue(1);
--                    break;
--                case "Aspected Magician":
--                    spMagic.setValue(2);
--                    break;
--                case "Full Magician":
--                case "Mystic Adept":
--                case "Adept":
--                    spMagic.setValue(1);
--                    break;
--                case "Mundane":
--                    spEdge.setValue(2);
--                    break;
--            }
--        }
--
--        String nat = JOptionPane.showInputDialog(frame,
--                "Enter nationality of birth:", tfNationality.getText());
--        if (nat != null) tfNationality.setText(nat);
--
--        String lang = JOptionPane.showInputDialog(frame,
--                "Enter native language:");
--        if (lang != null && !lang.trim().isEmpty()) {
--            skillsTableModel.addRow(new Object[]{"Language", "LG: " + lang, "Native", "", ""});
--            updateSkillCount();
--        }
--
--        int pos = JOptionPane.showConfirmDialog(frame,
--                "Would you like to choose a positive quality?\n(A negative quality will also be required)",
--                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
--        if (pos == JOptionPane.YES_OPTION) {
--            qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
--            qualitiesTableModel.addRow(new Object[]{"", "", "", ""});
--            updateQualityCount();
--        }
--
--        JOptionPane.showMessageDialog(frame,
--                "Stage 1 complete. Further stages will be implemented later.",
--                "Life Path Wizard", JOptionPane.INFORMATION_MESSAGE);
--    }
-+    private void runLifePathWizard() {
-+        clearForm();
-+
-+        // ===== Stage 1: Born This Way =====
-+        java.util.List<String> metaNames = new java.util.ArrayList<>();
-+        for (int i = 0; i < cbMetatype.getItemCount(); i++) {
-+            metaNames.add(cbMetatype.getItemAt(i).toString());
-+        }
-+        String meta = (String) JOptionPane.showInputDialog(frame,
-+                "Choose Metatype:", "Stage 1 - Born This Way",
-+                JOptionPane.QUESTION_MESSAGE, null,
-+                metaNames.toArray(new String[0]), null);
-+        if (meta == null) return;
-+        for (int i = 0; i < cbMetatype.getItemCount(); i++) {
-+            MetaItem mi = cbMetatype.getItemAt(i);
-+            if (mi.name.equals(meta)) { cbMetatype.setSelectedIndex(i); break; }
-+        }
-+        setBaseAttributesForMetatype(meta);
-+
-+        int surge = JOptionPane.showConfirmDialog(frame,
-+                "Will this character be affected by SURGE?",
-+                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
-+        if (surge == JOptionPane.YES_OPTION) {
-+            chkSurge.setSelected(true);
-+            java.util.List<String> colls = new java.util.ArrayList<>();
-+            for (int i = 0; i < cbSurgeCollective.getItemCount(); i++) {
-+                colls.add(cbSurgeCollective.getItemAt(i));
-+            }
-+            String coll = (String) JOptionPane.showInputDialog(frame,
-+                    "Select SURGE Collective:", "Stage 1 - Born This Way",
-+                    JOptionPane.QUESTION_MESSAGE, null,
-+                    colls.toArray(new String[0]), cbSurgeCollective.getItemAt(0));
-+            if (coll != null) {
-+                cbSurgeCollective.setSelectedItem(coll);
-+            }
-+        } else {
-+            chkSurge.setSelected(false);
-+        }
-+
-+        String[] statusOpts = new String[cbStatus.getItemCount()];
-+        for (int i = 0; i < cbStatus.getItemCount(); i++) {
-+            statusOpts[i] = cbStatus.getItemAt(i);
-+        }
-+        String statusSel = (String) JOptionPane.showInputDialog(frame,
-+                "Character Status:", "Stage 1 - Born This Way",
-+                JOptionPane.QUESTION_MESSAGE, null, statusOpts, null);
-+        if (statusSel == null) return;
-+        cbStatus.setSelectedItem(statusSel);
-+        switch (statusSel) {
-+            case "Technomancer":
-+                spResonance.setValue(1);
-+                break;
-+            case "Aspected Magician":
-+                spMagic.setValue(2);
-+                break;
-+            case "Full Magician":
-+            case "Mystic Adept":
-+            case "Adept":
-+                spMagic.setValue(1);
-+                break;
-+            case "Mundane":
-+                spEdge.setValue(((Number) spEdge.getValue()).intValue() + 1);
-+                break;
-+        }
-+
-+        String nat = JOptionPane.showInputDialog(frame,
-+                "Enter nationality of birth:", tfNationality.getText());
-+        if (nat != null) tfNationality.setText(nat);
-+
-+        String lang = JOptionPane.showInputDialog(frame,
-+                "Enter native language:");
-+        if (lang != null && !lang.trim().isEmpty()) {
-+            skillsTableModel.addRow(new Object[]{"Language", "LG: " + lang, "Native", "", ""});
-+            updateSkillCount();
-+        }
-+
-+        int pos = JOptionPane.showConfirmDialog(frame,
-+                "Would you like to choose a positive quality?\n(A negative quality will also be required)",
-+                "Stage 1 - Born This Way", JOptionPane.YES_NO_OPTION);
-+        if (pos == JOptionPane.YES_OPTION) {
-+            String[][] pair = showQualityPairDialog("Stage 1 - Born This Way Qualities");
-+            if (pair != null) {
-+                addQuality(pair[0][0], pair[0][1]);
-+                addQuality(pair[1][0], pair[1][1]);
-+            }
-+        }
-+
-+        // ===== Stage 2: Growing Up =====
-+        String[] skillChoices = {"Athletics","Con","Close Combat","Electronics","Influence","Outdoors","Perception","Stealth"};
-+        JList<String> list = new JList<>(skillChoices);
-+        list.setVisibleRowCount(8);
-+        int skillOpt;
-+        java.util.List<String> selected = null;
-+        do {
-+            skillOpt = JOptionPane.showConfirmDialog(frame, new JScrollPane(list),
-+                    "Stage 2 - Choose 4 Skills", JOptionPane.OK_CANCEL_OPTION);
-+            if (skillOpt != JOptionPane.OK_OPTION) return;
-+            selected = list.getSelectedValuesList();
-+            if (selected.size() != 4) {
-+                JOptionPane.showMessageDialog(frame, "Please select exactly four skills.",
-+                        "Stage 2 - Growing Up", JOptionPane.ERROR_MESSAGE);
-+            }
-+        } while (selected.size() != 4);
-+        for (String s : selected) {
-+            String[] info = skillMap.getOrDefault(s, new String[]{"",""});
-+            skillsTableModel.addRow(new Object[]{"General", s, RANK_OPTIONS[1], info[0], info[1]});
-+        }
-+        updateSkillCount();
-+
-+        String area = JOptionPane.showInputDialog(frame,
-+                "Enter an Area Knowledge skill for where the character grew up:");
-+        if (area != null && !area.trim().isEmpty()) {
-+            skillsTableModel.addRow(new Object[]{"Knowledge", "KB: " + area, "N/A", "", ""});
-+            updateSkillCount();
-+        }
-+
-+        int pos2 = JOptionPane.showConfirmDialog(frame,
-+                "Choose another positive quality?\n(A negative quality will also be required)",
-+                "Stage 2 - Growing Up", JOptionPane.YES_NO_OPTION);
-+        if (pos2 == JOptionPane.YES_OPTION) {
-+            String[][] pair = showQualityPairDialog("Stage 2 - Growing Up Qualities");
-+            if (pair != null) {
-+                addQuality(pair[0][0], pair[0][1]);
-+                addQuality(pair[1][0], pair[1][1]);
-+            }
-+        }
-+
-+        JOptionPane.showMessageDialog(frame, "Life Path complete.",
-+                "Life Path Wizard", JOptionPane.INFORMATION_MESSAGE);
-+    }
- 
-     private void generateReport() {
-         StringBuilder sb = new StringBuilder();
-         sb.append("=== Shadowrun 6e Character Report ===\n\n");
-         sb.append("-- Personal Data --\n");
-         sb.append(String.format("Name: %s\n", tfName.getText()));
-         sb.append(String.format("Player: %s\n", tfPlayer.getText()));
-         sb.append(String.format("Role: %s   Metatype: %s   Gender: %s   Age: %s   Height (cm): %s   Weight (kg): %s\n",
-                 cbRole.getSelectedItem(), cbMetatype.getSelectedItem(),
-                 cbGender.getSelectedItem(), tfAge.getText(),
-                 tfHeight.getText(), tfWeight.getText()));
-         sb.append(String.format("Nationality: %s   Status: %s\n",
-                 tfNationality.getText(), cbStatus.getSelectedItem()));
- 
-         sb.append("\n-- Attributes --\n");
-         sb.append(String.format("Body: %s   Agility: %s   Reaction: %s   Strength: %s   Willpower: %s\n",
-                 spBody.getValue(), spAgility.getValue(), spReaction.getValue(), spStrength.getValue(), spWillpower.getValue()));
-         sb.append(String.format("Logic: %s   Intuition: %s   Charisma: %s   Edge: %s   Essence: %s\n",
-                 spLogic.getValue(), spIntuition.getValue(), spCharisma.getValue(), spEdge.getValue(), spEssence.getValue()));
-         sb.append(String.format("Magic: %s   Resonance: %s\n",
-                 spMagic.getValue(), spResonance.getValue()));
-         // Initiative and other derived stats will be added later
- 
-         // Condition Monitor will be added in a future version
- 
  
 EOF
 )
